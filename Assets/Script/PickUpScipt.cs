@@ -4,8 +4,8 @@ using UnityEngine;
 public class PickUpScipt : MonoBehaviour
 {
     [Header("Refs")]
-    public Transform holdPos;                  // ใช้เป็นตำแหน่งอ้างอิง/แกนการยก (วางไว้หน้ากล้อง)
-    public Collider playerCollider;            // คอลลิเดอร์ของผู้เล่นไว้ Ignore ตอนถือ
+    public Transform holdPos;                  // จุดอ้างอิงการถือ (วางไว้หน้ากล้อง)
+    public Collider playerCollider;            // คอลลิเดอร์ผู้เล่นสำหรับ Ignore ตอนถือ
 
     [Header("Filters")]
     public string pickableTag = "pickable";
@@ -13,44 +13,49 @@ public class PickUpScipt : MonoBehaviour
 
     [Header("Input")]
     [Tooltip("คลิกซ้าย = หยิบ/วาง")]
-    public bool useLeftClickToggle = true;     // true = LMB toggle (ตามที่ขอ)
+    public bool useLeftClickToggle = true;
 
     [Header("Hold Physics")]
     public float pickUpRayRange = 5f;          // ระยะ Raycast หาไอเท็ม
-    public bool antiClipWhileHolding = true;  // กันทะลุผนังตอนถือ
+    public bool antiClipWhileHolding = true;   // กันทะลุผนังตอนถือ (SphereCast)
     public float holdSmooth = 20f;
     public float skin = 0.02f;
 
     [Header("Rotation (Yaw only)")]
-    public float wheelYawSpeed = 160f;         // ความเร็วหมุนด้วยสกอร์ลเมาส์ (ซ้าย/ขวา)
+    public float wheelYawSpeed = 160f;         // หมุนด้วยล้อเมาส์ แกน Y
     [Tooltip("ปิดการลากเมาส์เพื่อหมุน (เหลือแค่สกอร์ล)")]
-    public bool disableDragRotate = true;      // ปิดโหมด R+ลาก เมาส์
+    public bool disableDragRotate = true;
 
     [Header("Keep Visual Size")]
-    [Tooltip("ทำให้ของไม่ดูเล็ก/ใหญ่ขึ้นเมื่อยก: คงระยะจากกล้องตอนหยิบ")]
+    [Tooltip("คงระยะจากกล้องตอนหยิบ เพื่อให้ขนาดที่เห็นไม่เปลี่ยน")]
     public bool preserveApparentSize = true;
-    public float minHoldDistance = 0.6f;       // กันไม่ให้จ่อหน้ากล้องเกินไป
-    public float maxHoldDistance = 3.0f;       // กันไม่ให้ไกลเกินไป
+    public float minHoldDistance = 0.6f;
+    public float maxHoldDistance = 3.0f;
 
     [Header("Two-Camera Layering")]
     public string holdLayerName = "holdItem";
     public int defaultLayer = 0;
 
-    // runtime
+    [Header("Optional Camera Sync (Base/Overlay)")]
+    public Camera baseCam;     // กล้องหลัก (ถ้าไม่กำหนด จะใช้ Camera.main)
+    public Camera overlayCam;  // กล้อง Overlay ที่เรนเดอร์เลเยอร์ holdItem (ปล่อยว่างได้)
+
+    // --- runtime ---
     private GameObject heldObj;
     private Rigidbody heldRb;
-    private List<Collider> heldCols = new List<Collider>();
+    private readonly List<Collider> heldCols = new List<Collider>();
     private int holdLayer;
     private bool canDrop = true;
     private Quaternion targetRotation;
 
-    // เก็บสถานะของ Rigidbody เดิม
+    // เก็บสถานะเดิมของ Rigidbody
     private bool prevKinematic;
     private bool prevUseGravity;
     private RigidbodyInterpolation prevInterp;
     private CollisionDetectionMode prevCdm;
+    private bool prevDetectCollisions;
 
-    // เก็บระยะที่ใช้คงขนาดภาพ
+    // ระยะที่ใช้คงขนาดภาพ
     private float heldDistanceFromCam = 1.0f;
 
     void Awake()
@@ -62,65 +67,78 @@ public class PickUpScipt : MonoBehaviour
 
     void Update()
     {
-        // --- Toggle pickup/drop ด้วยคลิกซ้าย ---
+        // รับอินพุตเท่านั้น (ย้ายการขยับไป LateUpdate ให้ซิงก์กับกล้อง)
         if (useLeftClickToggle && Input.GetMouseButtonDown(0))
         {
             if (heldObj == null) TryPickup();
             else if (canDrop) DropObject();
         }
+    }
 
+    void LateUpdate()
+    {
+        // เคลื่อนย้าย/หมุนหลังกล้องอัปเดต -> ลดอาการสั่น
         if (heldObj != null)
         {
-            // เคลื่อนที่ไอเท็มไปยังตำแหน่งถือ
             if (antiClipWhileHolding) MoveHeldWithAntiClip();
             else MoveHeldSimple();
 
-            // หมุนด้วยล้อเมาส์ (yaw เท่านั้น)
             HandleWheelYaw();
+        }
 
-            // ปิดการโยน/ขว้าง -> ไม่มีโค้ดโยน
+        // ออปชัน: ซิงก์กล้อง Overlay กับกล้องหลัก (ถ้ากำหนดไว้)
+        if (overlayCam != null)
+        {
+            Camera cam = baseCam != null ? baseCam : Camera.main;
+            if (cam != null)
+            {
+                overlayCam.transform.SetPositionAndRotation(cam.transform.position, cam.transform.rotation);
+                overlayCam.fieldOfView = cam.fieldOfView;
+                overlayCam.nearClipPlane = cam.nearClipPlane;
+                overlayCam.farClipPlane = cam.farClipPlane;
+            }
         }
     }
 
     // ----------------- Pick / Drop -----------------
     void TryPickup()
     {
-        Camera cam = Camera.main;
+        Camera cam = baseCam != null ? baseCam : Camera.main;
         if (!cam) return;
 
-        // 1) Raycast ทะลุทุกเลเยอร์ก่อน แล้วค่อยเช็กเงื่อนไขเอง
+        // Raycast เลือกวัตถุ
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, pickUpRayRange, ~0, QueryTriggerInteraction.Ignore))
         {
             Transform tr = hit.transform;
 
-            // 2) เช็ก "อย่างใดอย่างหนึ่ง"
             bool tagOK = !string.IsNullOrEmpty(pickableTag) && tr.CompareTag(pickableTag);
             bool layerOK = ((1 << tr.gameObject.layer) & pickableLayer) != 0;
+            if (!(tagOK || layerOK)) return;
 
-            if (!(tagOK || layerOK)) return;   // ต้องมีแท็กตรง หรือ อยู่เลเยอร์ที่อนุญาต อย่างใดอย่างหนึ่ง
-
-            // ดึง rigidbody จาก RaycastHit
             Rigidbody rb = hit.rigidbody != null ? hit.rigidbody : hit.collider.GetComponent<Rigidbody>();
             if (!rb) return;
 
             heldObj = rb.gameObject;
             heldRb = rb;
 
-            // --- เก็บสถานะเดิม ---
+            // เก็บสถานะเดิม
             prevKinematic = heldRb.isKinematic;
             prevUseGravity = heldRb.useGravity;
             prevInterp = heldRb.interpolation;
             prevCdm = heldRb.collisionDetectionMode;
+            prevDetectCollisions = heldRb.detectCollisions;
 
-            // --- ตั้งค่าระหว่างถือ ---
+            // ตั้งค่าสำหรับ "ถือ"
             heldRb.isKinematic = true;
             heldRb.useGravity = false;
-            heldRb.detectCollisions = true;
-            heldRb.interpolation = RigidbodyInterpolation.Interpolate;
+            heldRb.linearVelocity = Vector3.zero;
+            heldRb.angularVelocity = Vector3.zero;
+            heldRb.detectCollisions = false;                     // ปิด contact ตอนถือ (กันโดนฟิสิกส์ผลัก)
+            heldRb.interpolation = RigidbodyInterpolation.None; // ปิด interp บนคิเนมาติค ลด jitter
             heldRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
-            // เปลี่ยนเลเยอร์ทั้งก้อน -> holdItem (กล้อง Overlay เรนเดอร์)
+            // ย้ายเลเยอร์ไป holdItem ให้กล้อง Overlay เรนเดอร์
             SetLayerRecursively(heldObj, holdLayer);
 
             // Ignore ชนกับผู้เล่น
@@ -129,10 +147,10 @@ public class PickUpScipt : MonoBehaviour
             if (playerCollider)
                 foreach (var c in heldCols) Physics.IgnoreCollision(c, playerCollider, true);
 
-            // มุมเริ่มต้น
+            // ตั้งมุมเริ่มต้น
             targetRotation = heldObj.transform.rotation;
 
-            // คงขนาดภาพ
+            // คงขนาดภาพ: เก็บระยะจากกล้อง -> จุดที่โดนยิง
             if (preserveApparentSize)
             {
                 float d = Vector3.Distance(cam.transform.position, hit.point);
@@ -141,20 +159,23 @@ public class PickUpScipt : MonoBehaviour
         }
     }
 
-
     void DropObject()
     {
         if (heldObj == null) return;
 
+        // เลิก Ignore กับผู้เล่น
         if (playerCollider)
             foreach (var c in heldCols) Physics.IgnoreCollision(c, playerCollider, false);
 
+        // คืนเลเยอร์เดิม
         SetLayerRecursively(heldObj, defaultLayer);
 
+        // คืนค่าฟิสิกส์เดิม
         heldRb.isKinematic = prevKinematic;
         heldRb.useGravity = prevUseGravity;
         heldRb.interpolation = prevInterp;
         heldRb.collisionDetectionMode = prevCdm;
+        heldRb.detectCollisions = prevDetectCollisions;
 
         heldObj = null;
         heldRb = null;
@@ -164,23 +185,23 @@ public class PickUpScipt : MonoBehaviour
     // ----------------- Movement while holding -----------------
     Vector3 GetHoldTargetPosition()
     {
-        var cam = Camera.main;
+        Camera cam = baseCam != null ? baseCam : Camera.main;
         if (!cam) return holdPos ? holdPos.position : transform.position + transform.forward * 1.0f;
 
         if (preserveApparentSize)
         {
-            // วางไว้ตามแนวกล้องที่ "ระยะเดิม" ตอนหยิบ เพื่อให้ขนาดที่เห็นไม่เปลี่ยน
+            // วางตามแนวกล้องที่ "ระยะเดิม" ตอนหยิบ
             return cam.transform.position + cam.transform.forward * heldDistanceFromCam;
         }
-        // โหมดปกติ: ใช้ตำแหน่ง holdPos
+        // โหมดปกติ: ใช้ตำแหน่ง holdPos ถ้ามี
         return holdPos ? holdPos.position : cam.transform.position + cam.transform.forward * 1.0f;
     }
 
     void MoveHeldSimple()
     {
         Vector3 target = GetHoldTargetPosition();
-        heldObj.transform.position = target;
-        heldRb.MoveRotation(targetRotation);
+        heldObj.transform.position = target;   // คิเนมาติค + ปิด detectCollisions แล้ว ปลอดภัย
+        if (heldRb) heldRb.MoveRotation(targetRotation);
     }
 
     void MoveHeldWithAntiClip()
@@ -199,7 +220,12 @@ public class PickUpScipt : MonoBehaviour
         if (dist > 1e-4f)
         {
             dir /= dist;
-            if (Physics.SphereCast(current, radius, dir, out RaycastHit hit, dist, ~0, QueryTriggerInteraction.Ignore))
+
+            // ไม่ชนเลเยอร์ที่ถืออยู่เอง
+            int mask = ~0;
+            if (holdLayer >= 0) mask &= ~(1 << holdLayer);
+
+            if (Physics.SphereCast(current, radius, dir, out RaycastHit hit, dist, mask, QueryTriggerInteraction.Ignore))
             {
                 if (!IsSelf(hit.collider))
                 {
@@ -218,12 +244,7 @@ public class PickUpScipt : MonoBehaviour
     // ----------------- Rotation (wheel only) -----------------
     void HandleWheelYaw()
     {
-        // ปิดโหมดลากเมาส์: เหลือเฉพาะสกอร์ลเพื่อหมุนแกน Y
-        if (!disableDragRotate)
-        {
-            // ถ้าภายหลังอยากเปิดการลากหมุน ค่อยเพิ่มได้
-        }
-
+        // (ยังไม่เปิดโหมดลากเมาส์ตามเดิม)
         float wheel = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(wheel) > 0.0005f)
         {

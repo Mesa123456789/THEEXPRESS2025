@@ -6,7 +6,7 @@ public class WarehouseZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Box"))
+        if (other.CompareTag("BoxInteract"))
         {
             boxInZone = other.gameObject;
             Debug.Log("กล่องเข้าเขตโกดัง รอกด E เพื่อเก็บเข้าคลัง");
@@ -15,7 +15,7 @@ public class WarehouseZone : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Box") && boxInZone == other.gameObject)
+        if (other.CompareTag("BoxInteract") && boxInZone == other.gameObject)
         {
             boxInZone = null;
         }

@@ -123,7 +123,7 @@ public class BoxScript : MonoBehaviour
                     Destroy(item.gameObject);
             }
 
-            gameObject.layer = LayerMask.NameToLayer("BoxInteract");
+            gameObject.tag = "BoxInteract";
             rb.isKinematic = false;
             rb.useGravity = true;
             boxSpawner.hasSpawnedBox = false;
