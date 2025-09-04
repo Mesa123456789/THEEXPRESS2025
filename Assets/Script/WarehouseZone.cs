@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class WarehouseZone : MonoBehaviour
 {
+    public static event Action OnBoxStored; // << อีเวนต์กระจายสัญญาณ
     GameObject boxInZone = null;
 
     private void OnTriggerEnter(Collider other)
@@ -28,6 +30,8 @@ public class WarehouseZone : MonoBehaviour
             Destroy(boxInZone);
             boxInZone = null;
             Debug.Log("เก็บกล่องเข้าคลังแล้ว!");
+
+            OnBoxStored?.Invoke(); // << แจ้งทุก NPC ว่าเก็บเข้าคลังแล้ว
         }
     }
 }

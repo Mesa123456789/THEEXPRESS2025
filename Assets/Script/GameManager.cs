@@ -1,6 +1,5 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,18 +9,20 @@ public class GameManager : MonoBehaviour
     public int currentSales = 0;
 
     [Header("Clock Settings")]
-    [Tooltip("ชั่วโมงเริ่มต้นของแต่ละวัน (24h) เช่น 15 = 15:00")]
-    public int startHour = 15;          // เริ่ม 15:00
-    [Tooltip("จำนวนชั่วโมงในหนึ่งวันของเกม เช่น 15->03 = 12 ชั่วโมง")]
-    public int hoursPerDay = 12;        // 15:00 ถึง 03:00
-    [Tooltip("ระยะเวลา (วินาทีจริง) ต่อ 1 ชั่วโมงในเกม")]
-    public float hourDuration = 60f;    // 60 วินาที = 1 ชั่วโมงในเกม
+    [Tooltip("ชั่วโมงเริ่มต้นของวัน (24 ชม.) เช่น 15 = 15:00")]
+    public int startHour = 15;           // เริ่ม 15:00
+    [Tooltip("จำนวนชั่วโมงต่อวันเกม (15→03 = 12 ชม.)")]
+    public int hoursPerDay = 12;         // 15:00 → 03:00
+    [Tooltip("วินาทีจริงต่อ 1 ชั่วโมงในเกม (ต้องการ 10 วินาที)")]
+    public float hourDuration = 10f;     // 10s = 1h in-game
+
+    [Tooltip("ถ้าเปิด ต้องทำยอดถึงเป้าถึงจะข้ามวันได้")]
+    public bool requireGoalToProgress = false;
 
     // ตัวนับภายใน
     private float hourTimer = 0f;
-    private float dayTimer = 0f;
-    private int currentHour;               // ชั่วโมงปัจจุบัน (0–23)
-    private int elapsedHoursThisDay = 0;   // จำนวนชั่วโมงที่ผ่านไปในวันนี้ (0..hoursPerDay)
+    private int currentHour;               // 0–23
+    private int elapsedHoursThisDay = 0;   // 0..hoursPerDay
 
     [Header("UI")]
     public TMP_Text timeText;
@@ -31,76 +32,84 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        StartNewDay();   // รีเซ็ตเวลา + เป้าขาย + UI
+        StartNewDay();
     }
 
     void Update()
     {
-        // นับเวลาจริง -> ชั่วโมงในเกม
         hourTimer += Time.deltaTime;
-        dayTimer += Time.deltaTime;
 
-        if (hourTimer >= hourDuration)
+        // รองรับเฟรมตก: เดินทีละ "ชั่วโมงเกม" จนครบ
+        while (hourTimer >= hourDuration)
         {
             hourTimer -= hourDuration;
+            AdvanceHour();
 
-            // เดินหน้าชั่วโมงจริง (วน 24 ชั่วโมง)
-            currentHour = (currentHour + 1) % 24;
-            elapsedHoursThisDay++;
+            // ถ้าจบวันแล้ว เรารีเซ็ตใน EndDay() → หยุด loop เฟรมนี้เลย
+            if (elapsedHoursThisDay == 0) break;
+        }
+    }
 
-            UpdateTimeUI();
+    // เลื่อนเวลาไป 1 ชั่วโมงเกม
+    void AdvanceHour()
+    {
+        currentHour = (currentHour + 1) % 24;
+        elapsedHoursThisDay++;
+        UpdateTimeUI();
 
-            // ครบชั่วโมงของวันนี้ -> จบวัน
-            if (elapsedHoursThisDay >= hoursPerDay)
-            {
-                EndDay();
-            }
+        if (elapsedHoursThisDay >= hoursPerDay)
+        {
+            EndDay();
         }
     }
 
     // ---------- Day Control ----------
     void StartNewDay()
     {
-        // รีเซ็ตเวลา
+        // เวลา
         currentHour = startHour % 24;
         elapsedHoursThisDay = 0;
         hourTimer = 0f;
-        dayTimer = 0f;
 
-        // สุ่ม/ตั้งเป้ายอดขายใหม่ และรีเซ็ตยอดวันนี้
-        salesGoal = Random.Range(900, 1501);
+        // ยอดขาย
+        if (salesGoal <= 0) salesGoal = 500;      // กันค่าเพี้ยน
         currentSales = 0;
 
-        // อัปเดต UI
+        // UI
         UpdateDayUI();
         UpdateTimeUI();
         UpdateSalesUI();
 
-        Debug.Log($"[Day {currentDay}] Start at {currentHour:00}:00  Goal: {salesGoal}");
-        // TODO: Spawn รอบใหม่/สุ่มลูกค้าได้ที่นี่
+        // Debug.Log($"[Day {currentDay}] Start {currentHour:00}:00  Goal {salesGoal}");
     }
 
     void EndDay()
     {
-        Debug.Log($"[Day {currentDay}] End. Sales {currentSales}/{salesGoal}");
-
-        if (currentSales >= salesGoal)
+        bool pass = currentSales >= salesGoal;
+        if (!requireGoalToProgress || pass)
         {
             currentDay++;
             StartNewDay();
         }
         else
         {
-            GameOver();
+            // ยังอยากวนวันต่อก็เปลี่ยนเป็น StartNewDay();
+            // ตอนนี้: ไม่ผ่านเป้า → ค้างวันไว้ หรือแสดง GameOver ตามต้องการ
+            // ตัวอย่าง: รีเซ็ตวันใหม่ต่อให้แม้ไม่ถึงเป้า:
+            // currentDay++; StartNewDay();
+
+            // ถ้าอยาก "หยุดเกม" ให้ทำ UI/Scene ที่นี่
+            // Debug.Log("Game Over! ยอดขายไม่ถึงเป้า");
+            currentDay++;       // ถ้าต้องการให้เดินต่อแม้ไม่ถึงเป้า ให้คอมเมนต์บรรทัดนี้ออกได้
+            StartNewDay();      // ← เลือกแนวทางนี้เพื่อให้ตรงคำขอ “วนลูปไปเรื่อยๆ”
         }
     }
 
-    void GameOver()
+    // ---------- Public API ----------
+    public void AddSales(int amount)
     {
-        Debug.Log("Game Over! ยอดขายไม่ถึงเป้า");
-        // ใส่ UI GameOver หรือรีสตาร์ทซีนตามต้องการ
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        // หรือถ้าจะให้เล่นต่อวันใหม่แม้ไม่ถึงเป้า ก็สลับมาเรียก StartNewDay() แทน
+        currentSales += amount;
+        UpdateSalesUI();
     }
 
     // ---------- UI ----------
@@ -112,21 +121,11 @@ public class GameManager : MonoBehaviour
 
     void UpdateTimeUI()
     {
-        if (timeText)
-            timeText.text = $"{currentHour:00}:00"; // แสดงแบบ 24 ชั่วโมง สองหลัก
+        if (timeText) timeText.text = $"{currentHour:00}:00";
     }
 
     void UpdateDayUI()
     {
-        if (DayText)
-            DayText.text = $"Day {currentDay}";
-    }
-
-    // ---------- Public API ----------
-    public void AddSales(int amount)
-    {
-        currentSales += amount;
-        UpdateSalesUI();
-        // Debug.Log($"Sold! Today's sales: {currentSales}/{salesGoal}");
+        if (DayText) DayText.text = $"Day {currentDay}";
     }
 }
