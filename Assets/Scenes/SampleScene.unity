@@ -2178,13 +2178,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentDay: 1
-  dayDuration: 30
   salesGoal: 500
   currentSales: 0
   startHour: 15
   hoursPerDay: 9
-  totalDayDuration: 300
-  hourDuration: 30
+  hourDuration: 2
   timeText: {fileID: 1959568251}
   salesText: {fileID: 1649112072}
   goalText: {fileID: 967890950}
