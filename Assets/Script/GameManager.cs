@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     [Header("Day / Goal")]
     public int currentDay = 1;
     public int salesGoal = 500;
@@ -29,7 +31,16 @@ public class GameManager : MonoBehaviour
     public TMP_Text salesText;
     public TMP_Text goalText;
     public TMP_Text DayText;
-
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // กันซ้ำ
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);    // อยู่ข้ามซีนได้
+    }
     void Start()
     {
         StartNewDay();

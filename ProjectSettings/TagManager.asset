@@ -16,6 +16,7 @@ TagManager:
   - Receipt
   - canPickUp
   - BoxInteract
+  - NPC
   layers:
   - Default
   - TransparentFX

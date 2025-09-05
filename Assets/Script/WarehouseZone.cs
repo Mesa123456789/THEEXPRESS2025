@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class WarehouseZone : MonoBehaviour
 {
-    public static event Action OnBoxStored; // << อีเวนต์กระจายสัญญาณ
-    GameObject boxInZone = null;
+    public static event Action OnBoxStored; 
+    public GameObject boxInZone = null;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -25,7 +25,7 @@ public class WarehouseZone : MonoBehaviour
 
     void Update()
     {
-        if (boxInZone != null && Input.GetKeyDown(KeyCode.E))
+        if (boxInZone != null )
         {
             Destroy(boxInZone);
             boxInZone = null;

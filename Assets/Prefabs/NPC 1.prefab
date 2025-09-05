@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8525272784195695067}
   m_Layer: 0
   m_Name: NPC 1
-  m_TagString: Untagged
+  m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 999ef5a3afaf9e841b5506c0488957c4, type: 2}
+  - {fileID: 2100000, guid: 010aefe12c1bf2f4687171b10ae99bb9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +126,5 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 4a735747acae6a041ba5a3d1cceb73e3, type: 2}
   moveSpeed: 3
   reachThreshold: 0.2
-  entryWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  entryWaypoints: []
   exitPoint: {fileID: 0}

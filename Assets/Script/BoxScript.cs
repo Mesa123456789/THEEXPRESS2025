@@ -71,7 +71,7 @@ public class BoxScript : MonoBehaviour
         Debug.Log($"Bubble inserted {bubbleCount} times");
 
         Vector3 scale = bubble.transform.localScale;
-        scale.y += 0.2f;
+        scale.y += 0.08f;
         bubble.transform.localScale = scale;
 
         if (bubbleCount >= 3)
@@ -121,6 +121,7 @@ public class BoxScript : MonoBehaviour
             {
                 if (item.CompareTag("pickable"))
                     Destroy(item.gameObject);
+                Debug.Log("ของข้างในถูกลบ");
             }
 
             gameObject.tag = "BoxInteract";
@@ -128,11 +129,17 @@ public class BoxScript : MonoBehaviour
             rb.useGravity = true;
             boxSpawner.hasSpawnedBox = false;
             Tape.isTapeDone = false;
-            GameManager gameManager = FindFirstObjectByType<GameManager>();
             int moneyEarned = Random.Range(150, 301);
-            gameManager.AddSales(moneyEarned);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddSales(moneyEarned);
+            }
+            else
+            {
+                Debug.LogWarning("GameManager.Instance is null");
+            }
 
-            Debug.Log("กล่องเสร็จ! Bubble + ของข้างในถูกลบ เหลือแต่กล่องเปล่าและหยิบได้");
+            Debug.Log("กล่องเสร็จ!หยิบได้");
         }
 
     }

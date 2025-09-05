@@ -36,6 +36,7 @@ public class NPCSpawner : MonoBehaviour
 
     private Coroutine loopCo;
 
+    
     void OnEnable()
     {
         if (spawnOnBoxStored)

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8525272784195695067}
   m_Layer: 0
   m_Name: NPC
-  m_TagString: Untagged
+  m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -126,7 +126,5 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 4a735747acae6a041ba5a3d1cceb73e3, type: 2}
   moveSpeed: 3
   reachThreshold: 0.2
-  entryWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  entryWaypoints: []
   exitPoint: {fileID: 0}
