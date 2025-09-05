@@ -112,22 +112,31 @@ public class SimplePickupOverlay : MonoBehaviour
         heldObj = rb.gameObject;
         heldRb = rb;
         originalParent = heldObj.transform.parent;
-
-        // เก็บฟิสิกส์เดิม
+        // --- เก็บสถานะเดิม ---
         prevKinematic = heldRb.isKinematic;
         prevUseGravity = heldRb.useGravity;
         prevDetectCollisions = heldRb.detectCollisions;
         prevInterp = heldRb.interpolation;
         prevCdm = heldRb.collisionDetectionMode;
 
-        // ปิดฟิสิกส์/ชนตอนถือ
-        heldRb.isKinematic = true;
+        // --- เคลียร์ความเร็ว "ก่อน" ทำให้คิเนมาติค ---
+        if (!heldRb.isKinematic)
+        {
+#if UNITY_6000_0_OR_NEWER
+            heldRb.linearVelocity = Vector3.zero;
+#else
+    heldRb.velocity = Vector3.zero;
+#endif
+            heldRb.angularVelocity = Vector3.zero;
+        }
+
+        // --- ตั้งค่าสำหรับตอนถือ ---
         heldRb.useGravity = false;
-        heldRb.linearVelocity = Vector3.zero;   // Unity 6
-        heldRb.angularVelocity = Vector3.zero;
         heldRb.detectCollisions = false;
         heldRb.interpolation = RigidbodyInterpolation.None;
         heldRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        heldRb.isKinematic = true; // <- ย้ายมาไว้ "ท้ายสุด"
+
 
         // ปิด collider ทั้งหมดชั่วคราว + เก็บสถานะ
         colStates.Clear();

@@ -71,7 +71,7 @@ public class BoxScript : MonoBehaviour
         Debug.Log($"Bubble inserted {bubbleCount} times");
 
         Vector3 scale = bubble.transform.localScale;
-        scale.y += 0.08f;
+        scale.y += 0.07f;
         bubble.transform.localScale = scale;
 
         if (bubbleCount >= 3)
