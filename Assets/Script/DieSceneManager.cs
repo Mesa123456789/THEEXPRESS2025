@@ -7,25 +7,30 @@ public class DieSceneManager : MonoBehaviour
     [Header("Where to go")]
     public string gameplayScene = "Gameplay";
 
+    [Header("GameManager")]
+    public GameManager GameManager;
+
     [Header("Options")]
-    public bool goToNextDayAt15 = false; // ถ้าต้องการให้ไปวันใหม่ 15:00 ก่อนกลับ
+    public bool goToNextDayAt15 = false;
 
     void Awake()
     {
         // โชว์เมาส์ในซีนตาย
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        Time.timeScale = 1f; // กันเผื่อมีการหยุดเวลา
+        Time.timeScale = 1f; 
 
-        // เผื่อซีนนี้ลืมใส่ EventSystem (จำเป็นสำหรับปุ่ม UI)
+    }
 
+    private void Start()
+    {
+        GameManager = GetComponent<GameManager>();
     }
 
     public void BacktoGameplay()
     {
-        // (ออปชัน) ให้ GM ตั้งเวลาไปวันใหม่ 15:00 ก่อนกลับ
-        if (goToNextDayAt15 && GameManager.Instance != null)
-            GameManager.Instance.SleepNow();
+        if (goToNextDayAt15 && GameManager != null)
+            GameManager.SleepNow();
 
         // ล็อกเมาส์กลับสำหรับ FPS
         Cursor.lockState = CursorLockMode.Locked;

@@ -5,13 +5,16 @@ using StarterAssets; // FirstPersonController
 public class Bed : MonoBehaviour
 {
     [Header("UI")]
-    public Canvas sleepUI;                 // พาเนลที่มีปุ่ม Sleep / No
+    public Canvas sleepUI;
 
     [Header("Player")]
     public FirstPersonController playerController;
 
+    [Header("Game")]
+    public GameManager gameManager;   // <-- เปลี่ยนชื่อฟิลด์และตั้งให้หาอัตโนมัติ
+
     [Header("Raycast")]
-    public Camera rayCamera;               // ว่างไว้จะใช้ Camera.main
+    public Camera rayCamera;
     public string bedTag = "Bed";
     public float rayDistance = 5f;
 
@@ -21,28 +24,27 @@ public class Bed : MonoBehaviour
 
     void Start()
     {
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>(); // หา GM ของซีนปัจจุบัน
         if (!rayCamera) rayCamera = Camera.main;
         if (sleepUI) sleepUI.enabled = false;
-        LockGameplay(); // ซ่อนเมาส์เริ่มเกม
+        LockGameplay();
     }
 
     void Update()
     {
-        // ถ้า UI เปิดอยู่ ไม่ต้องฟังคลิกเปิดซ้ำ
         if (sleepUI && sleepUI.enabled) return;
-
-        // กันคลิกทะลุ UI อื่น ๆ
         if (EventSystem.current && EventSystem.current.IsPointerOverGameObject()) return;
-
-        // คลิกซ้ายเท่านั้น
         if (!Input.GetMouseButtonDown(0)) return;
 
-        if (requireDangerTime && GameManager.Instance && !GameManager.Instance.IsDangerTime)
-            return;
+        // ต้องมี GM ถ้าบังคับช่วงอันตราย
+        if (requireDangerTime)
+        {
+            if (!gameManager) return;
+            if (!gameManager.IsDangerTime) return;
+        }
 
         if (!rayCamera) return;
 
-        // ยิง Ray จากตำแหน่งเมาส์ไปหาเตียง
         Ray ray = rayCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, rayDistance, ~0, QueryTriggerInteraction.Collide))
         {
@@ -63,31 +65,32 @@ public class Bed : MonoBehaviour
         return false;
     }
 
-    // ===== UI control =====
     void OpenSleepUI()
     {
         if (!sleepUI) return;
         sleepUI.enabled = true;
-        UnlockForUI();   // ปลดเมาส์ + ล็อกการเดิน (เหมือน Computer.cs)
+        UnlockForUI();
     }
 
     void CloseSleepUI()
     {
         if (!sleepUI) return;
         sleepUI.enabled = false;
-        LockGameplay();  // ซ่อนเมาส์ + ปลดล็อกการเดินกลับสู่เกม
+        LockGameplay();
     }
 
     // ===== Buttons =====
     public void OnClickSleep()
     {
-        GameManager.Instance?.SleepNow(); // ข้ามไปวันถัดไป 15:00
+        // เรียก GM ของซีนปัจจุบัน (เผื่อมีการเปลี่ยนซีนหรือถูกลบทิ้ง)
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
+        gameManager?.SleepNow();
         CloseSleepUI();
     }
 
     public void OnClickNo()
     {
-        CloseSleepUI();  // แค่ปิดแล้วเล่นต่อได้เลย
+        CloseSleepUI();
     }
 
     // ===== Cursor & movement helpers =====

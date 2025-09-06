@@ -3,7 +3,7 @@
 public class BoxScript : MonoBehaviour
 {
     [Header("Box Settings")]
-    public bool hasItem = false; 
+    public bool hasItem = false;
     public int Closing = 0;
 
     [Header("Lids")]
@@ -12,6 +12,9 @@ public class BoxScript : MonoBehaviour
 
     [Header("Tape")]
     public TapeDragScaler Tape;
+
+    [Header("GameManager")]
+    public GameManager gameManager;   // <-- ตั้งเป็นฟิลด์ปกติ
 
     [Header("Bubble Check")]
     public bool bubbleInserted = false;
@@ -24,27 +27,24 @@ public class BoxScript : MonoBehaviour
     Rigidbody rb;
 
     public bool PastedLabel = false;
-    
+    private bool boxCleared = false;
 
     void Start()
     {
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>(); // หา GM ของซีนปัจจุบัน
+
         boxSpawner = FindFirstObjectByType<BoxSpawner>();
         rb = GetComponent<Rigidbody>();
         bubble.SetActive(false);
         rb.isKinematic = true;
         rb.useGravity = false;
         PastedLabel = false;
-
-
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("pickable"))
-        {
             hasItem = true;
-
-        }
-
     }
 
     private void OnTriggerExit(Collider other)
@@ -58,29 +58,22 @@ public class BoxScript : MonoBehaviour
         Collider[] contents = Physics.OverlapBox(transform.position, transform.localScale / 2, Quaternion.identity);
         foreach (Collider col in contents)
             if (col.CompareTag("pickable")) return true;
-
         return false;
     }
 
     public void AddBubble()
     {
-        bubble.SetActive (true);
+        bubble.SetActive(true);
         if (bubbleCount >= 3) return;
 
         bubbleCount++;
-        Debug.Log($"Bubble inserted {bubbleCount} times");
-
         Vector3 scale = bubble.transform.localScale;
         scale.y += 0.07f;
         bubble.transform.localScale = scale;
 
         if (bubbleCount >= 3)
-        {
             bubbleInserted = true;
-            Debug.Log("พร้อมปิดกล่องได้แล้ว!");
-        }
     }
-    private bool boxCleared = false;
 
     private void Update()
     {
@@ -97,10 +90,9 @@ public class BoxScript : MonoBehaviour
             }
 
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 3f) && hit.collider.CompareTag("Boxlid"))
+            if (Physics.Raycast(ray, out var hit, 3f) && hit.collider.CompareTag("Boxlid"))
             {
-                SmoothLidClose lid = hit.collider.GetComponent<SmoothLidClose>();
+                var lid = hit.collider.GetComponent<SmoothLidClose>();
                 if (lid != null)
                 {
                     lid.CloseLid();
@@ -109,39 +101,35 @@ public class BoxScript : MonoBehaviour
             }
         }
 
-        if (leftLid != null && rightLid != null && leftLid.isClosed && rightLid.isClosed)
-        {
+        if (leftLid && rightLid && leftLid.isClosed && rightLid.isClosed)
             IsFinsihedClose = true;
-        }
-        if (Tape != null && Tape.isTapeDone && PastedLabel && !boxCleared)
+
+        if (Tape && Tape.isTapeDone && PastedLabel && !boxCleared)
         {
             boxCleared = true;
+
             Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
             foreach (Collider item in items)
-            {
                 if (item.CompareTag("pickable"))
                     Destroy(item.gameObject);
-                Debug.Log("ของข้างในถูกลบ");
-            }
 
             gameObject.tag = "BoxInteract";
             rb.isKinematic = false;
             rb.useGravity = true;
-            boxSpawner.hasSpawnedBox = false;
+            if (boxSpawner) boxSpawner.hasSpawnedBox = false;
             Tape.isTapeDone = false;
+
             int moneyEarned = Random.Range(150, 301);
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.AddSales(moneyEarned);
-            }
+
+            // หา GM อีกรอบเผื่อถูกถอด/ซีนรีโหลด
+            if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
+
+            if (gameManager != null)
+                gameManager.AddSales(moneyEarned);
             else
-            {
-                Debug.LogWarning("GameManager.Instance is null");
-            }
+                Debug.LogWarning("BoxScript: GameManager reference is null");
 
             Debug.Log("กล่องเสร็จ!หยิบได้");
         }
-
     }
-
 }
