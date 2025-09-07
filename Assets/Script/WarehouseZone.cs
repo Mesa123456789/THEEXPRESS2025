@@ -31,7 +31,7 @@ public class WarehouseZone : MonoBehaviour
             boxInZone = null;
             Debug.Log("เก็บกล่องเข้าคลังแล้ว!");
 
-            OnBoxStored?.Invoke(); // << แจ้งทุก NPC ว่าเก็บเข้าคลังแล้ว
+            OnBoxStored?.Invoke(); 
         }
     }
 }

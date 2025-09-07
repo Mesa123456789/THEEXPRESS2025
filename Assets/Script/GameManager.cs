@@ -1,11 +1,13 @@
-﻿using TMPro;
+﻿using StarterAssets;
+using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-
+    public FirstPersonController playerController;
     // ========= Day / Sales =========
     public int currentDay = 1;
     public int salesGoal = 500;   // เป้าขายต่อวัน
@@ -154,7 +156,7 @@ public class GameManager : MonoBehaviour
 
         if (!sleptThisCycle)
         {
-            // เดิม: SceneManager.LoadScene(deathSceneName);
+            
             StartCoroutine(DeathSequence());
             return;
         }
@@ -232,20 +234,22 @@ public class GameManager : MonoBehaviour
             return Mathf.Clamp01(hourTimer / hourDuration);
         }
     }
-    System.Collections.IEnumerator DeathSequence()
+    IEnumerator DeathSequence()
     {
         if (freezeDuringDeathDelay)
-            Time.timeScale = 0f;                     
-
-        yield return new WaitForSecondsRealtime(deathDelaySeconds); 
+            Time.timeScale = 0f;
+        playerController.isMovementLocked = true;
+        StartCoroutine(FadeManager.Instance.FadeOutAndLoad("CutScene_Die"));
+        yield return new WaitForSecondsRealtime(deathDelaySeconds);
 
         if (freezeDuringDeathDelay)
-            Time.timeScale = 1f;                
+            Time.timeScale = 1f;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(deathSceneName);
+       
+
     }
 
-    // ใช้ซ้ำให้ตรงกับเกณฑ์ [start, end) (เช่น 03:00–05:59 เมื่อ end=6)
+
 
 
 

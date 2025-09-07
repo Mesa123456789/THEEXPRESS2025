@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using StarterAssets; // FirstPersonController
+using StarterAssets;
+using System.Collections.Generic;
+using System.Collections; // FirstPersonController
 
 public class Bed : MonoBehaviour
 {
@@ -79,14 +81,35 @@ public class Bed : MonoBehaviour
         LockGameplay();
     }
 
-    // ===== Buttons =====
     public void OnClickSleep()
     {
-        // เรียก GM ของซีนปัจจุบัน (เผื่อมีการเปลี่ยนซีนหรือถูกลบทิ้ง)
-        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
-        gameManager?.SleepNow();
-        CloseSleepUI();
+        StartCoroutine(SleepWithFade());
     }
+
+    private IEnumerator SleepWithFade()
+    {
+        CloseSleepUI();
+        Time.timeScale = 0f;
+
+
+        if (FadeManager.Instance != null)
+        {
+            yield return StartCoroutine(FadeManager.Instance.FadeIn(2f));
+        }
+
+
+        gameManager?.SleepNow();
+
+
+        if (FadeManager.Instance != null)
+        {
+            yield return StartCoroutine(FadeManager.Instance.FadeOut(2f));
+        }
+
+        Time.timeScale = 1f;
+    }
+
+
 
     public void OnClickNo()
     {
