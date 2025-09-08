@@ -76,6 +76,7 @@ public class Bed : MonoBehaviour
 
     void CloseSleepUI()
     {
+        playerController.isMovementLocked = true;
         if (!sleepUI) return;
         sleepUI.enabled = false;
         LockGameplay();
@@ -83,31 +84,23 @@ public class Bed : MonoBehaviour
 
     public void OnClickSleep()
     {
-        StartCoroutine(SleepWithFade());
+        if (!sleepUI) return;
+        sleepUI.enabled = false;
+        StartCoroutine(SleepWithFadeAndReload());
     }
 
-    private IEnumerator SleepWithFade()
+    private IEnumerator SleepWithFadeAndReload()
     {
-        CloseSleepUI();
         Time.timeScale = 0f;
 
 
         if (FadeManager.Instance != null)
-        {
-            yield return StartCoroutine(FadeManager.Instance.FadeIn(2f));
-        }
+            yield return StartCoroutine(FadeManager.Instance.FadeIn(2f)); 
 
+        gameManager?.SleepNowAndReloadScene("Gameplay");
 
-        gameManager?.SleepNow();
-
-
-        if (FadeManager.Instance != null)
-        {
-            yield return StartCoroutine(FadeManager.Instance.FadeOut(2f));
-        }
-
-        Time.timeScale = 1f;
     }
+
 
 
 
@@ -116,7 +109,6 @@ public class Bed : MonoBehaviour
         CloseSleepUI();
     }
 
-    // ===== Cursor & movement helpers =====
     void UnlockForUI()
     {
         if (playerController) playerController.isMovementLocked = true;

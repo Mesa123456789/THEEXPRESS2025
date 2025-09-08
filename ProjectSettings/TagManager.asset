@@ -18,6 +18,7 @@ TagManager:
   - BoxInteract
   - NPC
   - Bed
+  - sign
   layers:
   - Default
   - TransparentFX

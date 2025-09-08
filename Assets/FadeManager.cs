@@ -36,7 +36,7 @@ public class FadeManager : MonoBehaviour
             canvasGroup.alpha = Mathf.Clamp01(t / duration);
             yield return null;
         }
-        canvasGroup.alpha = 1f; // มืดสนิท
+        canvasGroup.alpha = 1f; 
     }
 
     public IEnumerator FadeOut(float duration = 1.5f)

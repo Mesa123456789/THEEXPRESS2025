@@ -2,63 +2,79 @@
 using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public FirstPersonController playerController;
-    // ========= Day / Sales =========
-    public int currentDay = 1;
-    public int salesGoal = 500;   // เป้าขายต่อวัน
-    public int currentSales = 0;  // ยอดขาย "วันนี้"
 
-    // ========= Clock =========
+    public int currentDay = 1;
+    public int salesGoal = 500; 
+    public int currentSales = 0;  
+    public int totalSales = 0;
+    const string KEY_RELOAD = "GM_ReloadOnNewDay";
+    const string KEY_DAY = "GM_DaySaved";
+    const string KEY_TOTAL_SALES = "GM_TotalSales";
+
     [Header("Clock Settings")]
-    [Tooltip("ชั่วโมงเริ่มต้นของรอบ (24h) เช่น 15 = 15:00")]
-    public int startHour = 15;         
-    [Tooltip("วินาทีจริงต่อ 1 ชั่วโมงในเกม")]
-    public float hourDuration = 10f;  
+    public int startHour = 15;
+    public float hourDuration = 10f;
 
     [Header("Danger & Sleep")]
-    [Tooltip("เริ่มช่วงอันตราย (รวมชั่วโมงนี้)")]
-    public int dangerStartHour = 3;  
-    [Tooltip("เวลาจบรอบ (ถึงชั่วโมงนี้แล้วจะจบวัน/ตายถ้าไม่ได้นอน)")]
-    public int dayEndHour = 6;   
+    public int dangerStartHour = 3;
+    public int dayEndHour = 6;
     public string deathSceneName = "CutScene_Die";
 
-    // เวลาภายใน
-    private float hourTimer = 0f;
-    public int currentHour;              
-    private int elapsedHoursThisDay = 0;   
-    private int runtimeDayLength = 0;      
-    private bool sleptThisCycle = false;     
-    private bool isEnding = false;          
 
-    // ========= UI =========
+    private float hourTimer = 0f;
+    public int currentHour;
+    private int elapsedHoursThisDay = 0;
+    private int runtimeDayLength = 0;
+    private bool sleptThisCycle = false;
+    private bool isEnding = false;
+
+
     [Header("UI (assign per scene or auto-bind)")]
     public TMP_Text timeText;
     public TMP_Text salesText;
     public TMP_Text goalText;
     public TMP_Text DayText;
-
+    public TMP_Text totalSalesText;
     [Header("Danger UI")]
-    public TMP_Text dangerText;            
+    public TMP_Text dangerText;
     public string dangerMessage = "Danger time! Go to bed.";
 
     [Header("Danger Gauge")]
-    public DangerTimeGauge dangerGauge;  // ลากคอมโพเนนต์ DangerTimeGauge มาใส่
+    public DangerTimeGauge dangerGauge;
 
-    bool wasInDanger = false;            // สถานะก่อนหน้า (ใช้เช็คเปลี่ยนสถานะ)
+    bool wasInDanger = false;
 
     [Header("End of Day")]
-    public float deathDelaySeconds = 1f;   // เวลาหน่วงก่อนเข้า CutScene_Die
-    public bool freezeDuringDeathDelay = true; // true = หยุดเกมระหว่างดีเลย์
+    public float deathDelaySeconds = 1f;
+    public bool freezeDuringDeathDelay = true;
 
+    [Header("Shop Time")]
+    public int shopOpenHour = 15;
+    public int shopCloseHour = 2;
+    public bool shopIsOpen = false;
 
+    public TMP_Text shopUI;
+    public NPCSpawner npcSpawner;
+    public ShopSign shopSign;
 
-    // อยู่ช่วงอันตรายหรือไม่ (เช็คแบบวง 24 ชม.)
     public bool IsDangerTime => IsHourInRange(currentHour, dangerStartHour, dayEndHour);
+    void Awake()
+    {
+        if (PlayerPrefs.GetInt(KEY_RELOAD, 0) == 1)
+        {
+            currentDay = PlayerPrefs.GetInt(KEY_DAY, currentDay);
+            totalSales = PlayerPrefs.GetInt(KEY_TOTAL_SALES, totalSales);
+            PlayerPrefs.SetInt(KEY_RELOAD, 0);
+            PlayerPrefs.Save();
+        }
+    }
 
     void Start()
     {
@@ -69,6 +85,7 @@ public class GameManager : MonoBehaviour
             else dangerGauge.EndDanger();
         }
         wasInDanger = inDanger;
+        shopIsOpen = false;
         StartNewDay();
 
     }
@@ -78,39 +95,77 @@ public class GameManager : MonoBehaviour
         if (isEnding) return;
 
         hourTimer += Time.deltaTime;
-
-        // รองรับเฟรมตก
         while (hourTimer >= hourDuration && !isEnding)
         {
             hourTimer -= hourDuration;
             AdvanceHour();
 
-            // เพิ่งรีเซ็ตวัน -> ออกจากลูปเฟรมนี้
+
             if (elapsedHoursThisDay == 0) break;
         }
-        // --- Danger Gauge driving ---
+
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
 
         if (dangerGauge)
         {
-            // เปลี่ยนสถานะ: เข้าสู่ช่วงอันตราย
+
             if (inDanger && !wasInDanger)
                 dangerGauge.BeginDanger(dangerStartHour, dayEndHour);
 
-            // อยู่ในช่วงอันตราย → อัปเดตเกจทุกเฟรม
+
             if (inDanger)
                 dangerGauge.UpdateDanger(currentHour, hourTimer, hourDuration);
 
-            // เปลี่ยนสถานะ: ออกจากช่วงอันตราย
+
             if (!inDanger && wasInDanger)
                 dangerGauge.EndDanger();
         }
 
         wasInDanger = inDanger;
+        CheckShopPrompt();
 
     }
 
-    // เดินเวลาไป 1 ชั่วโมง
+    void CheckShopPrompt()
+    {
+       
+        bool inOpenWindow = IsHourInRange(currentHour, shopOpenHour, shopCloseHour);
+
+        if (inOpenWindow)
+        {
+            if (!shopIsOpen)
+            {
+                if (shopUI)
+                {
+                    shopUI.text = "Open Now!";
+                    shopUI.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (shopUI) shopUI.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            if (shopIsOpen)
+            {
+                if (shopUI)
+                {
+                    shopUI.text = "Close Now!";
+                    shopUI.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (shopUI) shopUI.gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+
+
     void AdvanceHour()
     {
         currentHour = (currentHour + 1) % 24;
@@ -118,12 +173,13 @@ public class GameManager : MonoBehaviour
         UpdateTimeUI();
         UpdateDangerUI();
 
-        // จบรอบเมื่อครบความยาวที่คำนวณ หรือชั่วโมงถึง dayEndHour ตรง ๆ
+        
         if (elapsedHoursThisDay >= runtimeDayLength || currentHour == (dayEndHour % 24))
         {
             EndDay();
         }
     }
+
 
     // ========= Day Control =========
     void StartNewDay()
@@ -156,7 +212,7 @@ public class GameManager : MonoBehaviour
 
         if (!sleptThisCycle)
         {
-            
+
             StartCoroutine(DeathSequence());
             return;
         }
@@ -171,13 +227,14 @@ public class GameManager : MonoBehaviour
 
         sleptThisCycle = true;
         currentDay++;
-        StartNewDay(); 
+        StartNewDay();
     }
 
     // ========= Public API =========
     public void AddSales(int amount)
     {
         currentSales += amount;
+        totalSales += amount;
         UpdateSalesUI();
     }
 
@@ -186,7 +243,9 @@ public class GameManager : MonoBehaviour
     {
         if (salesText) salesText.text = $"Sales: {currentSales}";
         if (goalText) goalText.text = $"Goal: {salesGoal}";
+        if (totalSalesText) totalSalesText.text = $"Total Sales: {totalSales}";
     }
+
 
     void UpdateTimeUI()
     {
@@ -220,9 +279,9 @@ public class GameManager : MonoBehaviour
         start = (start + 24) % 24;
         end = (end + 24) % 24;
 
-        if (start == end) return true;        
+        if (start == end) return true;
         if (start < end) return h >= start && h < end;
-        return h >= start || h < end;          
+        return h >= start || h < end;
     }
     public int CurrentHour => currentHour;
 
@@ -245,12 +304,21 @@ public class GameManager : MonoBehaviour
         if (freezeDuringDeathDelay)
             Time.timeScale = 1f;
 
-       
+
 
     }
 
 
-
+    public void SleepNowAndReloadScene(string gameplaySceneName = "Gameplay")
+    {
+        // บันทึก "วันถัดไป" ไว้ก่อน
+        int nextDay = currentDay + 1;
+        PlayerPrefs.SetInt(KEY_TOTAL_SALES, totalSales);
+        PlayerPrefs.SetInt(KEY_DAY, nextDay);
+        PlayerPrefs.SetInt(KEY_RELOAD, 1);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(gameplaySceneName);
+    }
 
 
 }
