@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class ShopSign : MonoBehaviour
 {
     [Header("Materials")]
-    public Material openMaterial; 
-    public Material closedMaterial; 
+    public Material openMaterial;
+    public Material closedMaterial;
 
     [Header("Mesh Renderer ของป้าย")]
     public MeshRenderer signRenderer;
 
     public GameManager gameManager;
     bool isOpen = false;
+    Coroutine rotateCo;
 
     void Start()
     {
@@ -35,27 +37,42 @@ public class ShopSign : MonoBehaviour
         }
     }
 
-
     void UpdateSign()
     {
-        if (isOpen)
+        if (signRenderer)
+            signRenderer.material = isOpen ? openMaterial : closedMaterial;
+
+        if (rotateCo != null) StopCoroutine(rotateCo);
+        rotateCo = StartCoroutine(RotateThroughPoints());
+    }
+
+    IEnumerator RotateThroughPoints()
+    {
+        // ตั้ง waypoint ตามที่คุณบอก
+        Vector3[] points = new Vector3[]
         {
-            transform.localRotation = Quaternion.Euler(
-                transform.localRotation.eulerAngles.x,
-                180f,
-                transform.localRotation.eulerAngles.z
-            );
-            if (signRenderer) signRenderer.material = openMaterial;
-        }
-        else
+            new Vector3(0, 0, 90),
+            new Vector3(0, 0, 130),
+            new Vector3(0, 180, 60),
+            new Vector3(0, 180, 90)
+        };
+
+        float stepDuration = 0.3f; // ความเร็วต่อ segment
+        for (int i = 0; i < points.Length - 1; i++)
         {
-            gameManager.shopIsOpen = false;
-            transform.localRotation = Quaternion.Euler(
-                transform.localRotation.eulerAngles.x,
-                0f,
-                transform.localRotation.eulerAngles.z
-            );
-            if (signRenderer) signRenderer.material = closedMaterial;
+            Quaternion start = Quaternion.Euler(points[i]);
+            Quaternion end = Quaternion.Euler(points[i + 1]);
+
+            float t = 0f;
+            while (t < 1f)
+            {
+                t += Time.deltaTime / stepDuration;
+                transform.localRotation = Quaternion.Slerp(start, end, t);
+                yield return null;
+            }
         }
+
+        // จบที่เป้าหมายสุดท้าย
+        transform.localRotation = Quaternion.Euler(points[points.Length - 1]);
     }
 }

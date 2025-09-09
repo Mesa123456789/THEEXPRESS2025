@@ -14,7 +14,7 @@ public class BoxScript : MonoBehaviour
     public TapeDragScaler Tape;
 
     [Header("GameManager")]
-    public GameManager gameManager;   // <-- ตั้งเป็นฟิลด์ปกติ
+    public GameManager gameManager;  
 
     [Header("Bubble Check")]
     public bool bubbleInserted = false;
@@ -31,7 +31,7 @@ public class BoxScript : MonoBehaviour
 
     void Start()
     {
-        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>(); // หา GM ของซีนปัจจุบัน
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>(); 
 
         boxSpawner = FindFirstObjectByType<BoxSpawner>();
         rb = GetComponent<Rigidbody>();
@@ -121,7 +121,7 @@ public class BoxScript : MonoBehaviour
 
             int moneyEarned = Random.Range(150, 301);
 
-            // หา GM อีกรอบเผื่อถูกถอด/ซีนรีโหลด
+   
             if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
 
             if (gameManager != null)

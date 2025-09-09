@@ -11,13 +11,12 @@ public class TapeDragScaler : MonoBehaviour
     public float startDragThreshold = 0.12f;
 
     [Header("Pivot")]
-    [Tooltip("ถ้า Mesh/pivot ของเทปอยู่กึ่งกลาง ให้ติ๊ก true เพื่อขยับตำแหน่งครึ่งหนึ่งของความยาว")]
     public bool pivotAtCenter = false;
 
     private bool isDragging = false;
     private bool tapeVisible = false;
 
-    // ความยาวใน "หน่วยโลกจริง"
+
     private float lastWorldLength = 0f;
     private float currentWorldLength = 0f;
 
@@ -26,7 +25,7 @@ public class TapeDragScaler : MonoBehaviour
 
     public bool isTapeDone;
 
-    // เก็บสเกลตั้งต้นของเทปเพื่อ “ล็อค” ความหนา/กว้าง
+
     private Vector3 baseLocalScale;
     private Transform parentForScale;
 
@@ -47,9 +46,6 @@ public class TapeDragScaler : MonoBehaviour
 
     void Update()
     {
-        if (!currentBox || !currentBox.IsFinsihedClose) return;
-
-        // เลือก dispenser
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -59,13 +55,12 @@ public class TapeDragScaler : MonoBehaviour
                 if (dispenser != null)
                 {
                     selectedDispenser = dispenser;
-                    // ไม่ return; ให้คลิกต่อเพื่อเริ่มลากได้เลย
+
                 }
             }
         }
-        if (selectedDispenser == null) return;
+        if (!currentBox || !currentBox.IsFinsihedClose && selectedDispenser == null) return;
 
-        // เริ่มลาก: ต้องคลิกใกล้ปลายเทปปัจจุบัน
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mouseWorld = GetMouseWorldPositionAtY(tapeStart.position.y);
