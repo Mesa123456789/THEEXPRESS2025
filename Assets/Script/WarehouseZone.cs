@@ -1,25 +1,40 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static WarehouseZone;
 
 public class WarehouseZone : MonoBehaviour
 {
-    public static event Action OnBoxStored; 
     public GameObject boxInZone = null;
+    private bool canStoreHere = false;
+    public ZoneType zoneType = ZoneType.LegalZone;
+    public enum ZoneType
+    {
+        LegalZone,    // รับเฉพาะ BoxPrice > 0
+        IllegalZone   // รับเฉพาะ BoxPrice < 0
+    }
     IEnumerator Start()
     {
         if (FadeManager.Instance != null)
-            yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f)); // ค่อย ๆ สว่าง
+            yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f));
 
-        Time.timeScale = 1f; // คืนเวลาให้เดินต่อหลังเฟดออกเสร็จ
+        Time.timeScale = 1f;
     }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("BoxInteract"))
-        {
+        BoxScript box = other.GetComponent<BoxScript>();
+        if (other.CompareTag("BoxInteract")) 
             boxInZone = other.gameObject;
-            Debug.Log("กล่องเข้าเขตโกดัง รอกด E เพื่อเก็บเข้าคลัง");
+        if (zoneType == ZoneType.LegalZone && box.BoxPrice > 0)
+        {
+            canStoreHere = true;
         }
+        else if (zoneType == ZoneType.IllegalZone && box.BoxPrice < 0)
+        {
+            canStoreHere = true;
+        }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -27,18 +42,18 @@ public class WarehouseZone : MonoBehaviour
         if (other.CompareTag("BoxInteract") && boxInZone == other.gameObject)
         {
             boxInZone = null;
+            canStoreHere = false;
         }
     }
 
     void Update()
     {
-        if (boxInZone != null )
+        if (boxInZone != null && canStoreHere)
         {
             Destroy(boxInZone);
             boxInZone = null;
+            canStoreHere = false;
             Debug.Log("เก็บกล่องเข้าคลังแล้ว!");
-
-            OnBoxStored?.Invoke(); 
         }
     }
 }

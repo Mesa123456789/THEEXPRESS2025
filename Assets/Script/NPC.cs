@@ -11,10 +11,10 @@ public class NPC : MonoBehaviour
     public float reachThreshold = 0.2f;
 
     [Header("Path In (waypoints 1→2→3...)")]
-    public Transform[] entryWaypoints;   // ใส่จุดทางเดินเข้าทีละจุด
+    public Transform[] entryWaypoints; 
 
     [Header("Exit")]
-    public Transform exitPoint;          // จุดออก ก่อน Destroy
+    public Transform exitPoint;     
 
     private int entryIndex = 0;
     private bool hasSpawnedPackage = false;
@@ -29,19 +29,17 @@ public class NPC : MonoBehaviour
     private void Start()
     {
         npcBoxcollider = FindFirstObjectByType<NpcBoxcollider>();
-
-        // ฟังอีเวนต์จากโกดัง: เมื่อเก็บเข้าคลัง → ให้ NPC นี้ออก (ถ้าวางของแล้ว)
-        WarehouseZone.OnBoxStored += HandleBoxStored;
+        BoxScript.OnBoxStored += HandleBoxStored;
     }
 
     private void OnDestroy()
     {
-        WarehouseZone.OnBoxStored -= HandleBoxStored;
+        BoxScript.OnBoxStored -= HandleBoxStored;
     }
 
     void HandleBoxStored()
     {
-        // ให้เดินออกเฉพาะกรณีที่วางของแล้ว (รออยู่)
+        
         if (hasSpawnedPackage && state == State.Waiting)
         {
             state = State.Exiting;
@@ -58,7 +56,6 @@ public class NPC : MonoBehaviour
                 UpdateEntering();
                 break;
             case State.Waiting:
-                // ยืนรออีเวนต์ OnBoxStored
                 break;
             case State.Exiting:
                 UpdateExiting();
@@ -68,7 +65,7 @@ public class NPC : MonoBehaviour
 
     void UpdateEntering()
     {
-        // 1) เดินตามทางเข้า 1→2→3 ...
+
         if (entryWaypoints != null && entryWaypoints.Length > 0 && entryIndex < entryWaypoints.Length)
         {
             MoveTowards(entryWaypoints[entryIndex].position);
@@ -77,10 +74,9 @@ public class NPC : MonoBehaviour
             return;
         }
 
-        // 2) เมื่อครบทางเข้าแล้ว → เดินไป NpcBoxcollider
+
         if (npcBoxcollider == null)
         {
-            // ถ้าไม่มีปลายทาง ให้ถือว่าพร้อม Spawn
             SpawnPackageAndWait();
             return;
         }
@@ -98,20 +94,22 @@ public class NPC : MonoBehaviour
         {
             if (data != null && data.package != null)
             {
+
                 // วางพัสดุที่จุด NpcBoxcollider
                 Vector3 dropPos = new Vector3(npcBoxcollider.transform.position.x + x, npcBoxcollider.transform.position.y + y, npcBoxcollider.transform.position.z + z);
+
                 Instantiate(data.package, dropPos, Quaternion.identity);
             }
             hasSpawnedPackage = true;
         }
-        state = State.Waiting; // ยืนรอจนโกดังเก็บเข้าคลัง → จะโดนสั่ง Exiting ผ่านอีเวนต์
+        state = State.Waiting; 
     }
 
     void UpdateExiting()
     {
         if (exitPoint == null)
         {
-            // ไม่มีจุดออกก็ลบทิ้งไปเลย
+
             Destroy(gameObject);
             state = State.Done;
             return;
@@ -120,12 +118,11 @@ public class NPC : MonoBehaviour
         MoveTowards(exitPoint.position);
         if (IsReached(exitPoint.position))
         {
-            Destroy(gameObject); // หายไป
+            Destroy(gameObject);
             state = State.Done;
         }
     }
 
-    // ---------- helpers ----------
     void MoveTowards(Vector3 target)
     {
         transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
