@@ -326,7 +326,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.065, y: 0.748, z: -0.008}
-  m_LocalScale: {x: 0.8, y: 0.1, z: 0.8}
+  m_LocalScale: {x: 0.75, y: 0.1, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3093471409491763370}
@@ -585,6 +585,7 @@ MonoBehaviour:
   leftLid: {fileID: 6043472369708956546}
   rightLid: {fileID: 1238150278867439291}
   Tape: {fileID: 3812762410684554886}
+  gameManager: {fileID: 0}
   bubbleInserted: 0
   bubbleCount: 0
   bubble: {fileID: 1728392966829902260}

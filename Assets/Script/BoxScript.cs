@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using static UnityEditor.Progress;
 
 public class BoxScript : MonoBehaviour
 {
@@ -20,7 +22,7 @@ public class BoxScript : MonoBehaviour
     public bool bubbleInserted = false;
     public int bubbleCount = 0;
     public GameObject bubble;
-
+    public int BoxPrice = 0;
     public bool IsFinsihedClose = false;
 
     BoxSpawner boxSpawner;
@@ -28,6 +30,10 @@ public class BoxScript : MonoBehaviour
 
     public bool PastedLabel = false;
     private bool boxCleared = false;
+
+    ItemScript itemScript;
+    public static event Action OnBoxStored;
+
 
     void Start()
     {
@@ -39,6 +45,7 @@ public class BoxScript : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
         PastedLabel = false;
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -74,7 +81,18 @@ public class BoxScript : MonoBehaviour
         if (bubbleCount >= 3)
             bubbleInserted = true;
     }
-
+    public void StoreBox()
+    {
+        ItemScript itemScript = FindFirstObjectByType<ItemScript>();
+        BoxPrice = itemScript.itemData.caughtPercent;
+        int moneyEarned = itemScript.itemData.price;
+        int risk = itemScript.itemData.caughtPercent;
+        gameManager.AddSales(moneyEarned, risk);
+        if (gameManager.totalCaughtPercent >= 100f)
+        {
+            Debug.Log("โดนจับ! Game Over");
+        }
+    }
     private void Update()
     {
         if (!hasItem) return;
@@ -118,17 +136,8 @@ public class BoxScript : MonoBehaviour
             rb.useGravity = true;
             if (boxSpawner) boxSpawner.hasSpawnedBox = false;
             Tape.isTapeDone = false;
-
-            int moneyEarned = Random.Range(150, 301);
-
-   
-            if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
-
-            if (gameManager != null)
-                gameManager.AddSales(moneyEarned);
-            else
-                Debug.LogWarning("BoxScript: GameManager reference is null");
-
+            StoreBox();
+            OnBoxStored?.Invoke();
             Debug.Log("กล่องเสร็จ!หยิบได้");
         }
     }

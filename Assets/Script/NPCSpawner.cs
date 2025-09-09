@@ -34,13 +34,13 @@ public class NPCSpawner : MonoBehaviour
     void OnEnable()
     {
         if (spawnOnBoxStored)
-            WarehouseZone.OnBoxStored += HandleBoxStoredSpawn;
+            BoxScript.OnBoxStored += HandleBoxStoredSpawn;
     }
 
     void OnDisable()
     {
         if (spawnOnBoxStored)
-            WarehouseZone.OnBoxStored -= HandleBoxStoredSpawn;
+            BoxScript.OnBoxStored -= HandleBoxStoredSpawn;
     }
 
     void Start()

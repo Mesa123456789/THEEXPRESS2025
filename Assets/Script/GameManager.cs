@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviour
     [Header("Danger UI")]
     public TMP_Text dangerText;
     public string dangerMessage = "Danger time! Go to bed.";
+    public int totalCaughtPercent = 0;
+    public TMP_Text totalCaughtPercentText;
+
 
     [Header("Danger Gauge")]
     public DangerTimeGauge dangerGauge;
@@ -181,20 +184,20 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // ========= Day Control =========
+
     void StartNewDay()
     {
-        currentHour = startHour % 24;  // 15:00
+        currentHour = startHour % 24;  
         elapsedHoursThisDay = 0;
         hourTimer = 0f;
         sleptThisCycle = false;
         isEnding = false;
 
-        // คำนวณความยาววันจาก startHour → dayEndHour (วน 24 ชม.)
+
         runtimeDayLength = (dayEndHour - startHour + 24) % 24;
         if (runtimeDayLength <= 0) runtimeDayLength = 24;
 
-        // ตั้งเป้า/รีเซ็ตยอดขายวันนี้
+
         if (salesGoal <= 0) salesGoal = 500;
         currentSales = 0;
 
@@ -230,20 +233,22 @@ public class GameManager : MonoBehaviour
         StartNewDay();
     }
 
-    // ========= Public API =========
-    public void AddSales(int amount)
+
+    public void AddSales(int amount , int caughtPercent)
     {
         currentSales += amount;
         totalSales += amount;
+        totalCaughtPercent += caughtPercent;   
         UpdateSalesUI();
     }
 
-    // ========= UI Update =========
+
     void UpdateSalesUI()
     {
         if (salesText) salesText.text = $"Sales: {currentSales}";
         if (goalText) goalText.text = $"Goal: {salesGoal}";
         if (totalSalesText) totalSalesText.text = $"Total Sales: {totalSales}";
+        if (totalCaughtPercentText) totalCaughtPercentText.text = $"total CaughtPercent: {totalCaughtPercent}";
     }
 
 

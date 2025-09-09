@@ -18,7 +18,7 @@ public class ShopSign : MonoBehaviour
     {
         isOpen = gameManager.shopIsOpen;
         if (!signRenderer) signRenderer = GetComponent<MeshRenderer>();
-        UpdateSign();
+        //UpdateSign();
     }
 
     private void Update()

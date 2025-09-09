@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class WarehouseZone : MonoBehaviour
 {
-    public static event Action OnBoxStored; 
+   
     public GameObject boxInZone = null;
     IEnumerator Start()
     {
         if (FadeManager.Instance != null)
-            yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f)); // ค่อย ๆ สว่าง
+            yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f)); 
 
-        Time.timeScale = 1f; // คืนเวลาให้เดินต่อหลังเฟดออกเสร็จ
+        Time.timeScale = 1f; 
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -38,7 +38,7 @@ public class WarehouseZone : MonoBehaviour
             boxInZone = null;
             Debug.Log("เก็บกล่องเข้าคลังแล้ว!");
 
-            OnBoxStored?.Invoke(); 
+            
         }
     }
 }
