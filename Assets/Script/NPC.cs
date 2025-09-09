@@ -22,10 +22,6 @@ public class NPC : MonoBehaviour
     private enum State { Entering, Waiting, Exiting, Done }
     private State state = State.Entering;
 
-    public float x;
-    public float y;
-    public float z;
-
     private void Start()
     {
         npcBoxcollider = FindFirstObjectByType<NpcBoxcollider>();
@@ -94,10 +90,7 @@ public class NPC : MonoBehaviour
         {
             if (data != null && data.package != null)
             {
-
-                // วางพัสดุที่จุด NpcBoxcollider
-                Vector3 dropPos = new Vector3(npcBoxcollider.transform.position.x + x, npcBoxcollider.transform.position.y + y, npcBoxcollider.transform.position.z + z);
-
+                Vector3 dropPos = npcBoxcollider ? npcBoxcollider.transform.position : transform.position;
                 Instantiate(data.package, dropPos, Quaternion.identity);
             }
             hasSpawnedPackage = true;
