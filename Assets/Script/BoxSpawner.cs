@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 public class BoxSpawner : MonoBehaviour
 {
     public GameObject cubePrefab;
-    public Vector3 spawPoint;
+    public GameObject spawPoint;
 
     public SphereSpawn sphereSpawner;
     public bool hasSpawnedBox = false;
@@ -12,7 +13,7 @@ public class BoxSpawner : MonoBehaviour
     {
         if (hasSpawnedBox) return;
 
-        GameObject newBox = Instantiate(cubePrefab, spawPoint, cubePrefab.transform.rotation);
+        GameObject newBox = Instantiate(cubePrefab, new Vector3(spawPoint.transform.position.x, spawPoint.transform.position.y, spawPoint.transform.position.z) , cubePrefab.transform.rotation);
         hasSpawnedBox = true;
 
         BoxScript boxScript = newBox.GetComponent<BoxScript>();
