@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: 1
   address: 1
-  package: {fileID: 3298422539209136124, guid: 616fe72fe73286848ab983f348bb3074, type: 3}
+  package: {fileID: 2625668967519983873, guid: 7873907c1470b1c4bb52c020dac5557a, type: 3}
