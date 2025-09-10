@@ -5,5 +5,5 @@ public class NPCData : ScriptableObject
 {
     public string npcName;
     public string address;
-   public GameObject package;
+    public GameObject package;
 }
