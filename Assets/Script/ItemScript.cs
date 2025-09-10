@@ -4,6 +4,7 @@ using UnityEngine;
 public class ItemScript : MonoBehaviour
 {
     public itemData itemData;
+    public ItemDialogueData dialogueSequence; // (เวอร์ชันใหม่ หลายบรรทัด + choices)
     void Start()
     {
         

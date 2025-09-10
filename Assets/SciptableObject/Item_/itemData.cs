@@ -6,4 +6,5 @@ public class itemData : ScriptableObject
     public int price;
     public int caughtPercent;
     public bool illegal;
+    public ItemDialogueData dialogueData;
 }

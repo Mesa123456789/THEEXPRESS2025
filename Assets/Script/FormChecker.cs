@@ -62,7 +62,6 @@ public class FormChecker : MonoBehaviour
         if (ok)
         {
             computer.OnCloseComputer();
-            //if (playerController) playerController.isMovementLocked = false;
             OnFormSuccess();
         }
         else
