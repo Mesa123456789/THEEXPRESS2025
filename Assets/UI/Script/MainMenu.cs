@@ -19,9 +19,9 @@ public class MainMenu : MonoBehaviour
 
     public void Play()
     {
-        SceneManager.LoadScene("Milk");
+        SceneManager.LoadScene("Gameplay");
         //LevelManager.Instance.LoadScene("Milk","")
-        MusicManager.Instance.PlayMusic("Milk");
+        MusicManager.Instance.PlayMusic("Gameplay");
     }
 
     public void Quit()
