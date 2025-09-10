@@ -25,10 +25,12 @@ public class NPC : MonoBehaviour
 
     // NEW: เก็บ reference ของที่สปอว์นไว้ (เผื่อจะลบทันทีเมื่อผู้เล่นเลือก choice2)
     private GameObject spawnedPackageRef;  // NEW
+    public ItemDialogueManager itemDialogueManager;
 
     private void Start()
     {
         npcBoxcollider = FindFirstObjectByType<NpcBoxcollider>();
+        itemDialogueManager = FindFirstObjectByType<ItemDialogueManager>();
         BoxScript.OnBoxStored += HandleBoxStored;
     }
 
@@ -146,11 +148,27 @@ public class NPC : MonoBehaviour
 
     public void ForceExitAndClearItem(GameObject itemOnTable = null) 
     {
+        
         if (state == State.Done) return;
-
+        
         if (itemOnTable) Destroy(itemOnTable);
         else if (spawnedPackageRef) Destroy(spawnedPackageRef);
 
         state = State.Exiting;
+        itemDialogueManager.Close();
+    }
+    public void OnAcceptDelivery()
+    {
+        // ใส่สิ่งที่อยากทำเมื่อรับของ (เล่นอนิเมชัน/ตั้งค่า/ไม่ต้องออก)
+        // ตัวอย่าง: ยืนรอให้ผู้เล่นไปเก็บใส่กล่อง -> เมื่อ BoxScript.OnBoxStored ยิงขึ้นมา เธอเปลี่ยน state เป็น Exiting อยู่แล้ว
+        Debug.Log("[NPC] Accepted. Waiting for box store or next action.");
+    }
+
+    // เรียกตอนผู้เล่น "ไม่รับของ" -> ให้เดินออก + เก็บของคืน
+    public void OnDeclineDelivery()
+    {
+        Debug.Log("[NPC] Declined. Walk away and clear item.");
+        ForceExitAndClearItem();
+        
     }
 }
