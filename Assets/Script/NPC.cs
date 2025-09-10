@@ -11,7 +11,9 @@ public class NPC : MonoBehaviour
     public float reachThreshold = 0.2f;
 
     [Header("Path In (waypoints 1→2→3...)")]
-    public Transform[] entryWaypoints; 
+    public Transform[] entryWaypoints;
+
+    public Transform SpawnPoint;
 
     [Header("Exit")]
     public Transform exitPoint;     
@@ -91,7 +93,7 @@ public class NPC : MonoBehaviour
             if (data != null && data.package != null)
             {
                 Vector3 dropPos = npcBoxcollider ? npcBoxcollider.transform.position : transform.position;
-                Instantiate(data.package, dropPos, Quaternion.identity);
+                Instantiate(data.package, new Vector3(SpawnPoint.position.x, SpawnPoint.position.y, SpawnPoint.position.z) , Quaternion.identity);
             }
             hasSpawnedPackage = true;
         }

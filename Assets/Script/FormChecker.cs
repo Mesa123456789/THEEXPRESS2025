@@ -21,12 +21,13 @@ public class FormChecker : MonoBehaviour
     public string npcTag = "NPC";
 
     [Header("Feedback")]
-    public TMP_Text feedbackText;                 // <- ใส่ Text ไว้โชว์ข้อความผิด
-    public float feedbackDuration = 2f;           // เวลาที่จะแสดงข้อความ (วินาที)
-    public string incorrectMessage = "Incorrect information."; // ข้อความอังกฤษ
+    public TMP_Text feedbackText;                
+    public float feedbackDuration = 2f;       
+    public string incorrectMessage = "Incorrect information."; 
 
     [SerializeField] private NPC currentNPC;
     private Coroutine feedbackCo;
+    public Computer computer;
 
     void Start()
     {
@@ -41,11 +42,11 @@ public class FormChecker : MonoBehaviour
 
     public void OnSubmitButton()
     {
-        // เก็บค่าที่ผู้เล่นพิมพ์ไว้ก่อน แล้วค่อยล้างฟอร์ม
+
         string inputName = nameField ? nameField.text : string.Empty;
         string inputAddr = addressField ? addressField.text : string.Empty;
 
-        ClearFormInputs(); // ล้างทุกครั้งที่กด Submit
+        ClearFormInputs();
 
         if (!currentNPC) { ShowFeedback(incorrectMessage); return; }
 
@@ -60,7 +61,8 @@ public class FormChecker : MonoBehaviour
 
         if (ok)
         {
-            if (playerController) playerController.isMovementLocked = false;
+            computer.OnCloseComputer();
+            //if (playerController) playerController.isMovementLocked = false;
             OnFormSuccess();
         }
         else
@@ -75,7 +77,6 @@ public class FormChecker : MonoBehaviour
         Instantiate(receiptPrefab, receiptSpawnPoint.position, receiptPrefab.transform.rotation);
     }
 
-    // ---------- Helpers ----------
     void ClearFormInputs()
     {
         if (nameField) nameField.SetTextWithoutNotify(string.Empty);

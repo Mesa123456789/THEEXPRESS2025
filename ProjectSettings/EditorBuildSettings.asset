@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Gameplay.unity
+    path: Assets/Scenes/GameplayPototype.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/CutScene_Die.unity
@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: d867e2048cda3674db5aa33d3dce47a1
   - enabled: 1
-    path: Assets/Scenes/Milk.unity
+    path: Assets/Scenes/Gameplay.unity
     guid: e6720a5da4d1e4646ad4800d93269da8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
