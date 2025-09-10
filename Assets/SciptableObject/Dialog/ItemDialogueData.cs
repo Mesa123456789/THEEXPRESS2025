@@ -3,22 +3,27 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ItemDialogueData", menuName = "Dialogue/Item Dialogue Data")]
 public class ItemDialogueData : ScriptableObject
 {
+    public enum StepType { Line, Choice }
+
     [System.Serializable]
-    public struct Line
+    public class Step
     {
-        public string speaker;          // ชื่อผู้พูด (ถ้าไม่ใช้ปล่อยว่างได้)
+        public StepType type = StepType.Line;
+
+        [Header("Line")]
+        public string speaker;
         [TextArea(2, 5)] public string text;
-        public AudioClip voice;         // (ออปชัน)
+        public AudioClip voice;
+
+        [Header("Choice")]
+        [Tooltip("2–4 ตัวเลือก (ใช้เฉพาะเมื่อ type = Choice)")]
+        public string[] options;
     }
 
-    [Header("Lines (แสดงตามลำดับ)")]
-    public Line[] lines;                // หลายประโยค
-
-    [Header("Choices (ตอนจบ)")]
-    [Tooltip("2-4 ตัวเลือก (แสดงหลังจบบรรทัดสุดท้าย)")]
-    public string[] options;            // ตัวเลือก 2–4 ข้อ
+    [Header("Flow")]
+    public Step[] steps;
 
     [Header("Behavior")]
-    public bool lockPlayer = true;      // ล็อกการเดินระหว่างแสดง
-    public AudioClip openSfx;           // เสียงเปิด (ออปชัน)
+    public bool lockPlayer = true;
+    public AudioClip openSfx;
 }

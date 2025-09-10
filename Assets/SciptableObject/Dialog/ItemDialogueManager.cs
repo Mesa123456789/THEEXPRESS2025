@@ -5,33 +5,42 @@ using UnityEngine.UI;
 using TMPro;
 using StarterAssets;
 
-public class ItemDialogueSequenceManager : MonoBehaviour
+public class ItemDialogueManager : MonoBehaviour
 {
-    public static ItemDialogueSequenceManager Instance { get; private set; }
+    public static ItemDialogueManager Instance { get; private set; }
 
     [Header("UI")]
     public GameObject panel;
-    public TMP_Text speakerText;     // ถ้าไม่ใช้ speaker ให้เว้นว่างได้
+    public TMP_Text speakerText;
     public TMP_Text bodyText;
-    public Button[] optionButtons;   // 4 ปุ่ม
-    public TMP_Text[] optionLabels;  // 4 Label จับคู่ปุ่ม
+    public Button[] optionButtons;   // วาง 4 ปุ่ม
+    public TMP_Text[] optionLabels;  // วาง 4 TMP_Text จับคู่ปุ่ม
 
     [Header("Typing")]
     public bool enableTyping = true;
+    [Tooltip("ตัวอักษร/วินาที")]
     public float charsPerSecond = 40f;
+    [Tooltip("หยุดเพิ่มตอนพบ .,!?…")]
+    public float punctuationPause = 0.08f;
+    [Tooltip("รองรับ Rich Text (<b>, <i>, <color>)")]
+    public bool supportRichText = true;
+    [Tooltip("เสียงทีละตัว (ออปชัน)")]
+    public AudioClip perCharSfx;
+    [Tooltip("ทุก N ตัวอักษรจะเล่นเสียง 1 ครั้ง")]
+    public int sfxEveryNChars = 2;
+    public KeyCode advanceKey = KeyCode.Space;
 
     [Header("Player Control")]
     public FirstPersonController player;
 
     // runtime
-    private ItemDialogueData data;
-    private Action<int> onChoice;
-    private int lineIndex;
+    private ItemDialogueData flow;
+    private int stepIndex;
     private bool isShowing;
     private bool isTyping;
     private Coroutine typeCo;
-    private int activeChoiceCount;   // 2–4
-    private int highlightedIndex;    // ตัวเลือกที่ไฮไลต์ (ตอนท้าย)
+    private Action<int> onChoice;     // callback ส่ง index ของตัวเลือกทุกครั้งที่มี Choice
+    private Action onFinished;        // (ออปชัน) ถ้าต้องการรู้ว่า flow จบแล้ว
 
     void Awake()
     {
@@ -45,57 +54,74 @@ public class ItemDialogueSequenceManager : MonoBehaviour
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
     }
 
-    public void Show(ItemDialogueData sequence, Action<int> onChoice = null)
+    public void Show(ItemDialogueData flow, Action<int> onChoice = null, Action onFinished = null)
     {
-        if (sequence == null || sequence.lines == null || sequence.lines.Length == 0)
+        if (flow == null || flow.steps.Length == 0)
         {
-            Debug.LogWarning("[ItemDialogueSequenceManager] Invalid sequence");
+            Debug.LogWarning("[ItemDialogueFlowManager] Invalid flow");
             return;
         }
 
-        this.data = sequence;
+        this.flow = flow;
         this.onChoice = onChoice;
-        this.lineIndex = 0;
+        this.onFinished = onFinished;
+        stepIndex = 0;
 
-        // เตรียม UI
         if (panel) panel.SetActive(true);
-        if (data.lockPlayer && player) player.isMovementLocked = true;
-        if (data.openSfx) AudioSource.PlayClipAtPoint(data.openSfx, Camera.main.transform.position);
 
-        // ซ่อนปุ่มตัวเลือกทั้งหมดก่อน (จะโผล่ตอนจบ)
+        if (flow.lockPlayer && player) player.isMovementLocked = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (flow.openSfx) AudioSource.PlayClipAtPoint(flow.openSfx, Camera.main.transform.position);
+
+        HideAllChoices();
+
+        isShowing = true;
+        ShowCurrentStep();
+    }
+
+    void HideAllChoices()
+    {
         for (int i = 0; i < optionButtons.Length; i++)
         {
             optionButtons[i].gameObject.SetActive(false);
             optionButtons[i].onClick.RemoveAllListeners();
         }
-
-        isShowing = true;
-
-        // แสดงบรรทัดแรก
-        ShowCurrentLine();
     }
 
-    void ShowCurrentLine()
+    void ShowCurrentStep()
     {
-        if (lineIndex >= data.lines.Length)
+        if (stepIndex >= flow.steps.Length)
         {
-            // จบทุกบรรทัดแล้ว → แสดงตัวเลือก
-            ShowChoices();
+            Close();
+            onFinished?.Invoke();
             return;
         }
 
-        var line = data.lines[lineIndex];
-        if (speakerText) speakerText.text = string.IsNullOrEmpty(line.speaker) ? "" : line.speaker;
+        var step = flow.steps[stepIndex];
+        HideAllChoices();
 
-        if (enableTyping)
+        if (step.type == ItemDialogueData.StepType.Line)
         {
-            if (typeCo != null) StopCoroutine(typeCo);
-            typeCo = StartCoroutine(TypeLine(line.text, line.voice));
+            if (speakerText) speakerText.text = string.IsNullOrEmpty(step.speaker) ? "" : step.speaker;
+
+            if (enableTyping)
+            {
+                if (typeCo != null) StopCoroutine(typeCo);
+                typeCo = StartCoroutine(TypeLine(step.text, step.voice));
+            }
+            else
+            {
+                if (bodyText) bodyText.text = step.text;
+                isTyping = false;
+            }
         }
-        else
+        else // Choice
         {
-            if (bodyText) bodyText.text = line.text;
-            isTyping = false;
+            if (speakerText) speakerText.text = "";
+            if (bodyText) bodyText.text = ""; // หรือใส่หัวข้อเองก็ได้
+            ShowChoices(step.options);
         }
     }
 
@@ -106,135 +132,119 @@ public class ItemDialogueSequenceManager : MonoBehaviour
 
         if (voice) AudioSource.PlayClipAtPoint(voice, Camera.main.transform.position);
 
-        float counter = 0f;
-        int shown = 0;
+        int i = 0;
+        float secPerChar = (charsPerSecond <= 0f) ? 0f : (1f / charsPerSecond);
 
-        while (shown < text.Length)
+        while (i < text.Length)
         {
-            // Space เพื่อ “ข้ามพิมพ์” ให้เต็มทันที
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (bodyText) bodyText.text = text;
-                isTyping = false;
-                yield break;
-            }
+            // *** ไม่ให้ Space ข้ามระหว่างพิมพ์ ***
+            // Space มีผลเฉพาะหลังพิมพ์จบ (ไปสเต็ปถัดไป)
 
-            counter += Time.deltaTime * charsPerSecond;
-            int want = Mathf.Clamp(Mathf.FloorToInt(counter), 0, text.Length);
-            if (want != shown)
+            if (supportRichText && text[i] == '<')
             {
-                shown = want;
-                if (bodyText) bodyText.text = text.Substring(0, shown);
+                int closeIdx = text.IndexOf('>', i);
+                if (closeIdx == -1) closeIdx = i;
+                Append(text.Substring(i, closeIdx - i + 1));
+                i = closeIdx + 1;
             }
-            yield return null;
+            else
+            {
+                Append(text[i].ToString());
+                i++;
+
+                if (perCharSfx && sfxEveryNChars > 0 && (i % sfxEveryNChars == 0))
+                    AudioSource.PlayClipAtPoint(perCharSfx, Camera.main.transform.position, 0.7f);
+
+                if (secPerChar > 0f) yield return new WaitForSeconds(secPerChar);
+
+                if (punctuationPause > 0f && IsPunc(text[i - 1]))
+                    yield return new WaitForSeconds(punctuationPause);
+            }
         }
 
         isTyping = false;
+    }
+
+    void Append(string s)
+    {
+        if (bodyText) bodyText.text += s;
+    }
+
+    bool IsPunc(char c)
+    {
+        return c == '.' || c == ',' || c == '!' || c == '?' || c == ';' || c == '…' || c == '，' || c == '。';
+    }
+
+    void ShowChoices(string[] options)
+    {
+        if (options == null || options.Length < 2)
+        {
+            Debug.Log("ไม่มีตัวเลือก");
+            stepIndex++;
+            ShowCurrentStep();
+            return;
+        }
+
+        int count = Mathf.Clamp(options.Length, 2, 4);
+        for (int i = 0; i < optionButtons.Length; i++)
+        {
+            bool enable = i < count;
+            optionButtons[i].gameObject.SetActive(enable);
+            optionButtons[i].onClick.RemoveAllListeners();
+
+            if (enable)
+            {
+                if (i < optionLabels.Length) optionLabels[i].text = options[i];
+
+                int idx = i;
+                optionButtons[i].onClick.AddListener(() =>
+                {
+                    // แจ้ง choiceIdx ออกทุกครั้งที่มีการเลือก
+                    onChoice?.Invoke(idx);
+
+                    // ไม่แตกกิ่ง → ไปสเต็ปถัดไปตามลำดับ
+                    stepIndex++;
+                    ShowCurrentStep();
+                });
+            }
+        }
     }
 
     void Update()
     {
         if (!isShowing) return;
+        if (isTyping) return; // ระหว่างพิมพ์ Space ไม่มีผล
 
-        // ยังพิมพ์อยู่ → ให้ coroutine จัดการ Space (skip-to-end)
-        if (isTyping) return;
-
-        // อยู่ช่วงบรรทัด (ยังไม่ถึงตัวเลือก)
-        if (lineIndex < (data?.lines?.Length ?? 0))
+        // สเต็ปเป็น Line และพิมพ์จบแล้ว → Space ไปสเต็ปถัดไป
+        if (stepIndex < (flow?.steps?.Length ?? 0))
         {
-            // Space เพื่อไป "บรรทัดถัดไป"
-            if (Input.GetKeyDown(KeyCode.Space))
+            var step = flow.steps[stepIndex];
+            if (step.type == ItemDialogueData.StepType.Line)
             {
-                lineIndex++;
-                ShowCurrentLine();
-            }
-            return;
-        }
-
-        // === อยู่ช่วงตัวเลือก ===
-        // เปลี่ยนตัวเลือกด้วยลูกศรซ้าย/ขวา หรือ A/D
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            highlightedIndex = (highlightedIndex - 1 + activeChoiceCount) % activeChoiceCount;
-            UpdateChoiceHighlight();
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
-            highlightedIndex = (highlightedIndex + 1) % activeChoiceCount;
-            UpdateChoiceHighlight();
-        }
-
-        // Space → เลือกตัวเลือกที่ไฮไลต์
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SelectChoice(highlightedIndex);
-        }
-    }
-
-    void ShowChoices()
-    {
-        // ไม่มี options → ปิดเลย
-        if (data.options == null || data.options.Length < 2)
-        {
-            Close();
-            return;
-        }
-
-        // โชว์ปุ่มตามจำนวนจริง (2–4)
-        activeChoiceCount = Mathf.Clamp(data.options.Length, 2, 4);
-        for (int i = 0; i < optionButtons.Length; i++)
-        {
-            bool enable = i < activeChoiceCount;
-            optionButtons[i].gameObject.SetActive(enable);
-
-            if (enable)
-            {
-                if (i < optionLabels.Length) optionLabels[i].text = data.options[i];
-
-                int idx = i;
-                optionButtons[i].onClick.RemoveAllListeners();
-                optionButtons[i].onClick.AddListener(() => SelectChoice(idx));
-            }
-            else
-            {
-                optionButtons[i].onClick.RemoveAllListeners();
+                if (Input.GetKeyDown(advanceKey))
+                {
+                    stepIndex++;
+                    ShowCurrentStep();
+                }
             }
         }
-
-        highlightedIndex = 0;
-        UpdateChoiceHighlight();
-    }
-
-    void UpdateChoiceHighlight()
-    {
-        for (int i = 0; i < activeChoiceCount; i++)
-        {
-            // เน้นแบบง่าย: select ปุ่ม + ปรับ alpha ของ label
-            optionButtons[i].Select();
-            if (i < optionLabels.Length)
-                optionLabels[i].alpha = (i == highlightedIndex) ? 1f : 0.6f;
-        }
-    }
-
-    void SelectChoice(int index)
-    {
-        onChoice?.Invoke(index);
-        Close();
     }
 
     void Close()
     {
         if (panel) panel.SetActive(false);
+
         if (player) player.isMovementLocked = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         isShowing = false;
         isTyping = false;
         if (typeCo != null) { StopCoroutine(typeCo); typeCo = null; }
 
-        data = null;
+        flow = null;
+        stepIndex = 0;
         onChoice = null;
-        lineIndex = 0;
-        activeChoiceCount = 0;
-        highlightedIndex = 0;
+        onFinished = null;
     }
 }

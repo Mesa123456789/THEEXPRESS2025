@@ -4,7 +4,8 @@ using UnityEngine;
 public class ItemScript : MonoBehaviour
 {
     public itemData itemData;
-    public ItemDialogueData dialogueSequence; // (เวอร์ชันใหม่ หลายบรรทัด + choices)
+    public ItemDialogueData dialogueSequence;
+    public NPC ownerNPC;
     void Start()
     {
         

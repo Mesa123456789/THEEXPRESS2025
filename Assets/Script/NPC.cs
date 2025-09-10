@@ -12,17 +12,19 @@ public class NPC : MonoBehaviour
 
     [Header("Path In (waypoints 1→2→3...)")]
     public Transform[] entryWaypoints;
-
     public Transform SpawnPoint;
 
     [Header("Exit")]
-    public Transform exitPoint;     
+    public Transform exitPoint;
 
     private int entryIndex = 0;
     private bool hasSpawnedPackage = false;
 
     private enum State { Entering, Waiting, Exiting, Done }
     private State state = State.Entering;
+
+    // NEW: เก็บ reference ของที่สปอว์นไว้ (เผื่อจะลบทันทีเมื่อผู้เล่นเลือก choice2)
+    private GameObject spawnedPackageRef;  // NEW
 
     private void Start()
     {
@@ -37,7 +39,6 @@ public class NPC : MonoBehaviour
 
     void HandleBoxStored()
     {
-        
         if (hasSpawnedPackage && state == State.Waiting)
         {
             state = State.Exiting;
@@ -63,7 +64,6 @@ public class NPC : MonoBehaviour
 
     void UpdateEntering()
     {
-
         if (entryWaypoints != null && entryWaypoints.Length > 0 && entryIndex < entryWaypoints.Length)
         {
             MoveTowards(entryWaypoints[entryIndex].position);
@@ -71,7 +71,6 @@ public class NPC : MonoBehaviour
                 entryIndex++;
             return;
         }
-
 
         if (npcBoxcollider == null)
         {
@@ -93,18 +92,27 @@ public class NPC : MonoBehaviour
             if (data != null && data.package != null)
             {
                 Vector3 dropPos = npcBoxcollider ? npcBoxcollider.transform.position : transform.position;
-                Instantiate(data.package, new Vector3(SpawnPoint.position.x, SpawnPoint.position.y, SpawnPoint.position.z) , Quaternion.identity);
+
+                // สร้างของ
+                spawnedPackageRef = Instantiate(
+                    data.package,
+                    new Vector3(SpawnPoint.position.x, SpawnPoint.position.y, SpawnPoint.position.z),
+                    Quaternion.identity
+                );
+
+                // NEW: กำหนดเจ้าของไอเทมให้ชี้กลับมาที่ NPC นี้
+                var item = spawnedPackageRef.GetComponent<ItemScript>();
+                if (item) item.ownerNPC = this; // NEW
             }
             hasSpawnedPackage = true;
         }
-        state = State.Waiting; 
+        state = State.Waiting;
     }
 
     void UpdateExiting()
     {
         if (exitPoint == null)
         {
-
             Destroy(gameObject);
             state = State.Done;
             return;
@@ -134,8 +142,15 @@ public class NPC : MonoBehaviour
         return Vector3.Distance(transform.position, target) <= reachThreshold;
     }
 
-    public NPCData GetData()
+    public NPCData GetData() => data;
+
+    public void ForceExitAndClearItem(GameObject itemOnTable = null) 
     {
-        return data;
+        if (state == State.Done) return;
+
+        if (itemOnTable) Destroy(itemOnTable);
+        else if (spawnedPackageRef) Destroy(spawnedPackageRef);
+
+        state = State.Exiting;
     }
 }

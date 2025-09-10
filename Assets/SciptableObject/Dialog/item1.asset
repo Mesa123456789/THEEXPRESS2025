@@ -12,15 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
   m_Name: item1
   m_EditorClassIdentifier: 
-  lines:
-  - speaker: mesa
-    text: send to
+  steps:
+  - type: 0
+    speaker: mesa
+    text: ...
     voice: {fileID: 0}
-  - speaker: mesa
-    text: someone...
+    options: []
+  - type: 0
+    speaker: mesa
+    text: send it to someone...
     voice: {fileID: 0}
-  options:
-  - yes
-  - no
+    options: []
+  - type: 1
+    speaker: mesa
+    text: I love...
+    voice: {fileID: 0}
+    options:
+    - no
+    - yes
   lockPlayer: 1
   openSfx: {fileID: 0}
