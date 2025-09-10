@@ -21,13 +21,12 @@ public class ItemDialogueTableTrigger : MonoBehaviour
             item.dialogueSequence,
             onChoice: (choiceIdx) =>
             {
-                // ตัวอย่างเงื่อนไข: choice 1 = ทำปกติ, choice 2 = ไล่ลูกค้า + ทำลายของ
-                if (choiceIdx == 1) // index เริ่มที่ 0
+                if (choiceIdx == 1)
                 {
                     item.ownerNPC?.ForceExitAndClearItem(item.gameObject);
                 }
             },
-            onFinished: null // ถ้าอยากทำอะไรเมื่อ flow จบทั้งหมด ใส่เพิ่มได้
+            onFinished: null 
         );
     }
 }

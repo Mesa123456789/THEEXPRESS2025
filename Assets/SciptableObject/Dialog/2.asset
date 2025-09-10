@@ -10,41 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
-  m_Name: item1
+  m_Name: 2
   m_EditorClassIdentifier: 
   steps:
-  - speaker: mesa
-    text: ...
+  - speaker: milk
+    text: send
     voice: {fileID: 0}
     gotoIndex: 1
     options: []
-  - speaker: mesa
-    text: send it to someone...
+  - speaker: milk
+    text: to
     voice: {fileID: 0}
-    gotoIndex: 2
-    options: []
-  - speaker: mesa
-    text: I love...
-    voice: {fileID: 0}
-    gotoIndex: 3
+    gotoIndex: -1
     options:
-    - text: yes
+    - text: address?
+      gotoIndex: 2
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+    - text: ???
       gotoIndex: 3
       onSelect:
         m_PersistentCalls:
           m_Calls: []
-    - text: no
-      gotoIndex: 4
-      onSelect:
-        m_PersistentCalls:
-          m_Calls: []
-  - speaker: mesa
-    text: Thank you
+  - speaker: milk
+    text: to cmu
     voice: {fileID: 0}
     gotoIndex: -1
     options: []
-  - speaker: mesa
-    text: F...
+  - speaker: milk
+    text: ???
     voice: {fileID: 0}
     gotoIndex: -1
     options: []

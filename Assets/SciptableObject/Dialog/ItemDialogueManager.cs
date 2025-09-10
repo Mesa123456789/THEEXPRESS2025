@@ -36,7 +36,7 @@ public class ItemDialogueManager : MonoBehaviour
     private Coroutine typeCo;
     private Action<int> onChoice;     // แจ้ง index ปุ่มที่กด (เฉพาะ Choice)
     private Action onFinished;        // Flow จบ
-
+    public bool IsShowing => isShowing;
     void Awake()
     {
         if (Instance && Instance != this) { Destroy(gameObject); return; }
