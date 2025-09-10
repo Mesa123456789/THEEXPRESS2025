@@ -13,22 +13,60 @@ MonoBehaviour:
   m_Name: item1
   m_EditorClassIdentifier: 
   steps:
-  - type: 0
-    speaker: mesa
+  - speaker: mesa
     text: ...
     voice: {fileID: 0}
+    gotoIndex: 1
     options: []
-  - type: 0
-    speaker: mesa
+  - speaker: mesa
     text: send it to someone...
     voice: {fileID: 0}
+    gotoIndex: 2
     options: []
-  - type: 1
-    speaker: mesa
+  - speaker: mesa
     text: I love...
     voice: {fileID: 0}
+    gotoIndex: -1
     options:
-    - no
-    - yes
+    - text: yes
+      gotoIndex: 3
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+    - text: no
+      gotoIndex: 4
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+  - speaker: mesa
+    text: Thank you
+    voice: {fileID: 0}
+    gotoIndex: 0
+    options:
+    - text: yes
+      gotoIndex: -1
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+    - text: no
+      gotoIndex: -1
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+  - speaker: mesa
+    text: F...
+    voice: {fileID: 0}
+    gotoIndex: 0
+    options:
+    - text: yes
+      gotoIndex: -1
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
+    - text: no
+      gotoIndex: -1
+      onSelect:
+        m_PersistentCalls:
+          m_Calls: []
   lockPlayer: 1
   openSfx: {fileID: 0}

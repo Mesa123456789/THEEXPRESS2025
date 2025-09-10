@@ -1,23 +1,35 @@
-using UnityEngine;
+๏ปฟusing UnityEngine;
+using UnityEngine.Events;
 
 [CreateAssetMenu(fileName = "ItemDialogueData", menuName = "Dialogue/Item Dialogue Data")]
 public class ItemDialogueData : ScriptableObject
 {
-    public enum StepType { Line, Choice }
+    [System.Serializable]
+    public class ChoiceOption
+    {
+
+        public string text;
+
+
+        public int gotoIndex = -1;
+
+
+        public UnityEvent onSelect;
+    }
 
     [System.Serializable]
     public class Step
     {
-        public StepType type = StepType.Line;
 
-        [Header("Line")]
         public string speaker;
         [TextArea(2, 5)] public string text;
         public AudioClip voice;
 
-        [Header("Choice")]
-        [Tooltip("2–4 ตัวเลือก (ใช้เฉพาะเมื่อ type = Choice)")]
-        public string[] options;
+
+        public int gotoIndex = -1;
+
+
+        public ChoiceOption[] options;
     }
 
     [Header("Flow")]

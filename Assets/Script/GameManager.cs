@@ -1,15 +1,16 @@
 ﻿using StarterAssets;
+using System;
 using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+public enum ChoiceResult { None, Yes, No }
 public class GameManager : MonoBehaviour
 {
     public FirstPersonController playerController;
-
+    public static GameManager Instance { get; private set; }
     public int currentDay = 1;
     public int salesGoal = 500; 
     public int currentSales = 0;  
@@ -68,6 +69,8 @@ public class GameManager : MonoBehaviour
     public ShopSign shopSign;
 
     public bool IsDangerTime => IsHourInRange(currentHour, dangerStartHour, dayEndHour);
+
+
     void Awake()
     {
         if (PlayerPrefs.GetInt(KEY_RELOAD, 0) == 1)
