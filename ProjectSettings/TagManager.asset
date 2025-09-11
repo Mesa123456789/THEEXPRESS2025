@@ -19,6 +19,7 @@ TagManager:
   - NPC
   - Bed
   - sign
+  - DialogTable
   layers:
   - Default
   - TransparentFX

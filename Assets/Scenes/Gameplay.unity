@@ -7085,8 +7085,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1020915433}
   - component: {fileID: 1020915432}
+  - component: {fileID: 1020915434}
   m_Layer: 0
-  m_Name: DayManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7148,6 +7149,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1020915434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020915431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c37e0310d69e0545947558b65ad3036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1038899945
 GameObject:
   m_ObjectHideFlags: 0
@@ -9242,7 +9255,7 @@ Transform:
   m_GameObject: {fileID: 1392718169}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.705, y: 0, z: -0.456}
+  m_LocalPosition: {x: 0.51, y: -0.09, z: -0.73}
   m_LocalScale: {x: 1, y: 1, z: 5.9928}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11256,7 +11269,7 @@ GameObject:
   - component: {fileID: 1624644856}
   m_Layer: 0
   m_Name: DialogManager
-  m_TagString: Untagged
+  m_TagString: DialogTable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11318,7 +11331,7 @@ Transform:
   m_GameObject: {fileID: 1624644851}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.01, y: 0.68, z: -0.456}
+  m_LocalPosition: {x: 0.51, y: -0.089999996, z: -0.73}
   m_LocalScale: {x: 1, y: 1, z: 5.9928}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11349,7 +11362,7 @@ MonoBehaviour:
   charsPerSecond: 10
   punctuationPause: 0.08
   supportRichText: 1
-  perCharSfx: {fileID: 0}
+  perCharSfx: {fileID: 8300000, guid: 6622affaad635914e803e41d9ecbd974, type: 3}
   sfxEveryNChars: 1
   advanceKey: 32
   player: {fileID: 450248280}

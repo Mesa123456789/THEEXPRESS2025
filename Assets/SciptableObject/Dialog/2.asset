@@ -14,34 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   steps:
   - speaker: milk
-    text: send
+    text: send to
     voice: {fileID: 0}
     gotoIndex: 1
+    onLineEndAction: 0
+    onLineEndDelay: 0
     options: []
   - speaker: milk
-    text: to
+    text: someone I love...
     voice: {fileID: 0}
     gotoIndex: -1
+    onLineEndAction: 0
+    onLineEndDelay: 0
     options:
     - text: address?
       gotoIndex: 2
-      onSelect:
-        m_PersistentCalls:
-          m_Calls: []
     - text: ???
       gotoIndex: 3
-      onSelect:
-        m_PersistentCalls:
-          m_Calls: []
   - speaker: milk
     text: to cmu
     voice: {fileID: 0}
     gotoIndex: -1
+    onLineEndAction: 0
+    onLineEndDelay: 0
     options: []
   - speaker: milk
     text: ???
     voice: {fileID: 0}
     gotoIndex: -1
+    onLineEndAction: 1
+    onLineEndDelay: 0.2
     options: []
   lockPlayer: 1
   openSfx: {fileID: 0}
