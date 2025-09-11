@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
+  m_Name: ItemDialogueData
+  m_EditorClassIdentifier: 
+  steps:
+  - speaker: baipu
+    text: hello
+    voice: {fileID: 0}
+    gotoIndex: 1
+    onLineEndAction: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: baipu
+    text: send to
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
+    onLineEndDelay: 0
+    options:
+    - text: what
+      gotoIndex: 2
+    - text: ???
+      gotoIndex: 3
+  - speaker: baipu
+    text: send sutff
+    voice: {fileID: 0}
+    gotoIndex: 3
+    onLineEndAction: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: mesa
+    text: Aderss
+    voice: {fileID: 0}
+    gotoIndex: 4
+    onLineEndAction: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: baipu
+    text: Aderss 1111
+    voice: {fileID: 0}
+    gotoIndex: 0
+    onLineEndAction: 0
+    onLineEndDelay: 0
+    options: []
+  lockPlayer: 1
+  openSfx: {fileID: 0}
