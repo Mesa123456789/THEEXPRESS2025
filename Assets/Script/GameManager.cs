@@ -68,6 +68,11 @@ public class GameManager : MonoBehaviour
     public NPCSpawner npcSpawner;
     public ShopSign shopSign;
 
+    [Header("Day/Night Lighting")]
+    public Light directionalLight;          // ลาก Directional Light ใน Inspector
+    public Vector3 lightAxis = Vector3.right; // แกนหมุน (ส่วนใหญ่ใช้ Vector3.right)
+    public float baseRotation = 0f;          // offset ถ้าอยากหมุนแกนเริ่มต้น
+
     public bool IsDangerTime => IsHourInRange(currentHour, dangerStartHour, dayEndHour);
 
 
@@ -129,7 +134,22 @@ public class GameManager : MonoBehaviour
 
         wasInDanger = inDanger;
         CheckShopPrompt();
+        UpdateSunLight();
 
+
+    }
+    void UpdateSunLight()
+    {
+        if (!directionalLight) return;
+
+        // เวลาปัจจุบัน (รวมเศษนาทีในชั่วโมงด้วย)
+        float hourFloat = currentHour + HourProgress01; // ex. 15.5 ชั่วโมง
+
+        // map 0–24 ชั่วโมง → 0–360 องศา
+        float t = (hourFloat / 24f) * 360f;
+
+        // ตั้ง rotation ให้ Directional Light
+        directionalLight.transform.rotation = Quaternion.Euler(new Vector3(t + baseRotation, 170f, 0f));
     }
 
     void CheckShopPrompt()

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d240500698b23c429d8874438572cf5, type: 3}
   m_Name: 1
   m_EditorClassIdentifier: 
-  npcName: 1
-  address: 1
+  npcName: someone
+  address: cmu
   package: {fileID: 2625668967519983873, guid: 7873907c1470b1c4bb52c020dac5557a, type: 3}

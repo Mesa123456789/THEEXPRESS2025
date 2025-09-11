@@ -34,7 +34,7 @@ MonoBehaviour:
   - speaker: milk
     text: to cmu
     voice: {fileID: 0}
-    gotoIndex: -1
+    gotoIndex: 4
     onLineEndAction: 0
     onLineEndDelay: 0
     options: []
@@ -43,6 +43,13 @@ MonoBehaviour:
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 1
+    onLineEndDelay: 0.2
+    options: []
+  - speaker: milk
+    text: Thank you
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
     onLineEndDelay: 0.2
     options: []
   lockPlayer: 1
