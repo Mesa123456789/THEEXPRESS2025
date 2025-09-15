@@ -4,13 +4,17 @@
 public class NPCDialogueStarter : MonoBehaviour
 {
     [Header("Behavior")]
-    public bool oneShot = false;      // คุยครั้งเดียวพอไหม
+    public bool oneShot = false;          // คุยครั้งเดียว
     private bool locked;
-    public GameObject ui;
-    void OnMouseDown() 
+    public GameObject ui;                 // Hint/ป้าย “กดคุย” (จะถูกลบทิ้งครั้งแรกที่กด)
+
+    [Header("Optional Override")]
+    [Tooltip("ถ้าตั้งไว้ จะใช้ไดอะล็อกนี้แทนทุกกรณี (ทั้งตำรวจ/ลูกค้า)")]
+    public ItemDialogueData overrideDialogue;
+
+    void OnMouseDown()
     {
-        if (ui == null) return;
-        Destroy(ui);
+        if (ui) Destroy(ui);
         TryStartDialogue();
     }
 
@@ -25,39 +29,48 @@ public class NPCDialogueStarter : MonoBehaviour
             return;
         }
 
-        // กันเริ่มซ้อน: ถ้า panel แสดงอยู่แล้วไม่เริ่มใหม่
+        // กันกดซ้อน ถ้ากำลังเปิดอยู่ไม่เริ่มใหม่
         if (mgr.panel && mgr.panel.activeSelf) return;
 
-        // ===== หา ItemScript ตัวแรกในซีน =====
-        var item = FindFirstObjectByType<ItemScript>();
-        if (!item)
-        {
-            Debug.LogWarning("[NPCDialogueStarter] No ItemScript found in scene.");
-            return;
-        }
+        // 1) ถ้ามี override ให้ใช้ก่อน
+        ItemDialogueData dlg = overrideDialogue;
 
-        // ดึง ItemDialogueData จาก item
-        ItemDialogueData dlg =
-            item.dialogueSequence
-            ?? (item.itemData ? item.itemData.dialogueData : null);
-
+        // 2) ถ้า GameObject นี้เป็น 'ตำรวจ' ให้ใช้ policeDialogue
         if (!dlg)
         {
-            Debug.LogWarning("[NPCDialogueStarter] Found ItemScript but no ItemDialogueData (dialogueSequence / itemData.dialogueData).");
-            return;
+            var police = GetComponent<NPCPolice>();
+            if (police && police.policeDialogue)
+            {
+                dlg = police.policeDialogue;
+            }
         }
 
-        // เริ่มไดอะล็อก
+        // 3) ไม่ใช่ตำรวจ → หาจาก ItemScript (ของบนโต๊ะ/กล่อง) เหมือนเดิม
+        if (!dlg)
+        {
+            var item = FindFirstObjectByType<ItemScript>();
+            if (!item)
+            {
+                Debug.LogWarning("[NPCDialogueStarter] No ItemScript found in scene (customer path).");
+            }
+            else
+            {
+                dlg = item.dialogueSequence
+                      ?? (item.itemData ? item.itemData.dialogueData : null);
+
+                if (!dlg)
+                {
+                    Debug.LogWarning("[NPCDialogueStarter] Found ItemScript but no ItemDialogueData.");
+                }
+            }
+        }
+
+        if (!dlg) return;
+
+        // เริ่มบทสนทนา
         mgr.Show(
             dlg,
-            onChoice: (choiceIdx) =>
-            {
-                // ถ้าต้องการ: ปุ่มลำดับที่ 2 (index=1) ให้ NPC เจ้าของเดินออกและเคลียร์ของ
-                if (choiceIdx == 1)
-                {
-                    //item.ownerNPC?.ForceExitAndClearItem(item.gameObject);
-                }
-            },
+            onChoice: null,          // ไม่ต้องทำแอ็กชันที่ช้อยส์—เราไปอยู่ใน LineAction แล้ว
             onFinished: () =>
             {
                 if (oneShot) locked = true;

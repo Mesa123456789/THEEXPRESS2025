@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Item2
   m_EditorClassIdentifier: 
   price: 500
-  caughtPercent: 20
+  caughtPercent: 90
   illegal: 1
   dialogueData: {fileID: 11400000, guid: ff618366ee5ee1b44ac75afc37376e57, type: 2}

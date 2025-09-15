@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     const string KEY_RELOAD = "GM_ReloadOnNewDay";
     const string KEY_DAY = "GM_DaySaved";
     const string KEY_TOTAL_SALES = "GM_TotalSales";
+    private bool policeTriggered = false;
 
     [Header("Clock Settings")]
     public int startHour = 15;
@@ -133,6 +134,9 @@ public class GameManager : MonoBehaviour
         }
 
         wasInDanger = inDanger;
+
+
+
         CheckShopPrompt();
         UpdateSunLight();
 
@@ -148,7 +152,7 @@ public class GameManager : MonoBehaviour
         // map 0–24 ชั่วโมง → 0–360 องศา
         float t = (hourFloat / 24f) * 360f;
 
-        // ตั้ง rotation ให้ Directional Light
+
         directionalLight.transform.rotation = Quaternion.Euler(new Vector3(t + baseRotation, 170f, 0f));
     }
 
@@ -190,7 +194,29 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void SpendMoney(int amount)
+    {
 
+        totalSales = Mathf.Max(0, totalSales - Mathf.Abs(amount));
+        UpdateSalesUI();
+    }
+
+    public void KillPlayerNow()
+    {
+        if (isEnding) return;
+        StartCoroutine(DeathSequence());
+    }
+
+
+    //public void TriggerPoliceIfNeeded()
+    //{
+    //    if (totalCaughtPercent > 90 && !policeTriggered)
+    //    {
+    //        policeTriggered = true;
+    //        npcSpawner.SpawnPolice();
+    //    }
+
+    //}
 
     void AdvanceHour()
     {
@@ -257,16 +283,23 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void AddSales(int amount , int caughtPercent)
+    public void AddSales(int amount, int caughtPercent)
     {
         currentSales += amount;
         totalSales += amount;
-        totalCaughtPercent += caughtPercent;   
+        totalCaughtPercent += caughtPercent;
         UpdateSalesUI();
+
+        if (totalCaughtPercent >= 90)
+        {
+            var spawner = FindFirstObjectByType<NPCSpawner>();
+            if (spawner) spawner.ForcePoliceNext();   // บังคับ spawn ตำรวจรอบถัดไป
+        }
     }
 
 
-    void UpdateSalesUI()
+
+    public void UpdateSalesUI()
     {
         if (salesText) salesText.text = $"Sales: {currentSales}";
         if (goalText) goalText.text = $"Goal: {salesGoal}";

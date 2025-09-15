@@ -135,7 +135,7 @@ namespace StarterAssets
 		{
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
-			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+			//Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 		}
 
 		private void CameraRotation()
@@ -209,55 +209,41 @@ namespace StarterAssets
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 
-		private void JumpAndGravity()
-		{
-			if (Grounded)
-			{
-				// reset the fall timeout timer
-				_fallTimeoutDelta = FallTimeout;
+        private void JumpAndGravity()
+        {
+            if (Grounded)
+            {
+                _fallTimeoutDelta = FallTimeout;
 
-				// stop our velocity dropping infinitely when grounded
-				if (_verticalVelocity < 0.0f)
-				{
-					_verticalVelocity = -2f;
-				}
+                // ให้ติดพื้นแน่นอน
+                if (_verticalVelocity < 0.0f)
+                    _verticalVelocity = -2f;
 
-				// Jump
-				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-				{
-					// the square root of H * -2 * G = how much velocity needed to reach desired height
-					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-				}
+                // ===== ปิด “การกระโดด” ตรงนี้ =====
+                // เดิม: ถ้า _input.jump และ cooldown หมด จะให้ความเร็วขึ้น
+                // เรา “ไม่ทำอะไรเลย” ก็พอ → กระโดดไม่ได้ แต่ยังมีแรงโน้มถ่วง
+                _input.jump = false;  // กัน input กระพริบค้าง (optional)
 
-				// jump timeout
-				if (_jumpTimeoutDelta >= 0.0f)
-				{
-					_jumpTimeoutDelta -= Time.deltaTime;
-				}
-			}
-			else
-			{
-				// reset the jump timeout timer
-				_jumpTimeoutDelta = JumpTimeout;
+                if (_jumpTimeoutDelta >= 0.0f)
+                    _jumpTimeoutDelta -= Time.deltaTime;
+            }
+            else
+            {
+                _jumpTimeoutDelta = JumpTimeout;
 
-				// fall timeout
-				if (_fallTimeoutDelta >= 0.0f)
-				{
-					_fallTimeoutDelta -= Time.deltaTime;
-				}
+                if (_fallTimeoutDelta >= 0.0f)
+                    _fallTimeoutDelta -= Time.deltaTime;
 
-				// if we are not grounded, do not jump
-				_input.jump = false;
-			}
+                _input.jump = false;
+            }
 
-			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-			if (_verticalVelocity < _terminalVelocity)
-			{
-				_verticalVelocity += Gravity * Time.deltaTime;
-			}
-		}
+            // แรงโน้มถ่วง “ต้องเปิด”
+            if (_verticalVelocity < _terminalVelocity)
+                _verticalVelocity += Gravity * Time.deltaTime;
+        }
 
-		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+
+        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
 		{
 			if (lfAngle < -360f) lfAngle += 360f;
 			if (lfAngle > 360f) lfAngle -= 360f;

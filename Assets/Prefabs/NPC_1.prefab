@@ -168,7 +168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e0f7e6bd742021a478793eb7c5aecac4, type: 3}
       propertyPath: m_Name
-      value: CharacterMale_Pank 1
+      value: NPC_1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e0f7e6bd742021a478793eb7c5aecac4, type: 3}
       propertyPath: m_TagString
@@ -223,10 +223,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 4a735747acae6a041ba5a3d1cceb73e3, type: 2}
   moveSpeed: 3
   reachThreshold: 0.2
-  entryWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  entryWaypoints: []
   SpawnPoint: {fileID: 2748413050762222867}
   exitPoint: {fileID: 0}
   itemDialogueManager: {fileID: 0}
@@ -244,6 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   oneShot: 1
   ui: {fileID: 8992255244820199151}
+  overrideDialogue: {fileID: 0}
 --- !u!136 &-5359377174266891462
 CapsuleCollider:
   m_ObjectHideFlags: 0

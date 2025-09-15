@@ -10,53 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
-  m_Name: ItemDialogueData
+  m_Name: PoliceDia
   m_EditorClassIdentifier: 
   steps:
-  - speaker: baipu
-    text: hello
+  - speaker: Police
+    text: PAY OR NOT???
     voice: {fileID: 0}
-    gotoIndex: 1
+    gotoIndex: 0
     onLineEndAction: 0
-    onLineEndDelay: 0
-    options: []
-  - speaker: baipu
-    text: send to
-    voice: {fileID: 0}
-    gotoIndex: -1
-    onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: what
+    - text: PAY
+      gotoIndex: 1
+    - text: NO
       gotoIndex: 2
-    - text: ???
-      gotoIndex: 5
-  - speaker: baipu
-    text: send sutff
+  - speaker: Police
+    text: GOOD
     voice: {fileID: 0}
     gotoIndex: 3
-    onLineEndAction: 0
+    onLineEndAction: 2
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: mesa
-    text: Aderss
-    voice: {fileID: 0}
-    gotoIndex: 4
-    onLineEndAction: 0
-    onLineEndDelay: 0
-    options: []
-  - speaker: baipu
-    text: Aderss 1111
+  - speaker: Police
+    text: ;)
     voice: {fileID: 0}
     gotoIndex: -1
-    onLineEndAction: 0
+    onLineEndAction: 1
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: baipu
-    text: F...
+  - speaker: Police
+    text: ;)
     voice: {fileID: 0}
     gotoIndex: -1
-    onLineEndAction: 0
+    onLineEndAction: 1
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   lockPlayer: 1

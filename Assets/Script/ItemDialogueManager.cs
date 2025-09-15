@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using StarterAssets;
+using UnityEditor.SearchService;
+using UnityEngine.SceneManagement;
 
 public class ItemDialogueManager : MonoBehaviour
 {
@@ -13,8 +15,8 @@ public class ItemDialogueManager : MonoBehaviour
     public GameObject panel;
     public TMP_Text speakerText;
     public TMP_Text bodyText;
-    public Button[] optionButtons;    // วาง 2–4 ปุ่ม
-    public TMP_Text[] optionLabels;   // จับคู่ปุ่ม
+    public Button[] optionButtons;
+    public TMP_Text[] optionLabels;
 
     [Header("Typing")]
     public bool enableTyping = true;
@@ -34,7 +36,7 @@ public class ItemDialogueManager : MonoBehaviour
     private bool isShowing;
     private bool isTyping;
     private Coroutine typeCo;
-    private Action<int> onChoice;     // แจ้ง index ปุ่มที่กด (เฉพาะ Choice)
+    private Action<int> onChoice;     // แจ้ง index ปุ่ม (เฉพาะ Choice)
     private Action onFinished;        // Flow จบ
 
     public bool IsShowing => isShowing;
@@ -51,7 +53,6 @@ public class ItemDialogueManager : MonoBehaviour
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
     }
 
-    /// <summary>แสดงบทสนทนา</summary>
     public void Show(ItemDialogueData flow, Action<int> onChoice = null, Action onFinished = null)
     {
         if (flow == null || flow.steps == null || flow.steps.Length == 0)
@@ -69,7 +70,6 @@ public class ItemDialogueManager : MonoBehaviour
 
         if (flow.lockPlayer && player) player.isMovementLocked = true;
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
 
         if (flow.openSfx && Camera.main)
             AudioSource.PlayClipAtPoint(flow.openSfx, Camera.main.transform.position);
@@ -116,6 +116,7 @@ public class ItemDialogueManager : MonoBehaviour
         {
             if (enableTyping)
             {
+                Cursor.visible = false;
                 if (typeCo != null) StopCoroutine(typeCo);
                 typeCo = StartCoroutine(TypeLine(step.text, step.voice, onTypedDone: () =>
                 {
@@ -123,17 +124,16 @@ public class ItemDialogueManager : MonoBehaviour
                     if (step.onLineEndAction != ItemDialogueData.LineAction.None)
                         StartCoroutine(InvokeAfterDelay(() => ExecuteLineEndAction(step), Mathf.Max(0f, step.onLineEndDelay)));
 
-                    // จบหรือไม่?
+                    // ถ้าจบบรรทัดนี้แล้วไม่มีปลายทาง (gotoIndex<0):
                     if (step.gotoIndex < 0)
                     {
                         if (step.onLineEndAction == ItemDialogueData.LineAction.None)
                         {
-                            // ไม่มีแอ็กชัน → รอ Space ใน Update() เพื่อปิด
-                            // (ไม่ทำอะไรที่นี่)
+                            // ไม่มีแอ็กชัน → ให้กด Space เพื่อปิดใน Update()
                         }
                         else
                         {
-                            // มีแอ็กชัน → ปิดอัตโนมัติหลังจบประโยค
+                            // มีแอ็กชัน → ปิดอัตโนมัติหลังยิงแอ็กชัน
                             Close();
                             onFinished?.Invoke();
                             return;
@@ -143,6 +143,7 @@ public class ItemDialogueManager : MonoBehaviour
             }
             else
             {
+                Cursor.visible = false;
                 if (bodyText) bodyText.text = step.text ?? "";
                 isTyping = false;
 
@@ -150,12 +151,11 @@ public class ItemDialogueManager : MonoBehaviour
                 if (step.onLineEndAction != ItemDialogueData.LineAction.None)
                     StartCoroutine(InvokeAfterDelay(() => ExecuteLineEndAction(step), Mathf.Max(0f, step.onLineEndDelay)));
 
-                // จบหรือไม่?
                 if (step.gotoIndex < 0)
                 {
                     if (step.onLineEndAction == ItemDialogueData.LineAction.None)
                     {
-                        // ไม่มีแอ็กชัน → รอ Space ใน Update() เพื่อปิด
+                        // ไม่มีแอ็กชัน → ให้กด Space เพื่อปิด
                     }
                     else
                     {
@@ -169,23 +169,23 @@ public class ItemDialogueManager : MonoBehaviour
         }
         else // ===== Choice =====
         {
-            // แสดงข้อความหัว Choice แล้วค่อยโชว์ปุ่ม
             if (enableTyping)
             {
                 if (typeCo != null) StopCoroutine(typeCo);
                 typeCo = StartCoroutine(TypeLine(step.text, step.voice, onTypedDone: () =>
                 {
+                    Cursor.visible = true;
                     ShowChoices(step.options);
                 }));
             }
             else
             {
                 if (bodyText) bodyText.text = step.text ?? "";
+                Cursor.visible = true;
                 ShowChoices(step.options);
             }
         }
     }
-
 
     IEnumerator TypeLine(string text, AudioClip voice, Action onTypedDone = null)
     {
@@ -240,7 +240,7 @@ public class ItemDialogueManager : MonoBehaviour
     {
         if (options == null || options.Length < 2)
         {
-            // ไม่มีตัวเลือก → ถือว่าเป็น Line แล้วไปต่อ (ตาม gotoIndex ของ Step ปัจจุบัน)
+            // ไม่มีตัวเลือก → ไปต่อด้วย gotoIndex ของ Step ปัจจุบัน
             GoTo(flow.steps[stepIndex].gotoIndex);
             return;
         }
@@ -341,19 +341,42 @@ public class ItemDialogueManager : MonoBehaviour
 
             case ItemDialogueData.LineAction.NPCExit:
                 {
-                    // หา NPC (มีตัวเดียว)
                     var npc = FindFirstObjectByType<NPC>();
                     if (!npc) { Debug.LogWarning("LineEndAction: No NPC found."); break; }
 
-                    // ถ้าต้องการลบของด้วย: หา ItemScript ตัวแรก
                     var item = FindFirstObjectByType<ItemScript>();
                     GameObject itemGo = item ? item.gameObject : null;
 
                     npc.ForceExitAndClearItem(itemGo);
                     break;
                 }
+
+            case ItemDialogueData.LineAction.PolicePay:
+                {
+                    var gm = FindFirstObjectByType<GameManager>();
+                    if (gm)
+                    {
+                        gm.totalCaughtPercent = 0;      // reset ค่าจับได้
+                        gm.totalSales -= 500;           // หักเงิน
+                        gm.UpdateSalesUI();
+                        Debug.Log("[Police] Paid bribe: -500, reset caught percent.");
+                    }
+                    break;
+                }
+
+            case ItemDialogueData.LineAction.KillPlayer:
+                {
+                    var gm = FindFirstObjectByType<GameManager>();
+                    if (gm)
+                    {
+                        Debug.Log("[Police] Refused to pay. Game over.");
+                        SceneManager.LoadScene("DirSeceneManager");
+                    }
+                    break;
+                }
         }
     }
+
 
     public void Close()
     {

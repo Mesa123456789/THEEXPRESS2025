@@ -4,7 +4,7 @@ using UnityEngine;
 public class NPC : MonoBehaviour
 {
     public NPCData data;
-    private NpcBoxcollider npcBoxcollider;
+    protected NpcBoxcollider npcBoxcollider;
 
     [Header("Move")]
     public float moveSpeed = 3f;
@@ -17,47 +17,50 @@ public class NPC : MonoBehaviour
     [Header("Exit")]
     public Transform exitPoint;
 
-    private int entryIndex = 0;
-    private bool hasSpawnedPackage = false;
+    protected int entryIndex = 0;
+    protected bool hasSpawnedPackage = false;
 
-    private enum State { Entering, Waiting, Exiting, Done }
-    private State state = State.Entering;
+    protected enum State { Entering, Waiting, Exiting, Done }
+    protected State state = State.Entering;
 
-
-    private GameObject spawnedPackageRef;  
+    // ไว้ให้ลูกคลาสเข้าถึงได้
+    protected GameObject spawnedPackageRef;
     public ItemDialogueManager itemDialogueManager;
 
-    Animator Animation;
-    private void Start()
+    protected Animator Animation;
+
+    protected virtual void Start()
     {
         Animation = GetComponent<Animator>();
         npcBoxcollider = FindFirstObjectByType<NpcBoxcollider>();
         itemDialogueManager = FindFirstObjectByType<ItemDialogueManager>();
         BoxScript.OnBoxStored += HandleBoxStored;
     }
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("DialogTable"))
-        {
-            Debug.Log("table collision");
-            Animation.SetBool("TableCollision", true);
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("DialogTable"))
-        {
-            Debug.Log("table collision");
-            Animation.SetBool("TableCollision", false);
-        }
-    }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         BoxScript.OnBoxStored -= HandleBoxStored;
     }
 
-    void HandleBoxStored()
+    protected virtual void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DialogTable"))
+        {
+            Debug.Log("table collision");
+            if (Animation) Animation.SetBool("TableCollision", true);
+        }
+    }
+
+    protected virtual void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("DialogTable"))
+        {
+            Debug.Log("table collision");
+            if (Animation) Animation.SetBool("TableCollision", false);
+        }
+    }
+
+    protected void HandleBoxStored()
     {
         if (hasSpawnedPackage && state == State.Waiting)
         {
@@ -65,7 +68,7 @@ public class NPC : MonoBehaviour
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (state == State.Done) return;
 
@@ -75,6 +78,7 @@ public class NPC : MonoBehaviour
                 UpdateEntering();
                 break;
             case State.Waiting:
+                // รอ event (ไดอะล็อก/เก็บกล่อง/อื่นๆ)
                 break;
             case State.Exiting:
                 UpdateExiting();
@@ -82,8 +86,9 @@ public class NPC : MonoBehaviour
         }
     }
 
-    void UpdateEntering()
+    protected virtual void UpdateEntering()
     {
+        // เดินตาม waypoints ก่อน
         if (entryWaypoints != null && entryWaypoints.Length > 0 && entryIndex < entryWaypoints.Length)
         {
             MoveTowards(entryWaypoints[entryIndex].position);
@@ -92,6 +97,7 @@ public class NPC : MonoBehaviour
             return;
         }
 
+        // จากนั้นเดินไปที่โต๊ะ/คอลลายเดอร์
         if (npcBoxcollider == null)
         {
             SpawnPackageAndWait();
@@ -105,31 +111,31 @@ public class NPC : MonoBehaviour
         }
     }
 
-    void SpawnPackageAndWait()
+    // ทำเป็น virtual เพื่อให้ NPCPolice override ได้
+    protected virtual void SpawnPackageAndWait()
     {
         if (!hasSpawnedPackage)
         {
             if (data != null && data.package != null)
             {
+                // จุดวาง
                 Vector3 dropPos = npcBoxcollider ? npcBoxcollider.transform.position : transform.position;
-
 
                 spawnedPackageRef = Instantiate(
                     data.package,
-                    new Vector3(SpawnPoint.position.x, SpawnPoint.position.y, SpawnPoint.position.z),
+                    SpawnPoint ? SpawnPoint.position : dropPos,
                     Quaternion.identity
                 );
 
-
                 var item = spawnedPackageRef.GetComponent<ItemScript>();
-                if (item) item.ownerNPC = this; 
+                if (item) item.ownerNPC = this;
             }
             hasSpawnedPackage = true;
         }
         state = State.Waiting;
     }
 
-    void UpdateExiting()
+    protected virtual void UpdateExiting()
     {
         if (exitPoint == null)
         {
@@ -146,7 +152,7 @@ public class NPC : MonoBehaviour
         }
     }
 
-    void MoveTowards(Vector3 target)
+    protected void MoveTowards(Vector3 target)
     {
         transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
         Vector3 dir = (target - transform.position);
@@ -157,27 +163,26 @@ public class NPC : MonoBehaviour
         }
     }
 
-    bool IsReached(Vector3 target)
+    protected bool IsReached(Vector3 target)
     {
         return Vector3.Distance(transform.position, target) <= reachThreshold;
     }
 
     public NPCData GetData() => data;
 
-    public void ForceExitAndClearItem(GameObject itemOnTable = null) 
+    public void ForceExitAndClearItem(GameObject itemOnTable = null)
     {
-        
         if (state == State.Done) return;
-        
+
         if (itemOnTable) Destroy(itemOnTable);
         else if (spawnedPackageRef) Destroy(spawnedPackageRef);
 
         state = State.Exiting;
-        itemDialogueManager.Close();
+        itemDialogueManager?.Close();
     }
+
     public void OnAcceptDelivery()
     {
-
         Debug.Log("[NPC] Accepted. Waiting for box store or next action.");
     }
 
@@ -185,8 +190,8 @@ public class NPC : MonoBehaviour
     {
         Debug.Log("[NPC] Declined. Walk away and clear item.");
         ForceExitAndClearItem();
-        
     }
 
-
+    // helper เผื่อเรียกจากลูกคลาส
+    protected State GetStateWaiting() => State.Waiting;
 }

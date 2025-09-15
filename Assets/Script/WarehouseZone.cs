@@ -10,8 +10,8 @@ public class WarehouseZone : MonoBehaviour
     public ZoneType zoneType = ZoneType.LegalZone;
     public enum ZoneType
     {
-        LegalZone,    // รับเฉพาะ BoxPrice > 0
-        IllegalZone   // รับเฉพาะ BoxPrice < 0
+        LegalZone,    
+        IllegalZone   
     }
     IEnumerator Start()
     {
@@ -23,6 +23,7 @@ public class WarehouseZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if(boxInZone == null) return;
         BoxScript box = other.GetComponent<BoxScript>();
         if (other.CompareTag("BoxInteract")) 
             boxInZone = other.gameObject;
@@ -39,6 +40,7 @@ public class WarehouseZone : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (boxInZone == null) return;
         if (other.CompareTag("BoxInteract") && boxInZone == other.gameObject)
         {
             boxInZone = null;
