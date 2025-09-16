@@ -25,7 +25,7 @@ public class FormChecker : MonoBehaviour
     public float feedbackDuration = 2f;       
     public string incorrectMessage = "Incorrect information."; 
 
-    [SerializeField] private NPC currentNPC;
+    [SerializeField] public NPC currentNPC;
     private Coroutine feedbackCo;
     public Computer computer;
 

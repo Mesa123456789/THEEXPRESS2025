@@ -9,8 +9,11 @@ public class WarehouseZone : MonoBehaviour
     public enum ZoneType { LegalZone, IllegalZone }
     public ZoneType zoneType = ZoneType.LegalZone;
 
+    public FormChecker formChecker;
+
     IEnumerator Start()
     {
+        
         if (FadeManager.Instance != null)
             yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f));
         Time.timeScale = 1f;
@@ -54,6 +57,7 @@ public class WarehouseZone : MonoBehaviour
         if (canStoreHere)
         {
             Destroy(boxInZone);
+            
             boxInZone = null;
             canStoreHere = false;
 

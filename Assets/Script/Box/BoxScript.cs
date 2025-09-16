@@ -88,11 +88,11 @@ public class BoxScript : MonoBehaviour
         int moneyEarned = itemScript.itemData.price;
         int risk = itemScript.itemData.caughtPercent;
         gameManager.AddSales(moneyEarned, risk);
-        if (gameManager.totalCaughtPercent >= 100f)
-        {
-            Debug.Log("โดนจับ! Game Over");
-        }
+
+
+        OnBoxStored?.Invoke();
     }
+
     private void Update()
     {
         if (!hasItem) return;
@@ -106,13 +106,13 @@ public class BoxScript : MonoBehaviour
                 Debug.Log("ต้องกดใส่บับเบิ้ลให้ครบ 3 ครั้งก่อนปิดกล่อง!");
                 return;
             }
-            else
-            {
-                Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
-                foreach (Collider item in items)
-                    if (item.CompareTag("pickable"))
-                        Destroy(item.gameObject);
-            }
+            //else
+            //{
+            //    Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
+            //    foreach (Collider item in items)
+            //        if (item.CompareTag("pickable"))
+            //            item.gameObject.SetActive(false);
+            //}
 
                 Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out var hit, 3f) && hit.collider.CompareTag("Boxlid"))
@@ -127,20 +127,25 @@ public class BoxScript : MonoBehaviour
         }
 
         if (leftLid && rightLid && leftLid.isClosed && rightLid.isClosed)
+        {
             IsFinsihedClose = true;
+        }
+
+
 
         if (Tape && Tape.isTapeDone && PastedLabel && !boxCleared)
         {
             boxCleared = true;
-
+            Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
+            foreach (Collider item in items)
+                if (item.CompareTag("pickable"))
+                    Destroy(item.gameObject);
             gameObject.tag = "BoxInteract";
             rb.isKinematic = false;
             rb.useGravity = true;
             if (boxSpawner) boxSpawner.hasSpawnedBox = false;
             Tape.isTapeDone = false;
             StoreBox();
-            OnBoxStored?.Invoke();
-            Debug.Log("กล่องเสร็จ!หยิบได้");
         }
     }
 }

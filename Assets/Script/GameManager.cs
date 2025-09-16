@@ -208,16 +208,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    //public void TriggerPoliceIfNeeded()
-    //{
-    //    if (totalCaughtPercent > 90 && !policeTriggered)
-    //    {
-    //        policeTriggered = true;
-    //        npcSpawner.SpawnPolice();
-    //    }
-
-    //}
-
     void AdvanceHour()
     {
         currentHour = (currentHour + 1) % 24;
@@ -293,7 +283,7 @@ public class GameManager : MonoBehaviour
         if (totalCaughtPercent >= 90)
         {
             var spawner = FindFirstObjectByType<NPCSpawner>();
-            if (spawner) spawner.ForcePoliceNext();   // บังคับ spawn ตำรวจรอบถัดไป
+            if (spawner) spawner.ForcePoliceNext(); 
         }
     }
 
@@ -381,6 +371,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(gameplaySceneName);
     }
 
+    // GameManager.cs
+    public bool TrySpendFromCurrentSales(int amount, bool alsoAffectTotal = false)
+    {
+        if (amount <= 0) return false;
+        if (currentSales < amount) return false;  
+
+        currentSales -= amount;
+        if (alsoAffectTotal)
+            totalSales = Mathf.Max(0, totalSales - amount);
+
+        UpdateSalesUI();
+        return true;
+    }
 
 }
 

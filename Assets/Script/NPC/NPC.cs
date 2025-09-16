@@ -23,7 +23,7 @@ public class NPC : MonoBehaviour
     protected enum State { Entering, Waiting, Exiting, Done }
     protected State state = State.Entering;
 
-    // ไว้ให้ลูกคลาสเข้าถึงได้
+
     protected GameObject spawnedPackageRef;
     public ItemDialogueManager itemDialogueManager;
 
@@ -68,6 +68,7 @@ public class NPC : MonoBehaviour
         }
     }
 
+
     protected virtual void Update()
     {
         if (state == State.Done) return;
@@ -78,7 +79,6 @@ public class NPC : MonoBehaviour
                 UpdateEntering();
                 break;
             case State.Waiting:
-                // รอ event (ไดอะล็อก/เก็บกล่อง/อื่นๆ)
                 break;
             case State.Exiting:
                 UpdateExiting();
@@ -183,15 +183,15 @@ public class NPC : MonoBehaviour
 
     public void OnAcceptDelivery()
     {
-        Debug.Log("[NPC] Accepted. Waiting for box store or next action.");
+
     }
 
     public void OnDeclineDelivery()
     {
-        Debug.Log("[NPC] Declined. Walk away and clear item.");
+
         ForceExitAndClearItem();
     }
 
-    // helper เผื่อเรียกจากลูกคลาส
+ 
     protected State GetStateWaiting() => State.Waiting;
 }
