@@ -29,9 +29,9 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: YES
+    - text: '> YES'
       gotoIndex: 2
-    - text: NO
+    - text: '> NO'
       gotoIndex: 3
   - speaker: UNKNOW
     text: To "mafia",At "Underground"

@@ -16,11 +16,23 @@ public class NPCDialogueStarter : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (Time.time - lastTriggerTime < retriggerCooldown) return;
-        lastTriggerTime = Time.time;
+        if (!CanTriggerNow()) return;
 
+        lastTriggerTime = Time.time;
         if (ui) Destroy(ui);
         TryStartDialogue();
+    }
+
+    bool CanTriggerNow()
+    {
+        // กันสแปมคลิก
+        if (Time.time - lastTriggerTime < retriggerCooldown) return false;
+
+        var mgr = ItemDialogueManager.Instance;
+        // ถ้าไดอะล็อกกำลังเปิดอยู่ ไม่ให้เริ่มใหม่ (กันซ้อน)
+        if (mgr && mgr.panel && mgr.panel.activeSelf) return false;
+
+        return true;
     }
 
     public void TryStartDialogue()
@@ -58,13 +70,14 @@ public class NPCDialogueStarter : MonoBehaviour
             }
         }
 
-        // ถ้าขณะนี้มีบทสนทนาเปิดอยู่ ให้ปิดก่อนเพื่อกันซ้อน แล้วค่อยเปิดใหม่
-        if (mgr.panel && mgr.panel.activeSelf)
-        {
-            mgr.Close();
-        }
-
-        // เปิดคุย (คุยได้หลายรอบ ไม่ล็อก)
-        mgr.Show(dlg, onChoice: null, onFinished: null);
+        // แค่เปิดคุย—ไม่ปิดของเดิมทับ (เพราะเราบล็อกไว้แล้ว)
+        mgr.Show(dlg,
+            onChoice: null,
+            onFinished: () =>
+            {
+                // กันสแปมต่อท้ายทันทีหลังปิด
+                lastTriggerTime = Time.time;
+            }
+        );
     }
 }

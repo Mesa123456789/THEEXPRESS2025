@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using StarterAssets;
-using UnityEditor.SearchService;
 using UnityEngine.SceneManagement;
 
 public class ItemDialogueManager : MonoBehaviour
@@ -25,7 +24,7 @@ public class ItemDialogueManager : MonoBehaviour
     [Tooltip("รองรับ <b>, <i>, <color>")] public bool supportRichText = true;
     [Tooltip("เสียงทีละตัว (ออปชัน)")] public AudioClip perCharSfx;
     [Tooltip("ทุก N ตัวอักษรจะเล่นเสียง 1 ครั้ง")] public int sfxEveryNChars = 2;
-    public KeyCode advanceKey = KeyCode.Space;
+     KeyCode advanceKey = KeyCode.Mouse0;
 
     [Header("Player Control")]
     public FirstPersonController player;
@@ -240,7 +239,6 @@ public class ItemDialogueManager : MonoBehaviour
     {
         if (options == null || options.Length < 2)
         {
-            // ไม่มีตัวเลือก → ไปต่อด้วย gotoIndex ของ Step ปัจจุบัน
             GoTo(flow.steps[stepIndex].gotoIndex);
             return;
         }

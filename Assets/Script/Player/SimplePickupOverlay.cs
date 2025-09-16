@@ -24,7 +24,7 @@ public class SimplePickupOverlay : MonoBehaviour
     public KeyCode pickupKey = KeyCode.Mouse0;  // คลิกซ้าย = หยิบ/วาง
 
     // ---------- runtime ----------
-    private GameObject heldObj;
+    public GameObject heldObj;
     private Rigidbody heldRb;
     private Transform originalParent;
     private Quaternion targetLocalRot;

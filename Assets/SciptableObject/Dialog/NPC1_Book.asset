@@ -29,9 +29,9 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: what
+    - text: '> what'
       gotoIndex: 2
-    - text: ???
+    - text: '> ???'
       gotoIndex: 5
   - speaker: baipu
     text: send sutff
@@ -41,8 +41,8 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: mesa
-    text: Aderss
+  - speaker: Delivery man
+    text: Aderss?
     voice: {fileID: 0}
     gotoIndex: 4
     onLineEndAction: 0

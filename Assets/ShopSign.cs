@@ -3,13 +3,6 @@ using System.Collections;
 
 public class ShopSign : MonoBehaviour
 {
-    [Header("Materials")]
-    public Material openMaterial;
-    public Material closedMaterial;
-
-    [Header("Mesh Renderer ของป้าย")]
-    public MeshRenderer signRenderer;
-
     public GameManager gameManager;
     bool isOpen = false;
     Coroutine rotateCo;
@@ -17,8 +10,6 @@ public class ShopSign : MonoBehaviour
     void Start()
     {
         isOpen = gameManager.shopIsOpen;
-        if (!signRenderer) signRenderer = GetComponent<MeshRenderer>();
-        //UpdateSign();
     }
 
     private void Update()
@@ -39,25 +30,19 @@ public class ShopSign : MonoBehaviour
 
     void UpdateSign()
     {
-        if (signRenderer)
-            signRenderer.material = isOpen ? openMaterial : closedMaterial;
-
         if (rotateCo != null) StopCoroutine(rotateCo);
         rotateCo = StartCoroutine(RotateThroughPoints());
     }
 
     IEnumerator RotateThroughPoints()
     {
-        // ตั้ง waypoint ตามที่คุณบอก
         Vector3[] points = new Vector3[]
         {
-            new Vector3(0, 0, 90),
-            new Vector3(0, 0, 130),
-            new Vector3(0, 180, 60),
-            new Vector3(0, 180, 90)
+            new Vector3(0, 0, 0),
+            new Vector3(0, 190, 0)
         };
 
-        float stepDuration = 0.3f; // ความเร็วต่อ segment
+        float stepDuration = 0.3f;
         for (int i = 0; i < points.Length - 1; i++)
         {
             Quaternion start = Quaternion.Euler(points[i]);
@@ -72,7 +57,6 @@ public class ShopSign : MonoBehaviour
             }
         }
 
-        // จบที่เป้าหมายสุดท้าย
         transform.localRotation = Quaternion.Euler(points[points.Length - 1]);
     }
 }

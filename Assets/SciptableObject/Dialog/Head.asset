@@ -29,9 +29,9 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: WHAT IS IT???
+    - text: '> WHAT IS IT???'
       gotoIndex: 2
-    - text: ???
+    - text: '> ???'
       gotoIndex: 3
   - speaker: mesa
     text: BETTER NOT KNOW ;)

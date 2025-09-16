@@ -21,9 +21,9 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: PAY
+    - text: '> PAY'
       gotoIndex: 1
-    - text: NO
+    - text: '> NO'
       gotoIndex: 2
   - speaker: Police
     text: GOOD

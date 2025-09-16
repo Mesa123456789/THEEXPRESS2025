@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using static UnityEditor.Progress;
+
 
 public class BoxScript : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class BoxScript : MonoBehaviour
     public bool bubbleInserted = false;
     public int bubbleCount = 0;
     public GameObject bubble;
-    public int BoxPrice = 0;
+    public bool illegal;
     public bool IsFinsihedClose = false;
 
     BoxSpawner boxSpawner;
@@ -84,7 +84,7 @@ public class BoxScript : MonoBehaviour
     public void StoreBox()
     {
         ItemScript itemScript = FindFirstObjectByType<ItemScript>();
-        BoxPrice = itemScript.itemData.caughtPercent;
+        illegal = itemScript.itemData.illegal;
         int moneyEarned = itemScript.itemData.price;
         int risk = itemScript.itemData.caughtPercent;
         gameManager.AddSales(moneyEarned, risk);
@@ -106,8 +106,15 @@ public class BoxScript : MonoBehaviour
                 Debug.Log("ต้องกดใส่บับเบิ้ลให้ครบ 3 ครั้งก่อนปิดกล่อง!");
                 return;
             }
+            else
+            {
+                Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
+                foreach (Collider item in items)
+                    if (item.CompareTag("pickable"))
+                        Destroy(item.gameObject);
+            }
 
-            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+                Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out var hit, 3f) && hit.collider.CompareTag("Boxlid"))
             {
                 var lid = hit.collider.GetComponent<SmoothLidClose>();
@@ -125,11 +132,6 @@ public class BoxScript : MonoBehaviour
         if (Tape && Tape.isTapeDone && PastedLabel && !boxCleared)
         {
             boxCleared = true;
-
-            Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
-            foreach (Collider item in items)
-                if (item.CompareTag("pickable"))
-                    Destroy(item.gameObject);
 
             gameObject.tag = "BoxInteract";
             rb.isKinematic = false;
