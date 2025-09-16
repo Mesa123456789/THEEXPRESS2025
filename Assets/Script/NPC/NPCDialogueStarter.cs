@@ -4,9 +4,11 @@
 public class NPCDialogueStarter : MonoBehaviour
 {
     [Header("Behavior")]
-    public bool oneShot = false;          // คุยครั้งเดียว
-    private bool locked;
-    public GameObject ui;                 // Hint/ป้าย “กดคุย” (จะถูกลบทิ้งครั้งแรกที่กด)
+    [Tooltip("กันดับเบิลคลิก/สแปมคลิก (วินาที)")]
+    public float retriggerCooldown = 0.25f;
+    private float lastTriggerTime = -999f;
+
+    public GameObject ui; // Hint/ป้าย “กดคุย” (จะถูกลบเมื่อกดครั้งแรก)
 
     [Header("Optional Override")]
     [Tooltip("ถ้าตั้งไว้ จะใช้ไดอะล็อกนี้แทนทุกกรณี (ทั้งตำรวจ/ลูกค้า)")]
@@ -14,14 +16,15 @@ public class NPCDialogueStarter : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (Time.time - lastTriggerTime < retriggerCooldown) return;
+        lastTriggerTime = Time.time;
+
         if (ui) Destroy(ui);
         TryStartDialogue();
     }
 
     public void TryStartDialogue()
     {
-        if (locked) return;
-
         var mgr = ItemDialogueManager.Instance;
         if (!mgr)
         {
@@ -29,52 +32,39 @@ public class NPCDialogueStarter : MonoBehaviour
             return;
         }
 
-        // กันกดซ้อน ถ้ากำลังเปิดอยู่ไม่เริ่มใหม่
-        if (mgr.panel && mgr.panel.activeSelf) return;
-
-        // 1) ถ้ามี override ให้ใช้ก่อน
+        // หา dialogue ตามลำดับความสำคัญ: override → ตำรวจ → ไอเท็มลูกค้า
         ItemDialogueData dlg = overrideDialogue;
 
-        // 2) ถ้า GameObject นี้เป็น 'ตำรวจ' ให้ใช้ policeDialogue
         if (!dlg)
         {
             var police = GetComponent<NPCPolice>();
-            if (police && police.policeDialogue)
-            {
-                dlg = police.policeDialogue;
-            }
+            if (police && police.policeDialogue) dlg = police.policeDialogue;
         }
 
-        // 3) ไม่ใช่ตำรวจ → หาจาก ItemScript (ของบนโต๊ะ/กล่อง) เหมือนเดิม
         if (!dlg)
         {
             var item = FindFirstObjectByType<ItemScript>();
             if (!item)
             {
                 Debug.LogWarning("[NPCDialogueStarter] No ItemScript found in scene (customer path).");
+                return;
             }
-            else
-            {
-                dlg = item.dialogueSequence
-                      ?? (item.itemData ? item.itemData.dialogueData : null);
 
-                if (!dlg)
-                {
-                    Debug.LogWarning("[NPCDialogueStarter] Found ItemScript but no ItemDialogueData.");
-                }
+            dlg = item.dialogueSequence ?? (item.itemData ? item.itemData.dialogueData : null);
+            if (!dlg)
+            {
+                Debug.LogWarning("[NPCDialogueStarter] Found ItemScript but no ItemDialogueData.");
+                return;
             }
         }
 
-        if (!dlg) return;
+        // ถ้าขณะนี้มีบทสนทนาเปิดอยู่ ให้ปิดก่อนเพื่อกันซ้อน แล้วค่อยเปิดใหม่
+        if (mgr.panel && mgr.panel.activeSelf)
+        {
+            mgr.Close();
+        }
 
-        // เริ่มบทสนทนา
-        mgr.Show(
-            dlg,
-            onChoice: null,          // ไม่ต้องทำแอ็กชันที่ช้อยส์—เราไปอยู่ใน LineAction แล้ว
-            onFinished: () =>
-            {
-                if (oneShot) locked = true;
-            }
-        );
+        // เปิดคุย (คุยได้หลายรอบ ไม่ล็อก)
+        mgr.Show(dlg, onChoice: null, onFinished: null);
     }
 }

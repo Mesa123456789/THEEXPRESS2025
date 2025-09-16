@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
-  m_Name: ItemDialogueData
+  m_Name: NPC1_Book
   m_EditorClassIdentifier: 
   steps:
   - speaker: baipu
@@ -18,13 +18,15 @@ MonoBehaviour:
     voice: {fileID: 0}
     gotoIndex: 1
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   - speaker: baipu
-    text: send to
+    text: send to "pupi"
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options:
     - text: what
@@ -36,6 +38,7 @@ MonoBehaviour:
     voice: {fileID: 0}
     gotoIndex: 3
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   - speaker: mesa
@@ -43,13 +46,15 @@ MonoBehaviour:
     voice: {fileID: 0}
     gotoIndex: 4
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   - speaker: baipu
-    text: Aderss 1111
+    text: Aderss "CMU"
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   - speaker: baipu
@@ -57,6 +62,7 @@ MonoBehaviour:
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
+    moneyAmount: 0
     onLineEndDelay: 0
     options: []
   lockPlayer: 1

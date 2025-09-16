@@ -10,43 +10,44 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
-  m_Name: item1
+  m_Name: PoliceDia
   m_EditorClassIdentifier: 
   steps:
-  - speaker: mesa
-    text: ...
+  - speaker: Police
+    text: PAY OR NOT???
     voice: {fileID: 0}
-    gotoIndex: 1
-    options: []
-  - speaker: mesa
-    text: send it to someone...
-    voice: {fileID: 0}
-    gotoIndex: 2
-    options: []
-  - speaker: mesa
-    text: I love...
+    gotoIndex: 0
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options:
+    - text: PAY
+      gotoIndex: 1
+    - text: NO
+      gotoIndex: 2
+  - speaker: Police
+    text: GOOD
     voice: {fileID: 0}
     gotoIndex: 3
-    options:
-    - text: yes
-      gotoIndex: 3
-      onSelect:
-        m_PersistentCalls:
-          m_Calls: []
-    - text: no
-      gotoIndex: 4
-      onSelect:
-        m_PersistentCalls:
-          m_Calls: []
-  - speaker: mesa
-    text: Thank you
-    voice: {fileID: 0}
-    gotoIndex: -1
+    onLineEndAction: 2
+    moneyAmount: 0
+    onLineEndDelay: 0
     options: []
-  - speaker: mesa
-    text: F...
+  - speaker: Police
+    text: ;)
     voice: {fileID: 0}
     gotoIndex: -1
+    onLineEndAction: 3
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Police
+    text: ;)
+    voice: {fileID: 0}
+    gotoIndex: 3
+    onLineEndAction: 1
+    moneyAmount: 0
+    onLineEndDelay: 0
     options: []
   lockPlayer: 1
   openSfx: {fileID: 0}

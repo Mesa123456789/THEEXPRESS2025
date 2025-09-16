@@ -350,13 +350,19 @@ public class GhostAI : MonoBehaviour
         {
             lastKnownPlayerPos = player.position;
             SetDestinationSmooth(player.position);
+
+            // ถ้าเข้าใกล้ในระยะโจมตี (เช่น <= 1.5 เมตร)
+            if (dist <= 1.5f)
+            {
+                GameManager.Instance.KillPlayerNow();
+            }
         }
         else
         {
             EnterSearchLost();
         }
-        // TODO: ตรวจ “จับได้” แล้วเรียก GameOver/ลด HP
     }
+
 
     bool PlayerDetectWithLOS(out float dist)
     {

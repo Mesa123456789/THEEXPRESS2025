@@ -10,38 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
-  m_Name: PoliceDia
+  m_Name: Human
   m_EditorClassIdentifier: 
   steps:
-  - speaker: Police
-    text: PAY OR NOT???
+  - speaker: UNKNOW
+    text: I GIVE YOU 350$,SEND OR DIE???
     voice: {fileID: 0}
-    gotoIndex: 0
+    gotoIndex: 1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Delivery man
+    text: ...
+    voice: {fileID: 0}
+    gotoIndex: -1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options:
-    - text: PAY
-      gotoIndex: 1
-    - text: NO
+    - text: YES
       gotoIndex: 2
-  - speaker: Police
-    text: GOOD
-    voice: {fileID: 0}
-    gotoIndex: 3
-    onLineEndAction: 2
-    moneyAmount: 0
-    onLineEndDelay: 0
-    options: []
-  - speaker: Police
-    text: ;)
+    - text: NO
+      gotoIndex: 3
+  - speaker: UNKNOW
+    text: To "mafia",At "Underground"
     voice: {fileID: 0}
     gotoIndex: -1
-    onLineEndAction: 1
+    onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: Police
+  - speaker: UNKNOW
+    text: I'm joking, you won't die
+    voice: {fileID: 0}
+    gotoIndex: 4
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: UNKNOW
     text: ;)
     voice: {fileID: 0}
     gotoIndex: -1

@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e59ab53ddf8be84c8948d00ff4487cc, type: 3}
-  m_Name: Item1
+  m_Name: Head
   m_EditorClassIdentifier: 
-  price: 100
-  CaughtPercent: 0
-  illegal: 0
+  price: 250
+  caughtPercent: 20
+  illegal: 1
+  dialogueData: {fileID: 11400000, guid: e1e19cfee0f76494fb7c40bf22c2b0e9, type: 2}
