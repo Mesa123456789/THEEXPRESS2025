@@ -44,7 +44,7 @@ public class NPCDialogueStarter : MonoBehaviour
             return;
         }
 
-        // หา dialogue ตามลำดับความสำคัญ: override → ตำรวจ → ไอเท็มลูกค้า
+
         ItemDialogueData dlg = overrideDialogue;
 
         if (!dlg)
@@ -70,12 +70,12 @@ public class NPCDialogueStarter : MonoBehaviour
             }
         }
 
-        // แค่เปิดคุย—ไม่ปิดของเดิมทับ (เพราะเราบล็อกไว้แล้ว)
+
         mgr.Show(dlg,
             onChoice: null,
             onFinished: () =>
             {
-                // กันสแปมต่อท้ายทันทีหลังปิด
+   
                 lastTriggerTime = Time.time;
             }
         );

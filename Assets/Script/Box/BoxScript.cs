@@ -92,6 +92,14 @@ public class BoxScript : MonoBehaviour
 
         OnBoxStored?.Invoke();
     }
+    void HidePickable(GameObject obj)
+    {
+        foreach (var r in obj.GetComponentsInChildren<Renderer>())
+            r.enabled = false;
+        foreach (var c in obj.GetComponentsInChildren<Collider>())
+            c.enabled = false;
+    }
+
 
     private void Update()
     {
@@ -106,15 +114,17 @@ public class BoxScript : MonoBehaviour
                 Debug.Log("ต้องกดใส่บับเบิ้ลให้ครบ 3 ครั้งก่อนปิดกล่อง!");
                 return;
             }
-            //else
-            //{
-            //    Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
-            //    foreach (Collider item in items)
-            //        if (item.CompareTag("pickable"))
-            //            item.gameObject.SetActive(false);
-            //}
+            else
+            {
+                Collider[] items = Physics.OverlapBox(transform.position, transform.localScale / 2, transform.rotation);
+                foreach (Collider item in items)
+                    if (item.CompareTag("pickable"))
+                    {
+                        HidePickable(item.gameObject); 
+                    }
+            }
 
-                Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out var hit, 3f) && hit.collider.CompareTag("Boxlid"))
             {
                 var lid = hit.collider.GetComponent<SmoothLidClose>();
@@ -130,8 +140,6 @@ public class BoxScript : MonoBehaviour
         {
             IsFinsihedClose = true;
         }
-
-
 
         if (Tape && Tape.isTapeDone && PastedLabel && !boxCleared)
         {

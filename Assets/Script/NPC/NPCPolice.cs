@@ -10,13 +10,13 @@ public class NPCPolice : NPC
 
         if (npcBoxcollider && Vector3.Distance(transform.position, npcBoxcollider.transform.position) > reachThreshold)
         {
-            // เผื่อพลาด: บังคับให้ไปหาโต๊ะก่อน
+
             state = State.Entering;
             return;
         }
 
         state = GetStateWaiting();
-        //OpenPoliceDialogue();
+
     }
 
 
@@ -28,7 +28,6 @@ public class NPCPolice : NPC
             policeDialogue,
             onChoice: (idx) =>
             {
-                // 0 = จ่าย, 1 = ไม่จ่าย (ตามที่คุณตั้งใน SO)
                 if (idx == 0)
                 {
                     GameManager.Instance?.SpendMoney(500);

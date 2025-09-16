@@ -355,7 +355,7 @@ public class ItemDialogueManager : MonoBehaviour
                     if (gm)
                     {
                         gm.totalCaughtPercent = 0;      // reset ค่าจับได้
-                        gm.totalSales -= 500;           // หักเงิน
+                        gm.SpendMoney(500);           // หักเงิน
                         gm.UpdateSalesUI();
                         Debug.Log("[Police] Paid bribe: -500, reset caught percent.");
                     }
