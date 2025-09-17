@@ -72,6 +72,7 @@ public class ItemDialogueManager : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
     }
 
@@ -276,7 +277,8 @@ public class ItemDialogueManager : MonoBehaviour
 
     void ShowChoices(ItemDialogueData.ChoiceOption[] options)
     {
-        // รอบถัดไปปกติจะไม่เข้าฟังก์ชันนี้เพราะถูก auto-route ไปแล้วใน ShowCurrentStep()
+        Cursor.visible = true;
+
         if (options == null || options.Length < 2)
         {
             GoTo(flow.steps[stepIndex].gotoIndex);
@@ -452,29 +454,27 @@ public class ItemDialogueManager : MonoBehaviour
         echoingChoice = true;
         pendingGotoIndex = gotoIndex;
 
-        Cursor.visible = true;
+       
 
-        // หน่วงกันคลิกค้าง (ทั้งสองกรณี)
+  
         suppressFirstClick = true;
         nextAdvanceAllowed = Time.unscaledTime + advanceCooldown;
 
         if (!hasEverTalked && enableTyping)
         {
-            // รอบแรก: เล่นอนิเมชันพิมพ์ echo ให้จบก่อน
+           
             if (typeCo != null) StopCoroutine(typeCo);
             typeCo = StartCoroutine(TypeLine(
                 choiceText ?? "",
-                null, // ไม่จำเป็นต้องมีเสียงก็ได้
+                null, 
                 onTypedDone: () =>
                 {
-                    // พิมพ์จบแล้ว ยังอยู่ในโหมด echo รอคลิกไปต่อ
-                    // (ไม่ต้องทำอะไรเพิ่ม ปล่อยให้ Update() จัดการต่อ)
+
                 }
             ));
         }
         else
         {
-            // รอบถัดไป: แสดงทันที ไม่มีอนิเมชัน
             isTyping = false;
             if (bodyText) bodyText.text = choiceText ?? "";
         }

@@ -351,10 +351,10 @@ public class GhostAI : MonoBehaviour
             lastKnownPlayerPos = player.position;
             SetDestinationSmooth(player.position);
 
-            // ถ้าเข้าใกล้ในระยะโจมตี (เช่น <= 1.5 เมตร)
             if (dist <= 1.5f)
             {
-                GameManager.Instance.KillPlayerNow();
+                GameManager gameManager = FindFirstObjectByType<GameManager>();
+                gameManager.KillPlayerNow();
             }
         }
         else
