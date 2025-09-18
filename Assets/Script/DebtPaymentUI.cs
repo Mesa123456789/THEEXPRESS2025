@@ -2,7 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-
+using System.Text.RegularExpressions;
+using System.Globalization;
 public class DebtPaymentUI : MonoBehaviour
 {
     [Header("Debt UI")]
@@ -19,12 +20,20 @@ public class DebtPaymentUI : MonoBehaviour
     int outstandingDebt;
     GameManager gm;
     Coroutine hideCo;
+    private bool isProcessing = false;
+
 
     void Awake()
     {
         gm = FindFirstObjectByType<GameManager>();
         outstandingDebt = Mathf.Max(0, gm.Debt);
+        if (submitButton != null)
+        {
+            submitButton.onClick.RemoveAllListeners();
+            submitButton.onClick.AddListener(OnSubmitPay);
+        }
     }
+
 
     void Start()
     {
@@ -41,44 +50,76 @@ public class DebtPaymentUI : MonoBehaviour
 
     public void OnSubmitPay()
     {
-        var raw = payInput ? payInput.text : "";
-        var sanitized = SanitizeNumber(raw);
+        if (isProcessing) return;             // กันดับเบิลคลิก
+        isProcessing = true;
 
-        if (!int.TryParse(sanitized, out int amount) || amount <= 0)
+        try
         {
+            if (payInput == null)
+            {
+                ShowStatus(false, "INPUT NOT FOUND");
+                return;
+            }
+
+            // 1) ทำความสะอาดอินพุต: เอาเฉพาะตัวเลข (รองรับคั่นหลักพันด้วย , ก็ได้)
+            string raw = payInput.text ?? "";
+            string sanitized = SanitizeNumber(raw);  // ดูฟังก์ชันด้านล่าง
+
+            // 2) แปลงเป็นจำนวนเต็ม
+            //    ถ้าอยากรองรับคั่นหลักพันด้วย comma ให้ใช้ NumberStyles.AllowThousands
+            if (!int.TryParse(sanitized, NumberStyles.Integer, CultureInfo.InvariantCulture, out int amount) || amount <= 0)
+            {
+                ShowStatus(false, "INVALID INPUT");
+                return; // ออกจากฟังก์ชันทันที -> ห้ามตัดเงิน
+            }
+
+            // 3) ตรวจหนี้
+            if (amount > outstandingDebt)
+            {
+                ShowStatus(false, "EXCEEDS OUTSTANDING BALANCE");
+                return;
+            }
+
+            // 4) ตรวจเงินคงเหลือ
+            if (amount > gm.TotalFunds)
+            {
+                ShowStatus(false, "NOT ENOUGH MONEY");
+                return;
+            }
+
+            // 5) ตัดเงิน
+            bool ok = gm.SpendMoney(amount);
+            if (!ok)
+            {
+                ShowStatus(false, "PAYMENT FAILED");
+                return;
+            }
+
+            // 6) อัปเดตหนี้ / UI
+            outstandingDebt -= amount;
+            RefreshDebtUI();
+            payInput.text = "";
+
+            if (outstandingDebt <= 0 && submitButton)
+                submitButton.interactable = false;
+
+            // 7) สำเร็จ
             ShowStatus(true, "PAYMENT SUCCESS");
-            return;
         }
-
-        if (amount > outstandingDebt)
+        finally
         {
-            ShowStatus(false, "EXCEEDS OUTSTANDING BALANCE");
-            return;
+            isProcessing = false;
         }
-
-        if (amount > gm.TotalFunds)   // ใช้ยอดรวม current+bank
-        {
-            ShowStatus(false, "NOT ENOUGH MONEY");
-            return;
-        }
-
-        // เรียกให้ GameManager จัดการหักจาก current → bank
-        bool ok = gm.SpendMoney(amount);
-        if (!ok)
-        {
-            ShowStatus(false, "PAYMENT FAILED");
-            return;
-        }
-
-        outstandingDebt -= amount;
-        RefreshDebtUI();
-        if (payInput) payInput.text = "";
-
-        
-
-        if (outstandingDebt <= 0 && submitButton)
-            submitButton.interactable = false;
     }
+
+    // เก็บไว้ให้ชัดเจน: เอาเฉพาะตัวเลข (ถ้ามีคอมมา ให้ลบทิ้ง)
+    private string SanitizeNumber(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        // ลบทุกอย่างที่ไม่ใช่ 0-9
+        return Regex.Replace(s, "[^0-9]", "");
+    }
+
 
     void ShowStatus(bool success, string message)
     {
@@ -102,12 +143,5 @@ public class DebtPaymentUI : MonoBehaviour
         hideCo = null;
     }
 
-    string SanitizeNumber(string s)
-    {
-        if (string.IsNullOrEmpty(s)) return "0";
-        System.Text.StringBuilder sb = new System.Text.StringBuilder(s.Length);
-        foreach (char ch in s)
-            if (char.IsDigit(ch)) sb.Append(ch);
-        return sb.Length == 0 ? "0" : sb.ToString();
-    }
+
 }
