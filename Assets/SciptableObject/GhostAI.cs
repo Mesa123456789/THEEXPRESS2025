@@ -262,6 +262,24 @@ public class GhostAI : MonoBehaviour
         lastPatrolIdx = fb;
         return fb;
     }
+    void ChangeState(GhostState next, float moveSpeed)
+    {
+        state = next;
+        stateTimer = 0f;
+        repathTimer = 999f;
+        SetMoveSpeed(moveSpeed);
+
+        if (player)
+        {
+            // หันหน้าเข้าผู้เล่นทันทีตอนสลับสถานะ
+            Vector3 look = (player.position - transform.position).normalized;
+            look.y = 0f;
+            if (look.sqrMagnitude > 0.01f)
+                transform.rotation = Quaternion.LookRotation(look);
+        }
+
+        if (animator) animator.SetInteger("GhostState", (int)state);
+    }
 
     void GoNextPatrol()
     {
@@ -485,15 +503,7 @@ public class GhostAI : MonoBehaviour
                         mode == PatrolMode.PatrolPoints ? patrolSpeed : roamSpeed);
     }
 
-    /* ===================== HELPERS ===================== */
-    void ChangeState(GhostState next, float moveSpeed)
-    {
-        state = next;
-        stateTimer = 0f;
-        repathTimer = 999f;
-        SetMoveSpeed(moveSpeed);
-        if (animator) animator.SetInteger("GhostState", (int)state);
-    }
+    
 
     void EnterSearchLost() => ChangeState(GhostState.SearchLost, huntSpeed);
 
