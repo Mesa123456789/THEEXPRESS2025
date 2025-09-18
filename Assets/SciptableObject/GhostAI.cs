@@ -66,6 +66,11 @@ public class GhostAI : MonoBehaviour
     [SerializeField] private float detourChance = 0.25f;         // โอกาสแวะข้างทาง
     [SerializeField] private float detourRadius = 2.5f;          // ระยะจุดแวะ
 
+    [Header("Close/Rear Awareness")]
+    [SerializeField] private float closeProximityRadius = 1.6f; // ระยะใกล้มาก เห็นทันที 360°
+    [SerializeField] private float rearAwarenessRadius = 3.0f; // ระยะด้านหลังที่ยอมให้เห็นแม้ไม่เข้า FOV
+    [SerializeField] private bool requireLOSForClose = true; // ถ้า true ระยะใกล้ก็ยังต้องไม่มีกำแพงบัง
+
     // --- Runtime ---
     private GhostState state = GhostState.Patrol;
     private Transform player;
@@ -157,9 +162,64 @@ public class GhostAI : MonoBehaviour
         }
 
         AntiStuckCheck();
+#if UNITY_EDITOR
+        if (player)
+        {
+            Color c = Color.gray;
+            if (Vector3.Distance(transform.position, player.position) <= closeProximityRadius) c = Color.yellow;
+            Debug.DrawLine(transform.position + Vector3.up * 1.7f, player.position + Vector3.up * 1.6f, c, 0.02f);
+        }
+#endif
+
+    }
+    bool PlayerDetectWithLOS(out float dist)
+    {
+        dist = Mathf.Infinity;
+        if (!player) return false;
+
+        Vector3 to = player.position - transform.position;
+        dist = to.magnitude;
+        float detectR = GetDetectRadius();
+
+        // 0) อยู่นอกระยะตรวจจับใหญ่สุด → ไม่เห็น
+        if (dist > detectR) return false;
+
+        Vector3 eye = transform.position + Vector3.up * 1.7f;
+        Vector3 head = player.position + Vector3.up * 1.6f;
+
+        // 1) ระยะใกล้มากแบบ 360°: เห็นทันที (เลือกได้ว่าจะบังคับให้ "ต้องไม่มี blocker" ด้วย)
+        if (dist <= closeProximityRadius)
+        {
+            if (!requireLOSForClose || ClearPathNoBlockers(eye, head, losBlockerMask))
+                return true;
+        }
+
+        // 2) ด้านหลังในระยะสั้น: แม้ไม่เข้า FOV ก็ให้เห็นถ้าทางโล่ง
+        // เช็กว่า "ไม่ได้อยู่ใน FOV ปกติ" ก่อน
+        float angle = Vector3.Angle(transform.forward, to);
+        if (angle > fov * 0.5f)
+        {
+            if (dist <= rearAwarenessRadius && ClearPathNoBlockers(eye, head, losBlockerMask))
+                return true;
+
+            // ไม่เข้า FOV และอยู่นอก rear radius → ไม่เห็น
+            return false;
+        }
+
+        // 3) เคสปกติ: อยู่ใน FOV แล้ว → เช็ก LOS แบบเข้ม (ชน Player ก่อน/ไม่โดน blocker)
+        return HasLineOfSight(player, detectR, playerMask, losBlockerMask, 1.7f);
     }
 
-    /* ===================== PATROL ===================== */
+    // true = ไม่มีสิ่งใน losBlockerMask บังระหว่าง a -> b
+    bool ClearPathNoBlockers(Vector3 a, Vector3 b, LayerMask blockers)
+    {
+        Vector3 dir = (b - a);
+        float dist = dir.magnitude;
+        if (dist <= 0.001f) return true;
+        // ยิง Ray ชนเฉพาะเลเยอร์ที่เป็น "ตัวบังสายตา"
+        return !Physics.Raycast(a, dir.normalized, dist, blockers, QueryTriggerInteraction.Ignore);
+    }
+
     void BuildPatrolOrder()
     {
         patrolOrder.Clear();
@@ -364,23 +424,7 @@ public class GhostAI : MonoBehaviour
     }
 
 
-    bool PlayerDetectWithLOS(out float dist)
-    {
-        dist = Mathf.Infinity;
-        if (!player) return false;
-
-        Vector3 to = player.position - transform.position;
-        dist = to.magnitude;
-
-        float detectR = GetDetectRadius();
-        if (dist > detectR) return false;
-
-        // FOV
-        if (Vector3.Angle(transform.forward, to) > fov * 0.5f) return false;
-
-        // LOS
-        return HasLineOfSight(player, detectR, playerMask, losBlockerMask, 1.7f);
-    }
+    
 
     bool HasLineOfSight(Transform player, float maxDist, LayerMask playerMask, LayerMask losBlockerMask, float eyeHeight = 1.7f)
     {
