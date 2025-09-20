@@ -37,10 +37,6 @@ public class Computer : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            OnCloseComputer();
-        }
     }
 
     public void OnOpenComputer()
@@ -52,8 +48,7 @@ public class Computer : MonoBehaviour
         // ถ้ามีฟิลด์ LockCameraPosition ใน StarterAssets ให้ล็อกด้วย (ไม่ error หากไม่มี)
         try { playerController.isMovementLocked = true; } catch { }
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (CursorCoordinator.I) CursorCoordinator.I.SetComputerOpen(true);
 
         // เริ่ม lerp มุม Y ไปที่ -90
         if (yawRoutine != null) StopCoroutine(yawRoutine);
@@ -67,8 +62,7 @@ public class Computer : MonoBehaviour
         playerController.isMovementLocked = false;
         try { playerController.isMovementLocked = false; } catch { }
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (CursorCoordinator.I) CursorCoordinator.I.SetComputerOpen(false);
 
         // ไม่จำเป็นต้องหมุนกลับ แต่ถ้าต้องการ ให้เรียก:
         // if (yawRoutine != null) StopCoroutine(yawRoutine);

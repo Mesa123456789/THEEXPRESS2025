@@ -67,6 +67,11 @@ public class ItemDialogueManager : MonoBehaviour
         talkedActorIds.Remove(actorInstanceId);
         if (currentActorId == actorInstanceId) currentActorId = 0;
     }
+    void SetCursor(bool show)
+    {
+        // อย่าจัดการ Cursor ตรง ๆ แล้ว — ให้ตัวกลางทำ
+        if (CursorCoordinator.I) CursorCoordinator.I.SetDialogueWantsCursor(show);
+    }
 
     // Helper: ใช้ตอนเปิดบทสนทนา เพื่อกำหนดว่าเป็นครั้งแรกของอินสแตนซ์นี้หรือไม่
     private bool IsFirstTimeForActor(GameObject actor)
@@ -97,14 +102,7 @@ public class ItemDialogueManager : MonoBehaviour
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
     }
 
-    void SetCursor(bool show)
-    {
-        Cursor.visible = show;
-        Cursor.lockState = show ? CursorLockMode.None : CursorLockMode.Locked;
 
-        var sai = player ? player.GetComponent<StarterAssetsInputs>() : null;
-        if (sai) sai.cursorInputForLook = !show;
-    }
 
     void ResetSessionState(bool clearChoices)
     {
