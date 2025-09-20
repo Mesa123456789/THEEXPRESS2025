@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using StarterAssets;
 using UnityEngine.SceneManagement;
+using static ItemDialogueData;
 
 public class ItemDialogueManager : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class ItemDialogueManager : MonoBehaviour
     [Tooltip("เสียงทีละตัว (ออปชัน)")] public AudioClip perCharSfx;
     [Tooltip("ทุก N ตัวอักษรจะเล่นเสียง 1 ครั้ง")] public int sfxEveryNChars = 2;
     KeyCode advanceKey = KeyCode.Mouse0;
+    [Header("UI Buttons")]
+    public Button nextButton;  
 
     [Header("Player Control")]
     public FirstPersonController player;
@@ -60,6 +63,9 @@ public class ItemDialogueManager : MonoBehaviour
     private bool reviewMode = false;
     private readonly HashSet<int> talkedActorIds = new HashSet<int>();
     private int currentActorId = 0;
+    // ใช้เก็บ echo ให้แสดงเป็น line ก่อนจะไป goto จริง
+    private struct EchoLine { public string text; public int gotoIndex; }
+    private readonly Queue<EchoLine> echoQueue = new Queue<EchoLine>();
 
     // เรียกจากภายนอกเมื่อนักแสดงถูกทำลาย เพื่อ "ลืม" สถานะของอินสแตนซ์นั้น
     public void ForgetActor(int actorInstanceId)
@@ -137,6 +143,7 @@ public class ItemDialogueManager : MonoBehaviour
         InternalShow(flow, onChoice, onFinished, forceReview: true);
     }
 
+    // ✅ เปลี่ยน: เปิดเคอร์เซอร์ตั้งแต่เริ่มโชว์ไดอะล็อก (และ logic เดิมคงไว้)
     void InternalShow(ItemDialogueData flow, Action<int> onChoice, Action onFinished, bool forceReview)
     {
         if (flow == null || flow.steps == null || flow.steps.Length == 0)
@@ -147,10 +154,8 @@ public class ItemDialogueManager : MonoBehaviour
 
         reviewMode = forceReview;
 
-        // รอบปกติ → ล้าง choiceMemory (เริ่มใหม่จริง ๆ)
-        // รอบทวน → ไม่ล้าง (ต้องมีช้อยส์เดิมไว้ใช้งาน)
-        // ไม่ว่าจะโหมดไหน เคลียร์ช้อยส์/สเตตเสมอ (ห้ามจำ)
-        ResetSessionState(clearChoices: true);
+        // ❗ สำคัญ: ถ้า review ห้ามล้าง choiceMemory เพื่อใช้ทวนช้อยส์เดิมได้
+        ResetSessionState(clearChoices: !forceReview);
 
         this.flow = flow;
         this.onChoice = onChoice;
@@ -165,10 +170,9 @@ public class ItemDialogueManager : MonoBehaviour
 
         if (forceReview)
         {
-            // รอบทวน: ไม่เล่นอนิเมชันตัวอักษร, ถือว่าเคยคุยแล้ว, ไม่เปิดเคอร์เซอร์
             enableTyping = false;
             hasEverTalked = true;
-            SetCursor(false);
+            // เคอร์เซอร์คุมด้วย SetDialogueCursorActive(true) ด้านล่าง
         }
         else
         {
@@ -181,9 +185,53 @@ public class ItemDialogueManager : MonoBehaviour
 
         isShowing = true;
         reviewMode = forceReview;
-        ShowCurrentStep();
 
+        // เปิดเคอร์เซอร์ตลอดช่วงไดอะล็อก (คอมเปิดจะ override ตาม CursorCoordinator)
+        SetDialogueCursorActive(true);
+
+        ShowCurrentStep();
     }
+    void ShowEchoLineNow(string text, int gotoIndex)
+    {
+        // ไม่โชว์ปุ่มช้อยส์
+        HideAllChoices();
+        isChoiceActive = false;
+
+        // เคอร์เซอร์คงเปิด (ให้กดปุ่ม Next ได้)
+        SetDialogueCursorActive(true);
+
+        // โชว์ปุ่ม Next
+        if (nextButton)
+        {
+            nextButton.gameObject.SetActive(true);
+            nextButton.interactable = !enableTyping; // ถ้าพิมพ์ทีละตัว เดี๋ยวค่อยเปิดตอนจบ
+        }
+
+        // แสดงเนื้อหา echo เป็น line
+        if (enableTyping)
+        {
+            if (typeCo != null) StopCoroutine(typeCo);
+            typeCo = StartCoroutine(TypeLine(
+                text ?? "",
+                null,
+                onTypedDone: () =>
+                {
+                    isTyping = false;
+                    if (nextButton) nextButton.interactable = true;
+                }
+            ));
+        }
+        else
+        {
+            isTyping = false;
+            if (bodyText) bodyText.text = text ?? "";
+            if (nextButton) nextButton.interactable = true;
+        }
+
+        // เก็บไว้ในคิวเผื่อมีหลาย echo ติด ๆ กัน (ปกติจะ 1 รายการ)
+        echoQueue.Enqueue(new EchoLine { text = text ?? "", gotoIndex = gotoIndex });
+    }
+
 
     void HideAllChoices()
     {
@@ -201,6 +249,7 @@ public class ItemDialogueManager : MonoBehaviour
         return step != null && step.options != null && step.options.Length >= 2;
     }
 
+    // ✅ เปลี่ยน: ระหว่างไดอะล็อก “ไม่ปิดเคอร์เซอร์” อีกต่อไป
     void ShowCurrentStep()
     {
         if (flow == null || flow.steps == null) { Close(); return; }
@@ -216,28 +265,33 @@ public class ItemDialogueManager : MonoBehaviour
 
         if (speakerText) speakerText.text = string.IsNullOrEmpty(step.speaker) ? "" : step.speaker;
 
-        // ถ้าเป็น Choice และอยู่ในโหมดทวน → ข้ามปุ่ม, ซ่อน cursor, ไปตามช้อยส์เดิมทันที
-        if (HasChoices(step) && reviewMode)
+        // ถ้าในคิวมี echo line ที่ต้องแสดงอยู่ ให้แสดงต่อก่อน (รองรับกรณีซ้อน)
+        if (echoQueue.Count > 0)
         {
-            // ครั้งถัดไป: ไม่โชว์ช้อยส์, ไม่ echo ข้อความช้อยส์, ไม่เปิดเคอร์เซอร์
-            isChoiceActive = false;
-            SetCursor(false);
-
-            // เลือกเส้นทางเริ่มต้น: ถ้ามี options ให้ใช้ options[0].gotoIndex
-            // ถ้าไม่มี (ป้องกันกรณีข้อมูลผิดรูป) ใช้ step.gotoIndex
-            int target = step.options != null && step.options.Length > 0
-                ? step.options[0].gotoIndex
-                : step.gotoIndex;
-
-            GoTo(target);
+            var e = echoQueue.Peek(); // แสดงอยู่แล้ว รอ NextButtonPressed เพื่อ deque + GoTo
+            if (bodyText) bodyText.text = e.text;
+            if (nextButton) nextButton.gameObject.SetActive(true);
             return;
         }
 
+        // ✅ Review + มี Choices → ใช้ช้อยส์ที่จำไว้ สร้าง echo-line แล้วรอผู้เล่นกด Next
+        if (HasChoices(step) && reviewMode)
+        {
+            int chosenIdx = 0;
+            string key = ChoiceKeyFor(stepIndex);
+            if (choiceMemory.TryGetValue(key, out int savedIdx))
+                chosenIdx = Mathf.Clamp(savedIdx, 0, step.options.Length - 1);
 
+            var opt = step.options[chosenIdx];
+            ShowEchoLineNow(opt.text, opt.gotoIndex);
+            return;
+        }
+
+        // --- ไม่มี Choices (line ปกติ): เคอร์เซอร์เปิด + โชว์ Next ---
         if (!HasChoices(step))
         {
             isChoiceActive = false;
-            SetCursor(false);
+            if (nextButton) nextButton.gameObject.SetActive(true);
 
             if (enableTyping)
             {
@@ -279,9 +333,10 @@ public class ItemDialogueManager : MonoBehaviour
         }
         else
         {
-            // โหมดปกติเท่านั้นที่จะมาถึงตรงนี้ (reviewMode ถูก return ไปแล้วด้านบน)
+            // --- มี Choices ปกติ ---
+            if (nextButton) nextButton.gameObject.SetActive(false);
+
             isChoiceActive = true;
-            SetCursor(true);
 
             if (enableTyping)
             {
@@ -289,7 +344,6 @@ public class ItemDialogueManager : MonoBehaviour
                 typeCo = StartCoroutine(TypeLine(step.text, step.voice, onTypedDone: () =>
                 {
                     isChoiceActive = true;
-                    SetCursor(true);
                     ShowChoices(step.options);
                 }));
             }
@@ -297,11 +351,13 @@ public class ItemDialogueManager : MonoBehaviour
             {
                 if (bodyText) bodyText.text = step.text ?? "";
                 isChoiceActive = true;
-                SetCursor(true);
                 ShowChoices(step.options);
             }
         }
     }
+
+
+
 
     IEnumerator TypeLine(string text, AudioClip voice, Action onTypedDone = null)
     {
@@ -362,10 +418,11 @@ public class ItemDialogueManager : MonoBehaviour
     //    Show(item.itemData.dialogueData, onChoice, onFinished);
     //}
 
+    // ✅ แก้ไข: ไม่ปิดเคอร์เซอร์ตอนกดช้อยส์อีกต่อไป (เอาบรรทัด SetCursor(false) ออก)
     void ShowChoices(ItemDialogueData.ChoiceOption[] options)
     {
         isChoiceActive = true;
-        SetCursor(true);
+        SetDialogueCursorActive(true);
 
         if (options == null || options.Length < 2)
         {
@@ -390,20 +447,21 @@ public class ItemDialogueManager : MonoBehaviour
                 int idx = i;
                 optionButtons[i].onClick.AddListener(() =>
                 {
+                    // ล็อกปุ่มอื่น ๆ
                     for (int k = 0; k < optionButtons.Length; k++)
                         if (optionButtons[k]) optionButtons[k].interactable = false;
 
                     onChoice?.Invoke(idx);
 
-                    // เก็บช้อยส์ไว้ใช้ในรอบทวน
+                    // จำช้อยส์ที่เลือกไว้สำหรับ review
                     string key = ChoiceKeyFor(stepIndex);
                     if (choiceMemory.ContainsKey(key)) choiceMemory[key] = idx;
                     else choiceMemory.Add(key, idx);
 
                     isChoiceActive = false;
-                    SetCursor(false);
 
-                    EchoChoiceThenGoto(options[idx].text, options[idx].gotoIndex);
+                    // ❗ เปลี่ยนพฤติกรรม: แสดง “echo เป็น line” แล้วค่อยไปต่อเมื่อกด Next
+                    ShowEchoLineNow(options[idx].text, options[idx].gotoIndex);
                 });
 
                 optionButtons[i].interactable = true;
@@ -415,52 +473,68 @@ public class ItemDialogueManager : MonoBehaviour
         }
     }
 
+
+    // ✅ เปลี่ยน: ปุ่ม Next ใช้ได้ทั้ง line และช่วง echo หลังเลือกช้อยส์
+    public void OnNextButtonPressed()
+    {
+        if (!isShowing || isTyping) return;
+
+        // ถ้ามี echo line ที่กำลังรออยู่ ให้ pop แล้วไปต่อ
+        if (echoQueue.Count > 0)
+        {
+            var e = echoQueue.Dequeue();
+            GoTo(e.gotoIndex);
+            return;
+        }
+
+        // ปกติ: line ธรรมดา → ไปตาม gotoIndex
+        var step = (flow != null && stepIndex >= 0 && stepIndex < flow.steps.Length)
+            ? flow.steps[stepIndex] : null;
+
+        if (step != null && !HasChoices(step))
+        {
+            GoTo(step.gotoIndex);
+        }
+    }
+
+
+    // ✅ เปลี่ยน: ตัดการฟัง Mouse0 ออก (เรากดต่อผ่านปุ่ม Next อย่างเดียว)
     void Update()
     {
         if (!isShowing) return;
 
+        // ถ้าอยู่โหมดช้อยส์และมีเหตุให้ cursor ถูก lock จากที่อื่น ให้ย้ำเปิดไว้
         if (isChoiceActive)
         {
             if (Cursor.lockState != CursorLockMode.None || !Cursor.visible)
-                SetCursor(true);
+                SetDialogueCursorActive(true);
         }
 
+        // debounce เดิมยังอยู่สำหรับกันคลิก/กดคีย์ไหลข้ามเฟรมแรกของการเปิด
         if (suppressFirstClick)
         {
-            if (Input.GetKeyUp(KeyCode.Mouse0) || Time.unscaledTime >= nextAdvanceAllowed)
+            if (Time.unscaledTime >= nextAdvanceAllowed)
                 suppressFirstClick = false;
             else
                 return;
         }
 
-        if (echoingChoice)
-        {
-            if (isTyping) return;
+        // ไม่ต้อง handle advance/echo ด้วย Mouse0 ใน Update แล้ว
+    }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                int target = pendingGotoIndex;
-                echoingChoice = false;
-                pendingGotoIndex = -999;
-                GoTo(target);
-            }
-            return;
-        }
 
-        if (isTyping) return;
-
+    public void Oncilck()
+    {
         if (flow == null || flow.steps == null) return;
         if (stepIndex < 0 || stepIndex >= flow.steps.Length) return;
 
         var step = flow.steps[stepIndex];
-
         if (!HasChoices(step))
         {
-            if (Input.GetKeyDown(advanceKey))
+           // if (Input.GetKeyDown(advanceKey))
                 GoTo(step.gotoIndex);
         }
     }
-
     void GoTo(int gotoIndex)
     {
         if (gotoIndex < 0)
@@ -533,6 +607,7 @@ public class ItemDialogueManager : MonoBehaviour
         }
     }
 
+    // ✅ แก้ไขหลัก: ช่วง echo ช้อยส์ ให้โชว์ปุ่ม Next และพร้อมกดหลังพิมพ์จบ
     void EchoChoiceThenGoto(string choiceText, int gotoIndex)
     {
         HideAllChoices();
@@ -541,10 +616,19 @@ public class ItemDialogueManager : MonoBehaviour
         pendingGotoIndex = gotoIndex;
 
         isChoiceActive = false;
-        SetCursor(false);
+
+        // เคอร์เซอร์ต้องคงเปิดไว้เสมอระหว่างไดอะล็อก
+        SetDialogueCursorActive(true);
 
         suppressFirstClick = true;
         nextAdvanceAllowed = Time.unscaledTime + advanceCooldown;
+
+        // โชว์ปุ่ม Next ระหว่าง echo (ล็อกไว้ก่อนถ้ามี typing)
+        if (nextButton)
+        {
+            nextButton.gameObject.SetActive(true);
+            nextButton.interactable = !enableTyping; // ถ้ามี typing เดี๋ยวค่อยเปิดตอนจบ
+        }
 
         if (!hasEverTalked && enableTyping)
         {
@@ -552,27 +636,41 @@ public class ItemDialogueManager : MonoBehaviour
             typeCo = StartCoroutine(TypeLine(
                 choiceText ?? "",
                 null,
-                onTypedDone: () => { }
+                onTypedDone: () =>
+                {
+                    isTyping = false;
+                    if (nextButton) nextButton.interactable = true; // พิมพ์จบ → กด Next ได้
+                }
             ));
         }
         else
         {
             isTyping = false;
             if (bodyText) bodyText.text = choiceText ?? "";
+            if (nextButton) nextButton.interactable = true; // ไม่มี typing → กด Next ได้เลย
         }
     }
 
+    void SetDialogueCursorActive(bool active)
+    {
+        if (CursorCoordinator.I) CursorCoordinator.I.SetDialogueWantsCursor(active);
+    }
+
+    // ✅ เปลี่ยน: ปิดเคอร์เซอร์ตอนจบไดอะล็อกเท่านั้น (ถ้าคอมยังเปิด CursorCoordinator จะคุมให้เปิดอยู่)
     public void Close()
     {
         if (panel) panel.SetActive(false);
+        if (nextButton) nextButton.gameObject.SetActive(false);
 
         if (player) player.isMovementLocked = false;
         isChoiceActive = false;
-        SetCursor(false);
+
+        // เคอร์เซอร์: ปิดตอนจบไดอะล็อก
+        SetDialogueCursorActive(false);
 
         isShowing = false;
         isTyping = false;
-        //if (typeCo != null) { StopCoroutine(typeCo); typeCo = null; }
+
         if (currentActorId != 0)
             talkedActorIds.Add(currentActorId);
         flow = null;
@@ -580,11 +678,9 @@ public class ItemDialogueManager : MonoBehaviour
         onChoice = null;
         onFinished = null;
 
-        // รอบถัดไปให้ถือว่า "คุยมาแล้ว"
         hasEverTalked = true;
-
-        // โหมดทวนใช้ครั้งต่อครั้ง
         reviewMode = false;
     }
+
 
 }
