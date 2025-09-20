@@ -127,8 +127,7 @@ public class NPC : MonoBehaviour
                     Quaternion.identity
                 );
 
-                var item = spawnedPackageRef.GetComponent<ItemScript>();
-                if (item) item.ownerNPC = this;
+
             }
             hasSpawnedPackage = true;
         }

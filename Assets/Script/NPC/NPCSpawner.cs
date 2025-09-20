@@ -25,6 +25,26 @@ public class NPCSpawner : MonoBehaviour
     private bool forcePoliceNextSpawn = false;  // บังคับตำรวจรอบถัดไป
     private GameManager gm;
 
+    public static NPCSpawner Instance { get; private set; }
+    public static NPC CurrentNPC { get; private set; }
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
+    public NPC Spawn(NPC npcPrefab, Vector3 position, Quaternion rotation)
+    {
+        var npc = Instantiate(npcPrefab, position, rotation);
+        CurrentNPC = npc;               // เซ็ต current ทุกครั้งที่ spawn
+        return npc;
+    }
+
+    public void SetCurrent(NPC npc)     // เผื่อบางเคสอยาก set เอง
+    {
+        CurrentNPC = npc;
+    }
     void Start()
     {
         gm = FindFirstObjectByType<GameManager>();

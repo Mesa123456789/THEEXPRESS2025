@@ -30,33 +30,50 @@ public class ItemDialogueManager : MonoBehaviour
     [Header("Player Control")]
     public FirstPersonController player;
 
-    // runtime
     private ItemDialogueData flow;
     private int stepIndex;
     private bool isShowing;
     private bool isTyping;
     private Coroutine typeCo;
-    private Action<int> onChoice;     // แจ้ง index ปุ่ม (เฉพาะ Choice)
-    private Action onFinished;        // Flow จบ
+    private Action<int> onChoice;
+    private Action onFinished;
     public bool IsShowing => isShowing;
 
-    // ===== คุณสมบัติเพิ่มตามข้อกำหนด =====
-    // เคยคุยมาแล้วหรือยัง (ใช้คุม "รอบแรก/รอบถัดไป")
     public bool hasEverTalked = false;
 
-    // กันคลิกแรกตอนเปิดหน้าต่าง (ดีบาวน์)
     [Header("Debounce")]
     [Tooltip("เวลาหน่วงเพื่อกันคลิกแรกไหลไปข้าม step0")]
     public float advanceCooldown = 0.12f;
     private bool suppressFirstClick = false;
     private float nextAdvanceAllowed = 0f;
 
-    // ความจำตัวเลือกที่ผู้เล่นเคยกด: key = flowName#stepIndex -> choiceIndex
+    // choice ที่ผู้เล่นเลือกไว้: key = flowName#stepIndex -> choiceIndex
     private readonly Dictionary<string, int> choiceMemory = new Dictionary<string, int>();
-    // ใส่ในคลาส ItemDialogueManager
-    private bool echoingChoice = false;
-    private int pendingGotoIndex = -999; // ค่า sentinel
 
+    private bool echoingChoice = false;
+    private int pendingGotoIndex = -999;
+
+    // cursor control
+    private bool isChoiceActive = false;
+
+    // โหมดทวน (ครั้งเดียวต่อการเรียก ShowReview)
+    private bool reviewMode = false;
+    private readonly HashSet<int> talkedActorIds = new HashSet<int>();
+    private int currentActorId = 0;
+
+    // เรียกจากภายนอกเมื่อนักแสดงถูกทำลาย เพื่อ "ลืม" สถานะของอินสแตนซ์นั้น
+    public void ForgetActor(int actorInstanceId)
+    {
+        talkedActorIds.Remove(actorInstanceId);
+        if (currentActorId == actorInstanceId) currentActorId = 0;
+    }
+
+    // Helper: ใช้ตอนเปิดบทสนทนา เพื่อกำหนดว่าเป็นครั้งแรกของอินสแตนซ์นี้หรือไม่
+    private bool IsFirstTimeForActor(GameObject actor)
+    {
+        currentActorId = actor ? actor.GetInstanceID() : 0;
+        return currentActorId == 0 ? true : !talkedActorIds.Contains(currentActorId);
+    }
     string ChoiceKeyFor(int stepIdx)
     {
         string flowId = flow ? flow.name : "noflow";
@@ -68,15 +85,61 @@ public class ItemDialogueManager : MonoBehaviour
         if (Instance && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         if (panel) panel.SetActive(false);
+
+        // ลืมทุกช้อยส์เสมอ (ไม่พกความจำข้ามการทำลายออบเจกต์/ซีน)
+        choiceMemory.Clear();
     }
+
 
     void Start()
     {
-        Cursor.visible = false;
+        SetCursor(false);
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
     }
 
-    public void Show(ItemDialogueData flow, Action<int> onChoice = null, Action onFinished = null)
+    void SetCursor(bool show)
+    {
+        Cursor.visible = show;
+        Cursor.lockState = show ? CursorLockMode.None : CursorLockMode.Locked;
+
+        var sai = player ? player.GetComponent<StarterAssetsInputs>() : null;
+        if (sai) sai.cursorInputForLook = !show;
+    }
+
+    void ResetSessionState(bool clearChoices)
+    {
+        hasEverTalked = false;
+        echoingChoice = false;
+        pendingGotoIndex = -999;
+        suppressFirstClick = false;
+        isTyping = false;
+        isChoiceActive = false;
+        if (typeCo != null) { StopCoroutine(typeCo); typeCo = null; }
+        if (clearChoices) choiceMemory.Clear();
+    }
+
+    // เรียกรอบปกติ (อนิเมชัน + เลือกช้อยส์ได้)
+    public void Show(GameObject actorOwner, ItemDialogueData flow,
+                     Action<int> onChoice = null, Action onFinished = null)
+    {
+        bool firstTime = IsFirstTimeForActor(actorOwner);
+
+        // ครั้งแรก = เล่นอนิเมชัน + ช้อยส์
+        // ครั้งถัดไป = ไม่เล่นอนิเมชัน + ไม่โชว์ช้อยส์ (เล่นแต่บรรทัด)
+        bool forceReview = !firstTime;
+
+        InternalShow(flow, onChoice, onFinished, forceReview);
+    }
+
+
+
+    // เรียกรอบทวน (ไม่อนิเมชัน + ไม่โชว์ช้อยส์/ไม่เปิด cursor + ใช้ช้อยส์เดิม)
+    public void ShowReview(ItemDialogueData flow, Action<int> onChoice = null, Action onFinished = null)
+    {
+        InternalShow(flow, onChoice, onFinished, forceReview: true);
+    }
+
+    void InternalShow(ItemDialogueData flow, Action<int> onChoice, Action onFinished, bool forceReview)
     {
         if (flow == null || flow.steps == null || flow.steps.Length == 0)
         {
@@ -84,32 +147,44 @@ public class ItemDialogueManager : MonoBehaviour
             return;
         }
 
+        reviewMode = forceReview;
+
+        // รอบปกติ → ล้าง choiceMemory (เริ่มใหม่จริง ๆ)
+        // รอบทวน → ไม่ล้าง (ต้องมีช้อยส์เดิมไว้ใช้งาน)
+        // ไม่ว่าจะโหมดไหน เคลียร์ช้อยส์/สเตตเสมอ (ห้ามจำ)
+        ResetSessionState(clearChoices: true);
+
         this.flow = flow;
         this.onChoice = onChoice;
         this.onFinished = onFinished;
-
-        // เริ่มใหม่ทุกครั้งจาก stepIndex 0
         stepIndex = 0;
 
         if (panel) panel.SetActive(true);
-
         if (flow.lockPlayer && player) player.isMovementLocked = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        if (flow.openSfx && Camera.main)
-            AudioSource.PlayClipAtPoint(flow.openSfx, Camera.main.transform.position);
+        if (flow.openSfx && Camera.main) AudioSource.PlayClipAtPoint(flow.openSfx, Camera.main.transform.position);
 
         HideAllChoices();
 
-        // รอบแรก -> เปิดพิมพ์ทีละตัว, รอบถัดไป -> ปิดพิมพ์ (โชว์ทันที)
-        enableTyping = !hasEverTalked;
+        if (forceReview)
+        {
+            // รอบทวน: ไม่เล่นอนิเมชันตัวอักษร, ถือว่าเคยคุยแล้ว, ไม่เปิดเคอร์เซอร์
+            enableTyping = false;
+            hasEverTalked = true;
+            SetCursor(false);
+        }
+        else
+        {
+            enableTyping = true;
+            hasEverTalked = false;
+        }
 
-        // ดีบาวน์กันคลิกแรกไหลไปข้าม step0
         suppressFirstClick = true;
         nextAdvanceAllowed = Time.unscaledTime + advanceCooldown;
 
         isShowing = true;
+        reviewMode = forceReview;
         ShowCurrentStep();
+
     }
 
     void HideAllChoices()
@@ -141,43 +216,42 @@ public class ItemDialogueManager : MonoBehaviour
         var step = flow.steps[stepIndex];
         HideAllChoices();
 
-        // Speaker & Text header
         if (speakerText) speakerText.text = string.IsNullOrEmpty(step.speaker) ? "" : step.speaker;
 
-        // ====== ถ้าเป็น "รอบถัดไป" และ step นี้เป็น Choice -> ข้ามปุ่ม ไปตามความจำ ======
-        if (hasEverTalked && HasChoices(step))
+        // ถ้าเป็น Choice และอยู่ในโหมดทวน → ข้ามปุ่ม, ซ่อน cursor, ไปตามช้อยส์เดิมทันที
+        if (HasChoices(step) && reviewMode)
         {
-            string key = ChoiceKeyFor(stepIndex);
-            bool found = choiceMemory.TryGetValue(key, out int savedIdx);
-            if (!found || savedIdx < 0 || savedIdx >= step.options.Length)
-                savedIdx = 0;
+            // ครั้งถัดไป: ไม่โชว์ช้อยส์, ไม่ echo ข้อความช้อยส์, ไม่เปิดเคอร์เซอร์
+            isChoiceActive = false;
+            SetCursor(false);
 
-            EchoChoiceThenGoto(step.options[savedIdx].text, step.options[savedIdx].gotoIndex);
+            // เลือกเส้นทางเริ่มต้น: ถ้ามี options ให้ใช้ options[0].gotoIndex
+            // ถ้าไม่มี (ป้องกันกรณีข้อมูลผิดรูป) ใช้ step.gotoIndex
+            int target = step.options != null && step.options.Length > 0
+                ? step.options[0].gotoIndex
+                : step.gotoIndex;
 
+            GoTo(target);
             return;
         }
 
-        // ====== Line (ไม่มี Choice) ======
+
         if (!HasChoices(step))
         {
+            isChoiceActive = false;
+            SetCursor(false);
+
             if (enableTyping)
             {
-                Cursor.visible = false;
                 if (typeCo != null) StopCoroutine(typeCo);
                 typeCo = StartCoroutine(TypeLine(step.text, step.voice, onTypedDone: () =>
                 {
-                    // ยิง Action หลังพิมพ์จบ (ถ้ามี)
                     if (step.onLineEndAction != ItemDialogueData.LineAction.None)
                         StartCoroutine(InvokeAfterDelay(() => ExecuteLineEndAction(step), Mathf.Max(0f, step.onLineEndDelay)));
 
-                    // terminal line
                     if (step.gotoIndex < 0)
                     {
-                        if (step.onLineEndAction == ItemDialogueData.LineAction.None)
-                        {
-                            // รอกดเพื่อปิด (ใน Update)
-                        }
-                        else
+                        if (step.onLineEndAction != ItemDialogueData.LineAction.None)
                         {
                             Close();
                             onFinished?.Invoke();
@@ -188,7 +262,6 @@ public class ItemDialogueManager : MonoBehaviour
             }
             else
             {
-                Cursor.visible = false;
                 if (bodyText) bodyText.text = step.text ?? "";
                 isTyping = false;
 
@@ -206,21 +279,27 @@ public class ItemDialogueManager : MonoBehaviour
                 }
             }
         }
-        else // ====== Choice (เฉพาะ "รอบแรก" เท่านั้นที่มาถึงจุดนี้) ======
+        else
         {
+            // โหมดปกติเท่านั้นที่จะมาถึงตรงนี้ (reviewMode ถูก return ไปแล้วด้านบน)
+            isChoiceActive = true;
+            SetCursor(true);
+
             if (enableTyping)
             {
                 if (typeCo != null) StopCoroutine(typeCo);
                 typeCo = StartCoroutine(TypeLine(step.text, step.voice, onTypedDone: () =>
                 {
-                    Cursor.visible = true;
+                    isChoiceActive = true;
+                    SetCursor(true);
                     ShowChoices(step.options);
                 }));
             }
             else
             {
                 if (bodyText) bodyText.text = step.text ?? "";
-                Cursor.visible = true;
+                isChoiceActive = true;
+                SetCursor(true);
                 ShowChoices(step.options);
             }
         }
@@ -275,9 +354,20 @@ public class ItemDialogueManager : MonoBehaviour
         return c == '.' || c == ',' || c == '!' || c == '?' || c == ';' || c == '…' || c == '，' || c == '。';
     }
 
+    //public void ShowFromItem(ItemScript item, System.Action<int> onChoice = null, System.Action onFinished = null)
+    //{
+    //    if (item == null || item.itemData == null || item.itemData.dialogueData == null)
+    //    {
+    //        Debug.LogWarning("[ItemDialogueManager] No dialogueData on itemData.");
+    //        return;
+    //    }
+    //    Show(item.itemData.dialogueData, onChoice, onFinished);
+    //}
+
     void ShowChoices(ItemDialogueData.ChoiceOption[] options)
     {
-        Cursor.visible = true;
+        isChoiceActive = true;
+        SetCursor(true);
 
         if (options == null || options.Length < 2)
         {
@@ -307,15 +397,16 @@ public class ItemDialogueManager : MonoBehaviour
 
                     onChoice?.Invoke(idx);
 
-                    // จำตัวเลือก
+                    // เก็บช้อยส์ไว้ใช้ในรอบทวน
                     string key = ChoiceKeyFor(stepIndex);
                     if (choiceMemory.ContainsKey(key)) choiceMemory[key] = idx;
                     else choiceMemory.Add(key, idx);
 
+                    isChoiceActive = false;
+                    SetCursor(false);
+
                     EchoChoiceThenGoto(options[idx].text, options[idx].gotoIndex);
-
                 });
-
 
                 optionButtons[i].interactable = true;
             }
@@ -330,7 +421,12 @@ public class ItemDialogueManager : MonoBehaviour
     {
         if (!isShowing) return;
 
-        // 1) กันคลิกค้าง
+        if (isChoiceActive)
+        {
+            if (Cursor.lockState != CursorLockMode.None || !Cursor.visible)
+                SetCursor(true);
+        }
+
         if (suppressFirstClick)
         {
             if (Input.GetKeyUp(KeyCode.Mouse0) || Time.unscaledTime >= nextAdvanceAllowed)
@@ -339,13 +435,10 @@ public class ItemDialogueManager : MonoBehaviour
                 return;
         }
 
-        // 2) โหมด echo มาก่อน isTyping
         if (echoingChoice)
         {
-            // ยังพิมพ์ echo อยู่ -> รอให้พิมพ์จบก่อน
             if (isTyping) return;
 
-            // พิมพ์จบแล้ว -> รอคลิกไปต่อ
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 int target = pendingGotoIndex;
@@ -356,7 +449,6 @@ public class ItemDialogueManager : MonoBehaviour
             return;
         }
 
-        // 3) จากนี้ค่อยเช็คสถานะพิมพ์ทั่วไป
         if (isTyping) return;
 
         if (flow == null || flow.steps == null) return;
@@ -371,11 +463,8 @@ public class ItemDialogueManager : MonoBehaviour
         }
     }
 
-
-
     void GoTo(int gotoIndex)
     {
-        // -1 (หรือต่ำกว่า) = จบไดอะล็อกทันที
         if (gotoIndex < 0)
         {
             Close();
@@ -383,7 +472,6 @@ public class ItemDialogueManager : MonoBehaviour
             return;
         }
 
-        // ค่าอื่น ๆ: กระโดดถ้าอยู่ในช่วง
         if (gotoIndex >= 0 && gotoIndex < (flow?.steps?.Length ?? 0))
         {
             stepIndex = gotoIndex;
@@ -391,7 +479,6 @@ public class ItemDialogueManager : MonoBehaviour
         }
         else
         {
-            // นอกช่วง → เลือกจบ
             Close();
             onFinished?.Invoke();
         }
@@ -427,8 +514,8 @@ public class ItemDialogueManager : MonoBehaviour
                     var gm = FindFirstObjectByType<GameManager>();
                     if (gm)
                     {
-                        gm.totalCaughtPercent = 0;      // reset
-                        gm.SpendMoney(500);            // หักเงินตามระบบใหม่ (current->bank)
+                        gm.totalCaughtPercent = 0;
+                        gm.SpendMoney(500);
                         gm.UpdateSalesUI();
                         Debug.Log("[Police] Paid bribe: -500, reset caught percent.");
                     }
@@ -447,6 +534,7 @@ public class ItemDialogueManager : MonoBehaviour
                 }
         }
     }
+
     void EchoChoiceThenGoto(string choiceText, int gotoIndex)
     {
         HideAllChoices();
@@ -454,23 +542,19 @@ public class ItemDialogueManager : MonoBehaviour
         echoingChoice = true;
         pendingGotoIndex = gotoIndex;
 
-       
+        isChoiceActive = false;
+        SetCursor(false);
 
-  
         suppressFirstClick = true;
         nextAdvanceAllowed = Time.unscaledTime + advanceCooldown;
 
         if (!hasEverTalked && enableTyping)
         {
-           
             if (typeCo != null) StopCoroutine(typeCo);
             typeCo = StartCoroutine(TypeLine(
                 choiceText ?? "",
-                null, 
-                onTypedDone: () =>
-                {
-
-                }
+                null,
+                onTypedDone: () => { }
             ));
         }
         else
@@ -479,24 +563,30 @@ public class ItemDialogueManager : MonoBehaviour
             if (bodyText) bodyText.text = choiceText ?? "";
         }
     }
+
     public void Close()
     {
         if (panel) panel.SetActive(false);
 
         if (player) player.isMovementLocked = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        isChoiceActive = false;
+        SetCursor(false);
 
         isShowing = false;
         isTyping = false;
-        if (typeCo != null) { StopCoroutine(typeCo); typeCo = null; }
-
+        //if (typeCo != null) { StopCoroutine(typeCo); typeCo = null; }
+        if (currentActorId != 0)
+            talkedActorIds.Add(currentActorId);
         flow = null;
         stepIndex = 0;
         onChoice = null;
         onFinished = null;
 
-        // ปิดรอบแรก
+        // รอบถัดไปให้ถือว่า "คุยมาแล้ว"
         hasEverTalked = true;
+
+        // โหมดทวนใช้ครั้งต่อครั้ง
+        reviewMode = false;
     }
+
 }

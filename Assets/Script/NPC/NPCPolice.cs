@@ -25,7 +25,8 @@ public class NPCPolice : NPC
         if (!itemDialogueManager || policeDialogue == null) return;
 
         itemDialogueManager.Show(
-            policeDialogue,
+            actorOwner: gameObject,        // <— NPC ตัวนี้
+            flow: policeDialogue,
             onChoice: (idx) =>
             {
                 if (idx == 0)
@@ -41,4 +42,5 @@ public class NPCPolice : NPC
             onFinished: null
         );
     }
+
 }

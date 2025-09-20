@@ -1,19 +1,12 @@
-using System.Security.Cryptography.X509Certificates;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ItemScript : MonoBehaviour
 {
     public itemData itemData;
-    public ItemDialogueData dialogueSequence;
-    public NPC ownerNPC;
-    void Start()
-    {
-        
-    }
+    public NPC ownerNPC { get; private set; }
 
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        
+        ownerNPC = NPCSpawner.CurrentNPC;   // อ้างอิง NPC ปัจจุบันจาก Spawner
     }
 }
