@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -2850665132485187372, guid: a239de706fbaf014bbf988009042c600, type: 3}
+  - {fileID: 2100000, guid: 0f20bc808d7a7b04fb8f2509a734b0c8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -102,8 +102,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: 1ec73561c71fe694796ee2c65ef2581a, type: 2}
-  dialogueSequence: {fileID: 11400000, guid: ff618366ee5ee1b44ac75afc37376e57, type: 2}
-  ownerNPC: {fileID: 0}
 --- !u!65 &-2689765802371123361
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -1,0 +1,352 @@
+fileFormatVersion: 2
+guid: 4bb8f7d984af7ee4aba8b728f0850440
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bed
+    second: {fileID: 2100000, guid: ebaa413f9174bbb4cbf9c04f5b978f3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cabin
+    second: {fileID: 2100000, guid: b96e2790dc5840e4a9c194c381b9feff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Door
+    second: {fileID: 2100000, guid: 294acacb24aa9394490e2b802bc175c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Fan
+    second: {fileID: 2100000, guid: bedc0f5d25815874d96e113a252c50e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: FanBody
+    second: {fileID: 2100000, guid: c3cecc2efa1255d488f6da0b6425c0da, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RollDoor
+    second: {fileID: 2100000, guid: 6516c66c7f8eb0a4b823fcf5f2c8bc8c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shelf
+    second: {fileID: 2100000, guid: 4154e7dd7eadc794eb745d822e5d9272, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stair
+    second: {fileID: 2100000, guid: 5045250fc45eede419fa634e58b3d333, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WallBed
+    second: {fileID: 2100000, guid: 6307c35810b9d354594300b22fe7f537, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WarehouseWall
+    second: {fileID: 2100000, guid: 2134c02fd4b885f43b7b1d2628ef52b1, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedRoom_BaseColor
+    second: {fileID: 2800000, guid: d77368c49a097a24fb33ca8fa0978f17, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedRoom_Metallic
+    second: {fileID: 2800000, guid: 54e050eb28f610048a1f72d002ebe810, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedRoom_Normal
+    second: {fileID: 2800000, guid: c8cc3e2a87d01dc4995052a22b146122, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedRoom_Roughness
+    second: {fileID: 2800000, guid: 7a181ed81ad0c1d46aff8701db7066ad, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedWall_BaseColor
+    second: {fileID: 2800000, guid: bd46e71aba6c9b94683fcd3e53fd5855, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedWall_Metallic
+    second: {fileID: 2800000, guid: bc64bbbd7554e46449e3bd1f845a1fdf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedWall_Normal
+    second: {fileID: 2800000, guid: 467b12be7751ca944bac53dd6b7d2374, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BedWall_Roughness
+    second: {fileID: 2800000, guid: bb2c18e2658c1384688ab288aeea32be, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Doors_BaseColor
+    second: {fileID: 2800000, guid: 420822dbc62d99843801fcfc28d7098e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Doors_Metallic
+    second: {fileID: 2800000, guid: 7cad6abeb6052504cb7ce4606c8870de, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Doors_Normal
+    second: {fileID: 2800000, guid: 0c6b79938bbb4b046afd481652f914a9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Doors_Roughness
+    second: {fileID: 2800000, guid: 31f93124ccb14a24680373808e96d991, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FanBody_BaseColor
+    second: {fileID: 2800000, guid: 8e4e31e3acff1ce46932574c94567fd9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FanBody_Metallic
+    second: {fileID: 2800000, guid: 2261a35c7fb9a0c45948a5fb22669e79, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FanBody_Normal
+    second: {fileID: 2800000, guid: bf47e0787d8795341804429063ed3cb6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FanBody_Roughness
+    second: {fileID: 2800000, guid: 2a863b3ff52993e4eb1d8f0ab452a6e3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Fanblades_BaseColor
+    second: {fileID: 2800000, guid: 2353116b5ac30f44caf222f6756c9daa, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Fanblades_Metallic
+    second: {fileID: 2800000, guid: 4059fbcb1f522134fb0cef63ee69c9d4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Fanblades_Normal
+    second: {fileID: 2800000, guid: 997bbac805fcc714eb09cad6ef97660b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Fanblades_Roughness
+    second: {fileID: 2800000, guid: 48857ac842bb6454fb17a3dc612bcb19, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: RollDoor_BaseColor
+    second: {fileID: 2800000, guid: 81c7f6c2b5c2bd944a0e702f9162d83e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: RollDoor_Metallic
+    second: {fileID: 2800000, guid: ec9a2d2d74f13f34aa79e3f2f339a502, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: RollDoor_Normal
+    second: {fileID: 2800000, guid: 9122439d7b571da4d94bc906994743c2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: RollDoor_Roughness
+    second: {fileID: 2800000, guid: 232e079666dcef244a740f1be1b579c5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Shelf_BaseColor
+    second: {fileID: 2800000, guid: f4af8772f72daff49b8bcd26ddb70dc1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Shelf_Metallic
+    second: {fileID: 2800000, guid: 5d09bf5a43c200940a9b8a45dd22fa68, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Shelf_Normal
+    second: {fileID: 2800000, guid: fa4c57a65d2311c46921db7a7232bb18, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Shelf_Roughness
+    second: {fileID: 2800000, guid: 318f6eafc80487849add344e89527151, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Stair_BaseColor
+    second: {fileID: 2800000, guid: 7684a7ee689ac624687d75ef7b256de5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Stair_Metallic
+    second: {fileID: 2800000, guid: 98b31d8fbd0daab47b291f2c8250ba6c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Stair_Normal
+    second: {fileID: 2800000, guid: 725c4dbadbedd6147a5c42821efe3a6f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Stair_Roughness
+    second: {fileID: 2800000, guid: bfd9e834553eaa84383cc88e72aee52b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: corrugated_iron_03_diff_4k
+    second: {fileID: 2800000, guid: ec2df5c9eb244f24cb7034d1ec58418c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: corrugated_iron_03_nor_gl_4k
+    second: {fileID: 2800000, guid: 872b4e35f65e14e43ad678c13d32e8ea, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: corrugated_iron_03_rough_4k
+    second: {fileID: 2800000, guid: 45783b1b92b8cfe4199a5f7d1f1e12c3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wall_BaseColor
+    second: {fileID: 2800000, guid: 306dbe1ab997a4f4d9c8ec9927f566a2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wall_Metallic
+    second: {fileID: 2800000, guid: 45caa5a42633a204ba4d50e4291a8383, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wall_Normal
+    second: {fileID: 2800000, guid: 526150d9ca91a1e47a810a2bf20f93be, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: wall_Roughness
+    second: {fileID: 2800000, guid: 434f131a98f39d041b20773f13489bab, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

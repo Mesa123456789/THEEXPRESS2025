@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: NPC1_Book
   m_EditorClassIdentifier: 
   steps:
-  - speaker: baipu
-    text: hello
+  - speaker: Baiphu
+    text: Hello
     voice: {fileID: 0}
     gotoIndex: 1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: baipu
-    text: send to "pupi"
+  - speaker: Baiphu
+    text: Send to "pupi"
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
@@ -33,8 +33,8 @@ MonoBehaviour:
       gotoIndex: 2
     - text: '> ???'
       gotoIndex: 5
-  - speaker: baipu
-    text: send sutff
+  - speaker: Baiphu
+    text: Send sutff
     voice: {fileID: 0}
     gotoIndex: 3
     onLineEndAction: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: baipu
+  - speaker: Baiphu
     text: Aderss "CMU"
     voice: {fileID: 0}
     gotoIndex: -1
@@ -57,11 +57,11 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: baipu
+  - speaker: Baiphu
     text: F...
     voice: {fileID: 0}
     gotoIndex: -1
-    onLineEndAction: 0
+    onLineEndAction: 1
     moneyAmount: 0
     onLineEndDelay: 0
     options: []

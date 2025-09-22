@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Head
   m_EditorClassIdentifier: 
   steps:
-  - speaker: mesa
+  - speaker: Mesa
     text: ...
     voice: {fileID: 0}
     gotoIndex: 1
@@ -21,8 +21,8 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: mesa
-    text: send it to "someone" ;)
+  - speaker: Mesa
+    text: Send it to "someone" ;)
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
       gotoIndex: 2
     - text: '> ???'
       gotoIndex: 3
-  - speaker: mesa
+  - speaker: Mesa
     text: BETTER NOT KNOW ;)
     voice: {fileID: 0}
     gotoIndex: 4
@@ -41,7 +41,7 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: mesa
+  - speaker: Mesa
     text: 
     voice: {fileID: 0}
     gotoIndex: -1
@@ -57,16 +57,18 @@ MonoBehaviour:
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: mesa
+  - speaker: Mesa
     text: '"ChinaTown"'
     voice: {fileID: 0}
-    gotoIndex: 6
+    gotoIndex: -1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
-    options: []
-  - speaker: mesa
-    text: Ok
+    options:
+    - text: OK
+      gotoIndex: 6
+  - speaker: Mesa
+    text: 'Thank '
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
