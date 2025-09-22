@@ -41,7 +41,7 @@ AudioSource:
   m_GameObject: {fileID: 1923626053483539520}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -8291034276853632875, guid: d2d599678c380304596cdfedf5c16a87, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -179,8 +179,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundEffects:
-  - groupID: 
-    clips: []
+  - groupID: Hover
+    clips:
+    - {fileID: 8300000, guid: 937b755259f68c5438b6d0323b95336c, type: 3}
+  - groupID: Click
+    clips:
+    - {fileID: 8300000, guid: f905ec8b8d9a43c43bcfb9b04d5b2ff3, type: 3}
 --- !u!114 &2665226274305815987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sfxLibrary: {fileID: 8848964380453909592}
-  sfx2DSource: {fileID: 0}
+  sfx2DSource: {fileID: 8457412888329716479}
 --- !u!114 &8818402512379249084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,7 +215,7 @@ MonoBehaviour:
   - trackName: MainMenu
     clip: {fileID: 8300000, guid: 1e1a267f1e3dc0b469e6ef7f3ac1166f, type: 3}
   - trackName: InGame
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 216b9ac6902421240a5b4386e15fc428, type: 3}
 --- !u!114 &3904624867243400313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,7 +271,7 @@ AudioSource:
   m_GameObject: {fileID: 7039354508743735498}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -6490190020614541516, guid: d2d599678c380304596cdfedf5c16a87, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
