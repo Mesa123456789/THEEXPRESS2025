@@ -20,8 +20,8 @@ public class MainMenu : MonoBehaviour
     public void Play()
     {
         SceneManager.LoadScene("Gameplay");
-        //LevelManager.Instance.LoadScene("Milk","")
-        MusicManager.Instance.PlayMusic("Gameplay");
+        //LevelManager.Instance.LoadScene("InGame", "");
+        MusicManager.Instance.PlayMusic("MainMenu");
     }
 
     public void Quit()
