@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8f94de2e-9120-4bc1-8693-3ad7e95dc952" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.001.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.001.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.002.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.002.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.003.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.003.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.007.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.007.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Material.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/BUTTON.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/BUTTON.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.001.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.001.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.002.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.002.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.003.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.003.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.004.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.004.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.005.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.005.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.006.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.006.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.008.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.008.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/Material.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/com.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/com.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/shelf and board.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/Shop/Texture_shop/shelf and board.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/WareHouse/WallBed.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/WareHouse/WallBed.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Asset/WareHouse/WarehouseWall.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Asset/WareHouse/WarehouseWall.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Gameplay.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Gameplay.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Outline.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Outline.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/UI/Font/Staatliches-Regular SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UI/Font/Staatliches-Regular SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/UI/Font/Staatliches_Com.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UI/Font/Staatliches_Com.asset" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="33L8sZt8gFI3bxon8eyGZ3EDCQT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f94de2e-9120-4bc1-8693-3ad7e95dc952" name="Changes" comment="" />
+      <created>1759085200959</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759085200959</updated>
+      <workItem from="1759085202883" duration="3000" />
+    </task>
+    <servers />
+  </component>
+  <component name="UnityProjectDiscoverer">
+    <option name="unityProject" value="true" />
+    <option name="unityProjectFolder" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
