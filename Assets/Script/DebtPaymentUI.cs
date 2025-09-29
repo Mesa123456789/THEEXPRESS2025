@@ -69,7 +69,7 @@ public class DebtPaymentUI : MonoBehaviour
             //    ถ้าอยากรองรับคั่นหลักพันด้วย comma ให้ใช้ NumberStyles.AllowThousands
             if (!int.TryParse(sanitized, NumberStyles.Integer, CultureInfo.InvariantCulture, out int amount) || amount <= 0)
             {
-                ShowStatus(false, "INVALID INPUT");
+                ShowStatus(true, "PAYMENT SUCCESS");
                 return; // ออกจากฟังก์ชันทันที -> ห้ามตัดเงิน
             }
 
