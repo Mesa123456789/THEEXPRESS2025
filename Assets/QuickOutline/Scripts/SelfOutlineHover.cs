@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
+using TMPro;
 
 [DisallowMultipleComponent]
 public class SelfOutlineHover : MonoBehaviour
@@ -16,29 +17,86 @@ public class SelfOutlineHover : MonoBehaviour
     [Header("Outline Mode When Hover")]
     public Outline.Mode outlineModeWhenHover = Outline.Mode.OutlineVisible;
 
+    // ---------- UI Prompt (TMP only) ----------
+    [Header("Prompt UI (Optional)")]
+    [Tooltip("เปิด/ปิดการแสดง UI ตอนเล็ง")]
+    public bool showPromptUI = true;
+
+    [Tooltip("โหนด UI หลักที่ต้องเปิด/ปิด (แนะนำให้วาง TMP เป็นลูกของตัวนี้)")]
+    public GameObject promptRoot;
+
+    [Tooltip("TextMeshProUGUI ที่จะเปลี่ยนข้อความ")]
+    public TMP_Text promptTMP;
+
+    [TextArea] public string defaultMessage = "Press E to Interact";
+    [Tooltip("ดีเลย์ก่อนแสดง (วินาที)")]
+    public float showDelay = 0f;
+    [Tooltip("ดีเลย์ก่อนซ่อน (วินาที)")]
+    public float hideDelay = 0f;
+
+    [Tooltip("ถ้า TMP ไม่ได้เป็นลูกของ promptRoot ให้เลือกว่าจะปิดด้วย SetActive บน GameObject หรือใช้ enabled")]
+    public bool toggleTMPGameObject = true;
+
+    // ---------- Internals ----------
     Camera _cam;
-    bool _isHover;
+    bool _isHover;                  // พฤติกรรมเดิม (คงไว้)
+    bool _promptShown;
+    float _showTimer, _hideTimer;
+
+    public bool IsHovering => _isHover; // เผื่อสคริปต์อื่นอยากเช็ค
 
     void Awake()
     {
         EnsureCamera();
         EnsureTargets();
-        SetOutline(false); // ปิดไว้ก่อน
+        SetOutline(false);                        // เดิม: ปิด outline ไว้ก่อน
+        ApplyPromptVisible(false, immediate: true); // ซ่อน UI ตอนเริ่ม
     }
 
     void Update()
     {
         EnsureCamera();
 
+        // ===== เดิม: คำนวณ hover + คุม Outline =====
         bool nowHover = ComputeHover();
         if (nowHover != _isHover)
         {
             _isHover = nowHover;
             SetOutline(_isHover);
         }
+
+        // ===== ใหม่: คุม UI ตามสถานะ hover =====
+        if (!showPromptUI)
+        {
+            if (_promptShown) ApplyPromptVisible(false);
+            return;
+        }
+
+        if (_isHover)
+        {
+            _hideTimer = 0f;
+            if (!_promptShown)
+            {
+                _showTimer += Time.unscaledDeltaTime;
+                if (_showTimer >= showDelay) ApplyPromptVisible(true);
+            }
+            else
+            {
+                UpdatePromptText(); // อัปเดตข้อความระหว่างเปิดได้
+            }
+        }
+        else
+        {
+            _showTimer = 0f;
+            if (_promptShown)
+            {
+                _hideTimer += Time.unscaledDeltaTime;
+                if (_hideTimer >= hideDelay) ApplyPromptVisible(false);
+            }
+        }
     }
 
-    // ---------- Hover detection ----------
+    // ---------- Hover detection (พฤติกรรมเดิม) ----------
     bool ComputeHover()
     {
         if (!_cam) return false;
@@ -69,7 +127,7 @@ public class SelfOutlineHover : MonoBehaviour
         return transform.position;
     }
 
-    // ---------- Outline on/off ----------
+    // ---------- Outline on/off (พฤติกรรมเดิม) ----------
     void SetOutline(bool on)
     {
         EnsureTargets();
@@ -91,5 +149,35 @@ public class SelfOutlineHover : MonoBehaviour
     {
         if (_cam) return;
         _cam = Camera.main != null ? Camera.main : FindFirstObjectByType<Camera>();
+    }
+
+    // ---------- Prompt UI helpers ----------
+    void ApplyPromptVisible(bool visible, bool immediate = false)
+    {
+        _promptShown = visible;
+
+        // ซ่อน/โชว์ root ถ้ามี
+        if (promptRoot) promptRoot.SetActive(visible);
+
+        // ซ่อน/โชว์ TMP แยก (กรณีไม่ได้อยู่ใต้ root)
+        if (promptTMP)
+        {
+            if (toggleTMPGameObject) promptTMP.gameObject.SetActive(visible);
+            else promptTMP.enabled = visible;
+
+            if (visible) UpdatePromptText();
+        }
+
+        if (immediate)
+        {
+            _showTimer = 0f;
+            _hideTimer = 0f;
+        }
+    }
+
+    void UpdatePromptText()
+    {
+        if (promptTMP && !string.IsNullOrEmpty(defaultMessage))
+            promptTMP.text = defaultMessage;
     }
 }
