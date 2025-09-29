@@ -20,6 +20,7 @@ TagManager:
   - Bed
   - sign
   - DialogTable
+  - Door
   layers:
   - Default
   - TransparentFX
