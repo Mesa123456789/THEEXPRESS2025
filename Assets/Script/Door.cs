@@ -2,25 +2,18 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    [Header("Local Z (degrees)")]
-    [Tooltip("����Դ (�Ϳ��᡹ Z Ẻ local)")]
+
     public float closedZ = 0f;
 
-    [Tooltip("����Դ (�Ϳ��᡹ Z Ẻ local)")]
     public float openZ = 90f;
 
-    [Header("Animation")]
-    [Tooltip("ͧ�ҵ���Թҷ� (����ҳ��� �ŧ�繤���������ع Quaternion)")]
+
     public float rotateSpeedDegPerSec = 180f;
 
-    [Tooltip("�Ѵ�����ٷչ����Թ���ҹ�� (�ѹ�ٻ��ҧ)")]
     public float maxRotateSeconds = 3f;
-
-    [Tooltip("����������Դ�������")]
     public bool startOpened = false;
 
-    [Header("Optional (�й�)")]
-    [Tooltip("����� Rigidbody ����� true �е�� isKinematic �����ع �ѹ���ԡ�����ѹ")]
+
     public bool manageRigidbodyWhileMoving = true;
 
     Quaternion _baseLocalRot;
