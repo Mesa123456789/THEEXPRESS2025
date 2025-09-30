@@ -13,28 +13,24 @@ MonoBehaviour:
   m_Name: Knife_DD
   m_EditorClassIdentifier: 
   steps:
-  - speaker: Baiphu
-    text: Hello
+  - speaker: Murderer
+    text: Ha...Hello
     voice: {fileID: 0}
     gotoIndex: 1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: Baiphu
-    text: Send to "pupi"
+  - speaker: Murderer
+    text: I want to sent this " Knife "
     voice: {fileID: 0}
-    gotoIndex: -1
+    gotoIndex: 2
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
-    options:
-    - text: '> what'
-      gotoIndex: 2
-    - text: '> ???'
-      gotoIndex: 5
-  - speaker: Baiphu
-    text: Send sutff
+    options: []
+  - speaker: Delivery man
+    text: The Blood?
     voice: {fileID: 0}
     gotoIndex: 3
     onLineEndAction: 0
@@ -42,26 +38,30 @@ MonoBehaviour:
     onLineEndDelay: 0
     options: []
   - speaker: Delivery man
-    text: Aderss?
+    text: 
     voice: {fileID: 0}
     gotoIndex: 4
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
-    options: []
-  - speaker: Baiphu
-    text: Aderss "CMU"
-    voice: {fileID: 0}
-    gotoIndex: -1
-    onLineEndAction: 0
-    moneyAmount: 0
-    onLineEndDelay: 0
-    options: []
-  - speaker: Baiphu
-    text: F...
+    options:
+    - text: '> Accept'
+      gotoIndex: 5
+    - text: '> Reject'
+      gotoIndex: 4
+  - speaker: Murderer
+    text: "Haha, It just a color, Bye \U0001F60A\U0001F60A"
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 1
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Murderer
+    text: Sent to "Milkcobar" in "Colombian"
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options: []

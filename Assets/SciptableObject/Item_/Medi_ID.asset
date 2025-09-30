@@ -15,4 +15,4 @@ MonoBehaviour:
   price: 320
   caughtPercent: 15
   illegal: 1
-  dialogueData: {fileID: 11400000, guid: 56674509e330efb41b7a6590658c78a5, type: 2}
+  dialogueData: {fileID: 11400000, guid: 7e74d76bc46b050429a9676af10c83ab, type: 2}

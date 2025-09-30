@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d240500698b23c429d8874438572cf5, type: 3}
   m_Name: Knife_NPC
   m_EditorClassIdentifier: 
-  npcName: ' WW'
-  address: WWWW
+  npcName: Milkcobar
+  address: Colombian
   package: {fileID: 4131169507574832769, guid: 77bdf96bbca4e7f4f8878a2793ffdf78, type: 3}
