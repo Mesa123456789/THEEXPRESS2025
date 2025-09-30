@@ -3,46 +3,29 @@ using UnityEngine;
 
 public class BubbleDrop : MonoBehaviour
 {
-    [Tooltip("อ้างอิงกล่องปลายทาง")]
     public BoxScript targetBox;
-
-    [Tooltip("หน่วงเวลาก่อนทำลายหลังจากตกถึงกล่อง (วินาที)")]
     public float destroyDelay = 1.0f;
+    public bool autoAddToBox = false; // ปิดไว้
 
-    [Tooltip("เรียก targetBox.AddBubble() อัตโนมัติเมื่อถึงกล่อง")]
-    public bool autoAddToBox = true;
+    private bool hitBox = false;
 
-    private bool counted = false;
+    void OnCollisionEnter(Collision collision) => TryHit(collision.collider);
+    void OnTriggerEnter(Collider other) => TryHit(other);
 
-    void OnCollisionEnter(Collision collision)
+    void TryHit(Collider col)
     {
-        TryHandleContact(collision.collider);
+        if (hitBox) return;
+        if (targetBox == null) return;
+
+        // ชนอะไรที่มี/อยู่ใต้ BoxScript (กล่องเป้าหมาย)
+        var box = col.GetComponentInParent<BoxScript>();
+        if (box != targetBox) return;
+
+        hitBox = true;
+        StartCoroutine(DestroyLater());
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        TryHandleContact(other);
-    }
-
-    private void TryHandleContact(Collider col)
-    {
-        if (counted) return;
-
-        // หา BoxScript จากคอลลิดเดอร์หรือพาเรนต์
-        BoxScript box = col.GetComponentInParent<BoxScript>();
-        if (box == null) return; // ยังไม่ใช่กล่อง
-
-        counted = true;
-
-        if (autoAddToBox && targetBox != null)
-        {
-            targetBox.AddBubble();
-        }
-
-        StartCoroutine(DestroyAfterDelay());
-    }
-
-    private IEnumerator DestroyAfterDelay()
+    IEnumerator DestroyLater()
     {
         yield return new WaitForSeconds(destroyDelay);
         Destroy(gameObject);

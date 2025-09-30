@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public FirstPersonController playerController;
     public static GameManager Instance { get; private set; }
 
+    public BoxScript currentBox;
     // ===== Gameplay Money & Progress =====
     public int currentDay = 1;
     public int salesGoal = 500;
@@ -116,12 +117,21 @@ public class GameManager : MonoBehaviour
         wasInDanger = inDanger;
         shopIsOpen = false;
         StartNewDay();
+
+        currentBox = FindFirstObjectByType<BoxScript>(); 
+        
     }
 
     void Update()
     {
         if (isEnding) return;
 
+        if (currentBox == null)
+        {
+            currentBox = FindFirstObjectByType<BoxScript>();
+            if (currentBox != null) Debug.Log("เชื่อม currentBox สำเร็จ!");
+            return;
+        }
         hourTimer += Time.deltaTime;
         while (hourTimer >= hourDuration && !isEnding)
         {

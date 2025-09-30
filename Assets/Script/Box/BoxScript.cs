@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Buffers.Text;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 public class BoxScript : MonoBehaviour
@@ -16,12 +19,21 @@ public class BoxScript : MonoBehaviour
     public TapeDragScaler Tape;
 
     [Header("GameManager")]
-    public GameManager gameManager;  
+    public GameManager gameManager;
 
-    [Header("Bubble Check")]
+    [Header("Bubble UI/Visual")]
+    public GameObject bubble;            // ตัววัตถุที่จะ scale (เช่นกองฟองในกล่อง)
+
+    [Header("Bubble Logic")]
+    public int bubbleCount = 0;          // นับรอบที่เพิ่มแล้ว
+    public int maxBubble = 3;            // เพิ่มได้สูงสุด 3 รอบ
+    public float stepY = 0.001f;           // ต่อคลิกเพิ่ม Y เท่าไร
+    public float scaleDuration = 0.25f;  // เวลาที่ใช้ในการ scale ต่อคลิก
     public bool bubbleInserted = false;
-    public int bubbleCount = 0;
-    public GameObject bubble;
+
+    private Coroutine scaleCo;
+    private float baseY;                 // ค่า y เดิมก่อนเริ่มเพิ่ม
+
     public bool illegal;
     public bool IsFinsihedClose = false;
 
@@ -45,6 +57,12 @@ public class BoxScript : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
         PastedLabel = false;
+
+        if (bubble != null)
+        {
+            baseY = bubble.transform.localScale.y;
+            bubble.SetActive(false);
+        }
 
     }
 
@@ -70,18 +88,43 @@ public class BoxScript : MonoBehaviour
 
     public void AddBubble()
     {
-        bubble.SetActive(true);
-        if (bubbleCount >= 3) return;
+        if (!hasItem) return;
+
+
+        if (!bubble.activeSelf) bubble.SetActive(true);
+
+        if (bubbleCount >= maxBubble) return; // เต็มแล้ว
 
         bubbleCount++;
-        Vector3 scale = bubble.transform.localScale;
-        scale.y += 0.07f;
-        bubble.transform.localScale = scale;
 
-        if (bubbleCount >= 3)
+        // คำนวณเป้าหมาย Y (base + step * count)
+        var s = bubble.transform.localScale;
+        float targetY = baseY + stepY * bubbleCount;
+        Vector3 target = new Vector3(s.x, targetY, s.z);
+
+        if (scaleCo != null) StopCoroutine(scaleCo);
+        scaleCo = StartCoroutine(ScaleTo(target, scaleDuration));
+
+        if (bubbleCount >= maxBubble)
             bubbleInserted = true;
     }
-    public void StoreBox()
+
+    private IEnumerator ScaleTo(Vector3 target, float duration)
+    {
+        Vector3 start = bubble.transform.localScale;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            bubble.transform.localScale = Vector3.Lerp(start, target, t);
+            yield return null;
+        }
+        bubble.transform.localScale = target;
+        scaleCo = null;
+    }
+
+public void StoreBox()
     {
         ItemScript itemScript = FindFirstObjectByType<ItemScript>();
         illegal = itemScript.itemData.illegal;

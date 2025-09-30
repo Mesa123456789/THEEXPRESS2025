@@ -1151,9 +1151,13 @@ MonoBehaviour:
   rightLid: {fileID: 8179179152410883516}
   Tape: {fileID: 3812762410684554886}
   gameManager: {fileID: 0}
-  bubbleInserted: 0
-  bubbleCount: 0
   bubble: {fileID: 1728392966829902260}
+  bubbleCount: 0
+  maxBubble: 3
+  stepY: 0.07
+  scaleDuration: 0.2
+  bubbleInserted: 0
+  illegal: 0
   IsFinsihedClose: 0
   PastedLabel: 0
 --- !u!65 &1375593924045155357

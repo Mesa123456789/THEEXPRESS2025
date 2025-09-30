@@ -26,7 +26,8 @@ public class ReceiptClickPlace : MonoBehaviour
     private Vector3 previewWorld;
     private Quaternion previewRot;
 
-    public SphereSpawn currentBox;
+    public GameManager manager;
+
     void Awake()
     {
         cam = Camera.main;
@@ -62,7 +63,7 @@ public class ReceiptClickPlace : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && snappingPreview && previewArea != null)
         {
             FinalizePlace(previewArea, previewWorld, previewRot);
-            currentBox.currentBox.PastedLabel = true;
+            manager.currentBox.PastedLabel = true;
         }
 
 
