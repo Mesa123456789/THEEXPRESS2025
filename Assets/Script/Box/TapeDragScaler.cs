@@ -46,6 +46,8 @@ public class TapeDragScaler : MonoBehaviour
 
     void Update()
     {
+        if(!currentBox.IsFinsihedClose) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

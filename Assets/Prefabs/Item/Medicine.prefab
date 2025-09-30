@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4011920813947416213}
   m_Layer: 0
   m_Name: Medicine
-  m_TagString: Untagged
+  m_TagString: pickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,8 +108,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.002677975, y: 0.0017884324, z: 0.00050413643}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.002677975, y: 0.0017884325, z: 0.0011899006}
+  m_Center: {x: 0, y: 6.3413734e-19, z: 0.00034288203}
 --- !u!54 &-5332002211510701740
 Rigidbody:
   m_ObjectHideFlags: 0

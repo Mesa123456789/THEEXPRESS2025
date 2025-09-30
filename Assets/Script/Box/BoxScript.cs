@@ -35,7 +35,9 @@ public class BoxScript : MonoBehaviour
     private float baseY;                 // ค่า y เดิมก่อนเริ่มเพิ่ม
 
     public bool illegal;
+    public int price;
     public bool IsFinsihedClose = false;
+    public int risk;
 
     BoxSpawner boxSpawner;
     Rigidbody rb;
@@ -49,8 +51,8 @@ public class BoxScript : MonoBehaviour
 
     void Start()
     {
-        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>(); 
-
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
+        itemScript = FindFirstObjectByType<ItemScript>();
         boxSpawner = FindFirstObjectByType<BoxSpawner>();
         rb = GetComponent<Rigidbody>();
         bubble.SetActive(false);
@@ -70,6 +72,9 @@ public class BoxScript : MonoBehaviour
     {
         if (other.CompareTag("pickable"))
             hasItem = true;
+        illegal = itemScript.itemData.illegal;
+        price = itemScript.itemData.price;
+        risk = itemScript.itemData.caughtPercent;
     }
 
     private void OnTriggerExit(Collider other)
@@ -123,18 +128,15 @@ public class BoxScript : MonoBehaviour
         bubble.transform.localScale = target;
         scaleCo = null;
     }
-
-public void StoreBox()
+    public void StoreBox()
     {
-        ItemScript itemScript = FindFirstObjectByType<ItemScript>();
-        illegal = itemScript.itemData.illegal;
-        int moneyEarned = itemScript.itemData.price;
-        int risk = itemScript.itemData.caughtPercent;
-        gameManager.AddSales(moneyEarned, risk);
-
+       
+        gameManager.AddSales(price, risk);
+        AddSalesPopupUI.ShowNotice(price);
 
         OnBoxStored?.Invoke();
     }
+
     void HidePickable(GameObject obj)
     {
         foreach (var r in obj.GetComponentsInChildren<Renderer>())
@@ -196,7 +198,7 @@ public void StoreBox()
             rb.useGravity = true;
             if (boxSpawner) boxSpawner.hasSpawnedBox = false;
             Tape.isTapeDone = false;
-            StoreBox();
+            //StoreBox();
         }
     }
 }

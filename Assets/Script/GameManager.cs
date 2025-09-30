@@ -71,9 +71,8 @@ public class GameManager : MonoBehaviour
     public int shopOpenHour = 15;
     public int shopCloseHour = 2;
     public bool shopIsOpen = false;
-    public TMP_Text shopUI;
     public NPCSpawner npcSpawner;
-    public ShopSign shopSign;
+
 
     [Header("Day/Night Lighting")]
     public Light directionalLight;
@@ -115,11 +114,11 @@ public class GameManager : MonoBehaviour
             else dangerGauge.EndDanger();
         }
         wasInDanger = inDanger;
-        shopIsOpen = false;
+
+        shopIsOpen = false;    // เริ่มวันใหม่ให้ปิดร้านก่อน
         StartNewDay();
 
-        currentBox = FindFirstObjectByType<BoxScript>(); 
-        
+        currentBox = FindFirstObjectByType<BoxScript>();
     }
 
     void Update()
@@ -132,6 +131,7 @@ public class GameManager : MonoBehaviour
             if (currentBox != null) Debug.Log("เชื่อม currentBox สำเร็จ!");
             return;
         }
+
         hourTimer += Time.deltaTime;
         while (hourTimer >= hourDuration && !isEnding)
         {
@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
         }
         wasInDanger = inDanger;
 
-        CheckShopPrompt();
+
         UpdateSunLight();
     }
 
@@ -161,26 +161,10 @@ public class GameManager : MonoBehaviour
         directionalLight.transform.rotation = Quaternion.Euler(new Vector3(t + baseRotation, 170f, 0f));
     }
 
-    void CheckShopPrompt()
+    public void SetShopOpen(bool open)
     {
-        bool inOpenWindow = IsHourInRange(currentHour, shopOpenHour, shopCloseHour);
-
-        if (inOpenWindow)
-        {
-            if (!shopIsOpen)
-            {
-                if (shopUI) { shopUI.text = "Open Now!"; shopUI.gameObject.SetActive(true); }
-            }
-            else { if (shopUI) shopUI.gameObject.SetActive(false); }
-        }
-        else
-        {
-            if (shopIsOpen)
-            {
-                if (shopUI) { shopUI.text = "Close Now!"; shopUI.gameObject.SetActive(true); }
-            }
-            else { if (shopUI) shopUI.gameObject.SetActive(false); }
-        }
+        shopIsOpen = open;
+        Debug.Log($"[GameManager] Shop is now {(shopIsOpen ? "OPEN" : "CLOSED")}.");
     }
 
     // ====== เงิน: เติมจากการขาย -> เข้า current ก่อน (พฤติกรรมเดิม) ======

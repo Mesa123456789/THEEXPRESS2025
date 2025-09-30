@@ -21,6 +21,7 @@ TagManager:
   - sign
   - DialogTable
   - Door
+  - RollDoor
   layers:
   - Default
   - TransparentFX

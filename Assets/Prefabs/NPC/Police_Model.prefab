@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Police_Model
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5d046c304a784f445ad362267abb7747, type: 3}
+      propertyPath: m_TagString
+      value: NPC
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 5d046c304a784f445ad362267abb7747, type: 3}
       propertyPath: m_Controller
       value: 

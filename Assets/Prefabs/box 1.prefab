@@ -116,7 +116,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5137384fc0b06774bb86be53087c43b5, type: 2}
+  - {fileID: 2100000, guid: c273ea6a227f6d547a80541a6806ef5f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,7 +167,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.107, y: -0.273, z: 0.126}
-  m_LocalScale: {x: 0.34, y: 0.001, z: 0.05}
+  m_LocalScale: {x: 0.35, y: 0.001, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3994049017566822370}
@@ -431,7 +431,7 @@ Transform:
   m_GameObject: {fileID: 4167858864261475150}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.282, y: -0.2785, z: 0.126}
+  m_LocalPosition: {x: -0.2861, y: -0.2785, z: 0.1295}
   m_LocalScale: {x: 0, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -658,7 +658,7 @@ Transform:
   m_GameObject: {fileID: 4799171521805093575}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.069, y: -0.2785, z: 0.126}
+  m_LocalPosition: {x: 0.069, y: -0.2785, z: 0.1236}
   m_LocalScale: {x: 0, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -903,7 +903,7 @@ Transform:
   m_GameObject: {fileID: 8889622656006036910}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.004, y: 0.1111, z: -0.012}
+  m_LocalPosition: {x: 0.004, y: 0.1067, z: -0.012}
   m_LocalScale: {x: 0.88, y: 1, z: 0.97}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -933,10 +933,10 @@ MonoBehaviour:
   margin: 0
   gridStep: 0
   gridVisual: {fileID: 7626192962978144531}
-  debugDrawGizmos: 1
-  gizmoAreaColor: {r: 0, g: 0.7, b: 1, a: 0.2}
-  gizmoSafeColor: {r: 0, g: 1, b: 0.2, a: 0.25}
-  gizmoWire: {r: 0, g: 0.7, b: 1, a: 1}
+  debugDrawGizmos: 0
+  gizmoAreaColor: {r: 1, g: 1, b: 1, a: 0}
+  gizmoSafeColor: {r: 1, g: 1, b: 1, a: 0}
+  gizmoWire: {r: 1, g: 1, b: 1, a: 0}
 --- !u!65 &8849719315032823651
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1158,7 +1158,9 @@ MonoBehaviour:
   scaleDuration: 0.2
   bubbleInserted: 0
   illegal: 0
+  price: 0
   IsFinsihedClose: 0
+  risk: 0
   PastedLabel: 0
 --- !u!65 &1375593924045155357
 BoxCollider:

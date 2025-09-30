@@ -51,18 +51,21 @@ public class WarehouseZone : MonoBehaviour
         }
     }
 
+
     void Update()
     {
-
         if (canStoreHere)
         {
-            Destroy(boxInZone);
-            
+            var box = boxInZone.GetComponent<BoxScript>();
+            if (box != null)
+            {
+                box.StoreBox(); // บวก sale + โชว์ popup
+            }
+
+            Destroy(boxInZone);  // แล้วค่อยลบกล่อง
             boxInZone = null;
             canStoreHere = false;
-
-
         }
-
     }
+
 }

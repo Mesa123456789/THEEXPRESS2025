@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7060996750548017927}
   m_Layer: 0
   m_Name: Pod
-  m_TagString: Untagged
+  m_TagString: pickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
