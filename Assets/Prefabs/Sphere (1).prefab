@@ -13,8 +13,7 @@ GameObject:
   - component: {fileID: 7882755373955178360}
   - component: {fileID: 4376924017028730344}
   - component: {fileID: -3506079819822098124}
-  - component: {fileID: 1970774648143925225}
-  - component: {fileID: 8843479709567398429}
+  - component: {fileID: 1711682688465147914}
   m_Layer: 0
   m_Name: Sphere (1)
   m_TagString: Bubble
@@ -32,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.539483, y: 2.6742134, z: -0.21129422}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -138,7 +137,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1970774648143925225
+--- !u!114 &1711682688465147914
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,18 +146,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5155453278232340389}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba5f1e296012c7c489898c08f4675159, type: 3}
+  m_Script: {fileID: 11500000, guid: d8ebc4a2cd2c6854eacd562db1e90718, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8843479709567398429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5155453278232340389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ab3e8e09667b724f8848a68df216109, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  targetBox: {fileID: 0}
+  destroyDelay: 1
+  autoAddToBox: 1

@@ -28,7 +28,7 @@ public class Computer : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             if (Physics.Raycast(ray, out RaycastHit hit, 3f) && hit.collider.CompareTag("Computer"))

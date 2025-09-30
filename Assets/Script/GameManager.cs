@@ -264,9 +264,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // ✅ เก็บเงินของวันเข้าสู่กองกลางก่อนรีเซ็ต
+        bankBalance += currentSales;
+        currentSales = 0;
+
         currentDay++;
         StartNewDay();
     }
+
 
     public void SleepNow()
     {
@@ -337,13 +342,17 @@ public class GameManager : MonoBehaviour
 
     public void SleepNowAndReloadScene(string gameplaySceneName = "Gameplay")
     {
-        // บันทึกค่าที่คงอยู่ข้ามวัน
+        // ✅ โอนยอดขายวันนี้เข้ากองกลางก่อนเซฟ
+        bankBalance += currentSales;
+        currentSales = 0;
+
         int nextDay = currentDay + 1;
-        PlayerPrefs.SetInt(KEY_BANK, bankBalance); // เก็บกองกลางใหม่
+        PlayerPrefs.SetInt(KEY_BANK, bankBalance);
         PlayerPrefs.SetInt(KEY_Debt, Debt);
         PlayerPrefs.SetInt(KEY_DAY, nextDay);
         PlayerPrefs.SetInt(KEY_RELOAD, 1);
         PlayerPrefs.Save();
         SceneManager.LoadScene(gameplaySceneName);
     }
+
 }

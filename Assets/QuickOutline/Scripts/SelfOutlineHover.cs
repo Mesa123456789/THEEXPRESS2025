@@ -28,7 +28,7 @@ public class SelfOutlineHover : MonoBehaviour
     [Tooltip("TextMeshProUGUI ที่จะเปลี่ยนข้อความ")]
     public TMP_Text promptTMP;
 
-    [TextArea] public string defaultMessage = "Press E to Interact";
+    [TextArea] public string defaultMessage = "Interact";
     [Tooltip("ดีเลย์ก่อนแสดง (วินาที)")]
     public float showDelay = 0f;
     [Tooltip("ดีเลย์ก่อนซ่อน (วินาที)")]
