@@ -20191,6 +20191,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7465866627235718192, guid: 8eeb4f4c2a0876c468bf2d9dbd0fe5ee, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f6e55547cedd5a8418a5a29fb19d28c1, type: 2}
     - target: {fileID: 919132149155446097, guid: 8eeb4f4c2a0876c468bf2d9dbd0fe5ee, type: 3}
       propertyPath: m_Name
       value: printerlabel_low
