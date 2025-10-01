@@ -22,8 +22,8 @@ public class FadeManager : MonoBehaviour
 
     public IEnumerator FadeOutAndLoad(string sceneName)
     {
-        yield return StartCoroutine(FadeManager.Instance.FadeIn(2f));
-        yield return new WaitForSecondsRealtime(1f);
+        yield return StartCoroutine(FadeManager.Instance.FadeIn(0.5f));
+        //yield return new WaitForSecondsRealtime(1f);
         SceneManager.LoadScene(sceneName);
     }
 

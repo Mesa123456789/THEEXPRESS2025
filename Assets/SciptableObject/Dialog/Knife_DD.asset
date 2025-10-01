@@ -22,7 +22,7 @@ MonoBehaviour:
     onLineEndDelay: 0
     options: []
   - speaker: Murderer
-    text: I want to sent this " Knife "
+    text: 'I want to sent this Knife '
     voice: {fileID: 0}
     gotoIndex: 2
     onLineEndAction: 0

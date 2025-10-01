@@ -12,6 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
   m_Name: Letter_DD
   m_EditorClassIdentifier: 
-  steps: []
+  steps:
+  - speaker: Romios
+    text: 'Can I send my letter?
+
+'
+    voice: {fileID: 0}
+    gotoIndex: 1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Romios
+    text: 'This letter is filled with feelings of love for the person in the letter.
+
+'
+    voice: {fileID: 0}
+    gotoIndex: 2
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Delivery man
+    text: '
+
+'
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options:
+    - text: '> That Romantic, I love it.'
+      gotoIndex: 3
+    - text: "> Sorry, This is express, isn\u2019t post office. "
+      gotoIndex: 4
+  - speaker: Romios
+    text: " It\u2019s Good, i am very excited\r\n"
+    voice: {fileID: 0}
+    gotoIndex: 5
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Romios
+    text: 'Ok, I will go post office.
+
+'
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 1
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Romios
+    text: "Send it to \u201CJohn\u201D in \u201CParis\u201D."
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
   lockPlayer: 1
   openSfx: {fileID: 0}

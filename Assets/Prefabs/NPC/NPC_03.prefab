@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1534ca764831354ba1367fd00248665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: eec2e86eef8ce814c95e0f468c3e1d6a, type: 2}
+  data: {fileID: 11400000, guid: e8988fe51c6b2ad4397e28472fafe18d, type: 2}
   moveSpeed: 3
   reachThreshold: 0.2
   entryWaypoints: []

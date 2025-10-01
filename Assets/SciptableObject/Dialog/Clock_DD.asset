@@ -12,6 +12,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab144288567b144aba77d4835f72b15, type: 3}
   m_Name: Clock_DD
   m_EditorClassIdentifier: 
-  steps: []
+  steps:
+  - speaker: ' Watson'
+    text: ' I found my friend''s lost pocket watch from last year and want to send
+      it to them. Can I send it?
+
+'
+    voice: {fileID: 0}
+    gotoIndex: 1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Delivery man
+    text: 
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options:
+    - text: '> Sure, That''s my work! '
+      gotoIndex: 2
+    - text: '> Sorry, I can''t send it for you. '
+      gotoIndex: 3
+  - speaker: ' Watson'
+    text: 'Oh, Thank You This pocket watch is very important to my friend.
+
+'
+    voice: {fileID: 0}
+    gotoIndex: 4
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: ' Watson'
+    text: 'I will find another express.
+
+'
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 1
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: ' Watson'
+    text: Send it to "Dr.Manhattan" in "England".
+    voice: {fileID: 0}
+    gotoIndex: -1
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
   lockPlayer: 1
   openSfx: {fileID: 0}

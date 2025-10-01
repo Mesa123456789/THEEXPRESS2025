@@ -107,6 +107,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        shopIsOpen = false;      // เริ่มวันใหม่ให้ปิดร้านก่อน
+        StartNewDay();           // ← กำหนด currentHour = startHour
+
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
         if (dangerGauge)
         {
@@ -114,9 +117,6 @@ public class GameManager : MonoBehaviour
             else dangerGauge.EndDanger();
         }
         wasInDanger = inDanger;
-
-        shopIsOpen = false;    // เริ่มวันใหม่ให้ปิดร้านก่อน
-        StartNewDay();
 
         currentBox = FindFirstObjectByType<BoxScript>();
     }
@@ -129,9 +129,10 @@ public class GameManager : MonoBehaviour
         {
             currentBox = FindFirstObjectByType<BoxScript>();
             if (currentBox != null) Debug.Log("เชื่อม currentBox สำเร็จ!");
-            return;
+            // ❌ ห้าม return ที่นี่
         }
 
+        // เวลาเดิน
         hourTimer += Time.deltaTime;
         while (hourTimer >= hourDuration && !isEnding)
         {
@@ -140,6 +141,7 @@ public class GameManager : MonoBehaviour
             if (elapsedHoursThisDay == 0) break;
         }
 
+        // อัปเดต danger + เกจ
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
         if (dangerGauge)
         {
@@ -149,9 +151,11 @@ public class GameManager : MonoBehaviour
         }
         wasInDanger = inDanger;
 
-
+        UpdateTimeUI();        // ให้ UI เวลาอัปเดตทุกเฟรม (ถ้าอยากเห็น HH:mm แนะนำเพิ่มคำนวณนาที)
         UpdateSunLight();
     }
+
+
 
     void UpdateSunLight()
     {
@@ -285,8 +289,12 @@ public class GameManager : MonoBehaviour
 
     void UpdateTimeUI()
     {
-        if (timeText) timeText.text = $"{currentHour:00}:00";
+        if (!timeText) return;
+
+        //int minutes = Mathf.FloorToInt(HourProgress01 * 60f);
+        timeText.text = $"{currentHour:00}: 00";
     }
+
 
     void UpdateDayUI()
     {
@@ -329,7 +337,8 @@ public class GameManager : MonoBehaviour
     {
         if (freezeDuringDeathDelay) Time.timeScale = 0f;
         playerController.isMovementLocked = true;
-        StartCoroutine(FadeManager.Instance.FadeOutAndLoad("CutScene_Die"));
+        StartCoroutine(FadeManager.Instance.FadeOutAndLoad("DieWMonster"));
+        //SceneManager.LoadScene("DieWMonster");
         yield return new WaitForSecondsRealtime(deathDelaySeconds);
         if (freezeDuringDeathDelay) Time.timeScale = 1f;
     }

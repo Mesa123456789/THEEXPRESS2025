@@ -36,7 +36,7 @@ MonoBehaviour:
     - text: Ask
       gotoIndex: 7
   - speaker: Delivery man
-    text: "\u201CAlright, I\u2019ll take it.\u201D"
+    text: "Alright, I\u2019ll take it."
     voice: {fileID: 0}
     gotoIndex: 4
     onLineEndAction: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     text: "\U0001F621\U0001F92C"
     voice: {fileID: 0}
     gotoIndex: -1
-    onLineEndAction: 0
+    onLineEndAction: 1
     moneyAmount: 0
     onLineEndDelay: 0
     options: []

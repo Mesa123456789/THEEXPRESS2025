@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1534ca764831354ba1367fd00248665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 73960a16a9c03524ebe97ac9718e1702, type: 2}
+  data: {fileID: 11400000, guid: 0136a9c95e461d649b4a1ec0997685d3, type: 2}
   moveSpeed: 3
   reachThreshold: 0.2
   entryWaypoints: []
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb32b8ddf19c1e74283f848e67b4a4e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  oneShot: 1
+  retriggerCooldown: 0.25
   ui: {fileID: 8992255244820199151}
   overrideDialogue: {fileID: 0}
 --- !u!136 &-5359377174266891462

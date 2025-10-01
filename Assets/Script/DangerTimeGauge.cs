@@ -1,34 +1,32 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DangerTimeGauge : MonoBehaviour
 {
     [Header("UI")]
-    public Slider slider;                  // ตั้ง Max Value = 100
-    public bool hideWhenNotDanger = true;  // ซ่อนเมื่อไม่ใช่ช่วงอันตราย
+    public Slider slider;                   // ใส่ Slider ของเกจ
+    public bool hideWhenNotDanger = true;   // ซ่อนเมื่อไม่ใช่ช่วงอันตราย
 
-    // cache หน้าต่างอันตราย
-    int startHour;
-    int endHour;
-    int windowH = 0;
+    [Header("Smoothing")]
+    public bool smooth = true;
+    [Range(1f, 30f)] public float smoothSpeed = 12f;
+
+    // cache
+    int startHour, endHour, windowH;
     bool isActive = false;
 
     void Awake()
     {
         if (!slider) slider = GetComponent<Slider>();
-        if (!slider)
-        {
-            Debug.LogError("[DangerTimeGauge] Please assign Slider.");
-            enabled = false;
-            return;
-        }
+        if (!slider) { Debug.LogError("[DangerTimeGauge] Please assign Slider."); enabled = false; return; }
+
+        slider.wholeNumbers = false;           // ❗ ทำให้เลื่อนไหล ไม่เป็นขั้น
         if (slider.maxValue <= 0f) slider.maxValue = 100f;
-        if (hideWhenNotDanger) slider.gameObject.SetActive(false);
+
         slider.value = 0f;
+        if (hideWhenNotDanger) slider.gameObject.SetActive(false);
     }
 
-    // เรียกเมื่อเข้าสู่ช่วงอันตราย
     public void BeginDanger(int dangerStartHour, int dangerEndHour)
     {
         startHour = Mod24(dangerStartHour);
@@ -41,7 +39,6 @@ public class DangerTimeGauge : MonoBehaviour
         slider.value = slider.maxValue; // เริ่มเต็ม
     }
 
-    // เรียกทุกเฟรม “ขณะอยู่ในช่วงอันตราย”
     public void UpdateDanger(int currentHour, float hourTimer, float hourDuration)
     {
         if (!isActive) return;
@@ -49,13 +46,21 @@ public class DangerTimeGauge : MonoBehaviour
         int sinceStartH = Mod24(currentHour - startHour);
         float hourT = (hourDuration > 0f) ? Mathf.Clamp01(hourTimer / hourDuration) : 0f;
 
-        float progressed = Mathf.Clamp(sinceStartH + hourT, 0f, windowH);
-        float remain01 = Mathf.Clamp01((windowH - progressed) / windowH); // 1 → 0
+        float progressed = Mathf.Clamp(sinceStartH + hourT, 0f, windowH);   // เดินหน้ากี่ชั่วโมง
+        float remain01 = Mathf.Clamp01((windowH - progressed) / windowH); // คงเหลือ 1→0
+        float target = slider.maxValue * remain01;
 
-        slider.value = slider.maxValue * remain01;
+        if (smooth)
+        {
+            float t = 1f - Mathf.Exp(-smoothSpeed * Time.deltaTime);
+            slider.value = Mathf.Lerp(slider.value, target, t);
+        }
+        else
+        {
+            slider.value = target;
+        }
     }
 
-    // เรียกเมื่อออกจากช่วงอันตราย
     public void EndDanger()
     {
         isActive = false;

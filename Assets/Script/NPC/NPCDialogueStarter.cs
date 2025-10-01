@@ -20,7 +20,10 @@ public class NPCDialogueStarter : MonoBehaviour
         if (!CanTriggerNow()) return;
 
         lastTriggerTime = Time.time;
-        if (ui) Destroy(ui);
+        if(ui  != null)
+        {
+            Destroy(ui);
+        }
         TryStartDialogue();
     }
 

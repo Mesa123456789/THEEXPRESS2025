@@ -354,9 +354,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3296432631257479853}
   - component: {fileID: -3153399881978156115}
-  - component: {fileID: -570730675547519869}
   - component: {fileID: -4882333425895768885}
   - component: {fileID: 5857250502479585397}
+  - component: {fileID: -6436850575178725644}
   m_Layer: 0
   m_Name: PockerClock
   m_TagString: pickable
@@ -430,27 +430,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &-570730675547519869
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4952455492832385426}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.002677975, y: 0.0017884324, z: 0.00050413643}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &-4882333425895768885
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -491,6 +470,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: 0c6d4fd78a9ac0942815dd8e65eb6a48, type: 2}
+--- !u!65 &-6436850575178725644
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4952455492832385426}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: -0.2, y: -0.1, z: 0.4}
+  m_Center: {x: 0, y: 0.06, z: 0}
 --- !u!1 &6769088150028295083
 GameObject:
   m_ObjectHideFlags: 0

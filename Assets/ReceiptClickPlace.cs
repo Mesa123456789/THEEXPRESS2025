@@ -36,9 +36,12 @@ public class ReceiptClickPlace : MonoBehaviour
 
     void Update()
     {
+        if(manager.currentBox == null) return;
+
         if (held == null)
         {
-            if (Input.GetMouseButtonDown(0)) TryPick();
+            if (Input.GetMouseButtonDown(0)) 
+                TryPick();
             return;
         }
 
@@ -157,11 +160,10 @@ public class ReceiptClickPlace : MonoBehaviour
         }
     }
 
-    // ---------- หยิบด้วย "แท็ก" ----------
+   
     void TryPick()
     {
         if (!manager.currentBox.Tape.isTapeDone) return;
-
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
 
         // ยิงเรย์แบบไม่กรองเลเยอร์ แล้วคัดด้วยแท็กเอง

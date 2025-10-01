@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2327334140917600795}
   - component: {fileID: 3466548596808867770}
   - component: {fileID: 5743647322595169192}
-  - component: {fileID: -1810532726079796862}
   - component: {fileID: -8072862819176173073}
   - component: {fileID: -996580748282421214}
+  - component: {fileID: 7805372013158938214}
   m_Layer: 0
   m_Name: Syrings
   m_TagString: pickable
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: -8.636856, y: -0.22822562, z: -3.3439198}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 200, y: 200, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,27 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &-1810532726079796862
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534055922901310351}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.002677975, y: 0.0017884324, z: 0.00050413643}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &-8072862819176173073
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -150,3 +129,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: ea12d0a59393e8d4fb94edd492d36b7f, type: 2}
+--- !u!65 &7805372013158938214
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6534055922901310351}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.00022063598, y: 0.00022063583, z: 0.0015679229}
+  m_Center: {x: 0.000000019143044, y: -0.00000008786081, z: 0.0007662174}

@@ -31,6 +31,8 @@ public class TapeDragScaler : MonoBehaviour
 
     BoxScript currentBox;
 
+    public GameObject cube;
+
     void Start()
     {
         if (!tapeObject) { enabled = false; return; }
@@ -57,6 +59,7 @@ public class TapeDragScaler : MonoBehaviour
                 if (dispenser != null)
                 {
                     selectedDispenser = dispenser;
+                    cube.SetActive(true);
 
                 }
             }
@@ -126,7 +129,11 @@ public class TapeDragScaler : MonoBehaviour
             tapeVisible = false;
 
             if (lastWorldLength == 0f) tapeObject.SetActive(false);
-            if (lastWorldLength > 0f) isTapeDone = true;
+            if (lastWorldLength > 0f)
+            {
+                isTapeDone = true;
+                GameObject.Destroy(cube);
+            }
         }
     }
 
