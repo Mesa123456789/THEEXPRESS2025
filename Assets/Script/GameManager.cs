@@ -292,7 +292,7 @@ public class GameManager : MonoBehaviour
         if (!timeText) return;
 
         //int minutes = Mathf.FloorToInt(HourProgress01 * 60f);
-        timeText.text = $"{currentHour:00}: 00";
+        timeText.text = $"{currentHour:00} : 00";
     }
 
 
