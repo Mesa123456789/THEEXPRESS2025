@@ -9666,13 +9666,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843124550}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -8.175, y: 0, z: -1.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &843717185
 GameObject:
   m_ObjectHideFlags: 0
@@ -11372,6 +11372,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 942898061}
   m_Mesh: {fileID: 6204797120779173728, guid: 4bb8f7d984af7ee4aba8b728f0850440, type: 3}
+--- !u!1 &950227833
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950227834}
+  m_Layer: 0
+  m_Name: NPC_WayPoint1  (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &950227834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950227833}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -8.18, y: 0, z: -9.84}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &965877298
 GameObject:
   m_ObjectHideFlags: 0
@@ -11768,13 +11799,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974471246}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -8.175, y: 0, z: -4.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &975127539
 GameObject:
   m_ObjectHideFlags: 0
@@ -17042,13 +17073,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1325400266}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -8.175, y: 0, z: -3.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1325698969
 GameObject:
   m_ObjectHideFlags: 0
@@ -25045,14 +25076,23 @@ MonoBehaviour:
   - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
   policePrefab: {fileID: 3013270293681396606, guid: cb4ecf7a3876ea24baa8e23782bf7567, type: 3}
   spawnPoints:
-  - {fileID: 974471247}
+  - {fileID: 950227834}
   entryWaypoints:
+  - {fileID: 1237337150}
+  exitPoint: {fileID: 2045465760}
+  queuePoints:
   - {fileID: 2045465760}
-  exitPoint: {fileID: 1237337150}
+  - {fileID: 843124551}
+  - {fileID: 1325400267}
+  - {fileID: 974471247}
   spawnDelayRange: {x: 2, y: 5}
-  maxAlive: 1
+  maxAlive: 4
   requireShopOpen: 1
   canSpawn: 1
+  minQueueSize: 3
+  keepQueueFilled: 1
+  fillTickDelay: 0.25
+  autoCallWhenPoliceFront: 1
 --- !u!65 &1768713439
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -29304,13 +29344,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2045465759}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -8.175, y: 0, z: -1.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &2055537026
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38543,6 +38583,7 @@ SceneRoots:
   - {fileID: 843124551}
   - {fileID: 1325400267}
   - {fileID: 974471247}
+  - {fileID: 950227834}
   - {fileID: 1237337150}
   - {fileID: 1493201840}
   - {fileID: 376900580}

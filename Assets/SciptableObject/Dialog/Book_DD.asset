@@ -24,7 +24,7 @@ MonoBehaviour:
   - speaker: Delivery man
     text: 
     voice: {fileID: 0}
-    gotoIndex: 1
+    gotoIndex: -1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0

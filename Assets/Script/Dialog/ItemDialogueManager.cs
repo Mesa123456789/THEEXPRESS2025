@@ -595,13 +595,37 @@ public class ItemDialogueManager : MonoBehaviour
 
             case ItemDialogueData.LineAction.NPCExit:
                 {
-                    var npc = FindFirstObjectByType<NPC>();
-                    if (!npc) { Debug.LogWarning("LineEndAction: No NPC found."); break; }
+                    NPC npc = null;
+
+                    // ✅ 1) เอาตัวที่หน้าโต๊ะจริง ๆ ก่อน
+                    if (NPCSpawner.Instance != null)
+                        npc = NPCSpawner.CurrentNPC;
+
+                    // ✅ 2) Fallback: หา NPC ที่ Animator มี TableCollision = true (คือชนโต๊ะอยู่)
+                    if (npc == null)
+                    {
+                        var npcs = FindObjectsByType<NPC>(FindObjectsSortMode.None);
+                        foreach (var n in npcs)
+                        {
+                            var anim = n.GetComponent<Animator>();
+                            if (anim && anim.GetBool("TableCollision"))
+                            {
+                                npc = n;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (npc == null) { Debug.LogWarning("LineEndAction: No CURRENT NPC at table."); break; }
+
+                    // ถ้ามีไอเท็มบนโต๊ะให้เคลียร์ไปด้วย
                     var item = FindFirstObjectByType<ItemScript>();
                     GameObject itemGo = item ? item.gameObject : null;
+
                     npc.ForceExitAndClearItem(itemGo);
                     break;
                 }
+
 
             case ItemDialogueData.LineAction.PolicePay:
                 {

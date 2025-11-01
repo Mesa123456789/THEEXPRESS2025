@@ -195,6 +195,16 @@ public class GameManager : MonoBehaviour
         }
         wasInDanger = inDanger;
 
+        // หลังอัปเดตชั่วโมง/สถานะเวลาแล้ว เพิ่ม:
+        if (npcSpawner)
+        {
+            // ข้อ 5: หลังตี 2 ไม่ให้สปาวน์เพิ่ม
+            if (currentHour == ((shopCloseHour % 24) + 24) % 24 || currentHour > ((shopCloseHour % 24) + 24) % 24)
+            {
+                npcSpawner.SetSpawningEnabled(false);
+            }
+        }
+
         UpdateTimeUI();
         UpdateSunLight();
     }
@@ -221,7 +231,38 @@ public class GameManager : MonoBehaviour
     {
         shopIsOpen = open;
         Debug.Log($"[GameManager] Shop is now {(shopIsOpen ? "OPEN" : "CLOSED")}.");
+
+        if (!npcSpawner) return;
+
+        if (!open)
+        {
+            // ปิดร้าน: ล้างคิว (เว้น current) และหยุดสปาวน์
+            npcSpawner.HandleShopClosed();
+            npcSpawner.SetSpawningEnabled(false);
+            return;
+        }
+
+        // เปิดร้าน: อนุญาตให้สปาวน์ และ "พรีวอร์มคิว" ให้มีคนมารอทันที
+        npcSpawner.SetSpawningEnabled(true);
+
+        // จำนวนเริ่มต้นที่จะให้ยืนรอคิวหน้าโต๊ะ
+        // ถ้ามี Queue Points ให้เติมให้เต็มแถว; ถ้าไม่มีก็เท่ากับ maxAlive
+        int targetInitial =
+            (npcSpawner.queuePoints != null && npcSpawner.queuePoints.Length > 0)
+            ? npcSpawner.queuePoints.Length
+            : npcSpawner.maxAlive;
+
+        // กันเกินโควตา
+        targetInitial = Mathf.Min(targetInitial, npcSpawner.maxAlive);
+
+        // สปาวน์ให้ครบจำนวนที่ตั้งใจ (ปล่อยให้ NPCSpawner จัดเข้าคิวเอง)
+        for (int i = 0; i < targetInitial; i++)
+        {
+            npcSpawner.SpawnOne();
+        }
     }
+
+
 
     // ====== เงิน: เติมจากการขาย -> เข้า current ก่อน (พฤติกรรมเดิม) ======
     public void AddSales(int amount, int caughtPercent)

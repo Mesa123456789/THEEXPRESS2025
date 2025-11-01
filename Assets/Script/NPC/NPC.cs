@@ -23,11 +23,14 @@ public class NPC : MonoBehaviour
     protected enum State { Entering, Waiting, Exiting, Done }
     protected State state = State.Entering;
 
-
     protected GameObject spawnedPackageRef;
     public ItemDialogueManager itemDialogueManager;
 
     protected Animator Animation;
+
+    // === ADD: คิว
+    protected Transform queueTarget = null;
+    protected bool isCalledToTable = false;
 
     protected virtual void Start()
     {
@@ -48,6 +51,9 @@ public class NPC : MonoBehaviour
         {
             Debug.Log("table collision");
             if (Animation) Animation.SetBool("TableCollision", true);
+
+            // === ADD: set current npc "เฉพาะตอนชนโต๊ะ"
+            NPCSpawner.Instance?.SetCurrent(this);
         }
     }
 
@@ -65,9 +71,10 @@ public class NPC : MonoBehaviour
         if (hasSpawnedPackage && state == State.Waiting)
         {
             state = State.Exiting;
+            // แจ้งให้คิวที่เหลือขยับ (ข้อ 4)
+            NPCSpawner.Instance?.OnNpcLeaving(this);
         }
     }
-
 
     protected virtual void Update()
     {
@@ -79,6 +86,10 @@ public class NPC : MonoBehaviour
                 UpdateEntering();
                 break;
             case State.Waiting:
+                if (!isCalledToTable && queueTarget != null && !IsReached(queueTarget.position))
+                {
+                    MoveTowards(queueTarget.position);
+                }
                 break;
             case State.Exiting:
                 UpdateExiting();
@@ -88,7 +99,18 @@ public class NPC : MonoBehaviour
 
     protected virtual void UpdateEntering()
     {
-        // เดินตาม waypoints ก่อน
+        // 1) ถ้ายัง "ไม่ถูกเรียก" ให้เดินไปยืนที่ queueTarget แล้วรอ
+        if (!isCalledToTable && queueTarget != null)
+        {
+            MoveTowards(queueTarget.position);
+            if (IsReached(queueTarget.position))
+            {
+                state = State.Waiting;  // ยืนรอเฉย ๆ ยังไม่ spawn package
+            }
+            return;
+        }
+
+        // 2) ถูกเรียกแล้ว: ถ้ามี waypoint ก่อนไปโต๊ะให้เดินตามก่อน
         if (entryWaypoints != null && entryWaypoints.Length > 0 && entryIndex < entryWaypoints.Length)
         {
             MoveTowards(entryWaypoints[entryIndex].position);
@@ -97,7 +119,7 @@ public class NPC : MonoBehaviour
             return;
         }
 
-        // จากนั้นเดินไปที่โต๊ะ/คอลลายเดอร์
+        // 3) ไปที่โต๊ะ (BoxCollider) เพื่อวางของ + รอ
         if (npcBoxcollider == null)
         {
             SpawnPackageAndWait();
@@ -107,18 +129,17 @@ public class NPC : MonoBehaviour
         MoveTowards(npcBoxcollider.transform.position);
         if (IsReached(npcBoxcollider.transform.position))
         {
-            SpawnPackageAndWait();
+            SpawnPackageAndWait(); // state -> Waiting
         }
     }
 
-    // ทำเป็น virtual เพื่อให้ NPCPolice override ได้
+    // ทำเป็น virtual เพื่อให้ NPCPolice override ได้ (เดิม)
     protected virtual void SpawnPackageAndWait()
     {
         if (!hasSpawnedPackage)
         {
             if (data != null && data.package != null)
             {
-                // จุดวาง
                 Vector3 dropPos = npcBoxcollider ? npcBoxcollider.transform.position : transform.position;
 
                 spawnedPackageRef = Instantiate(
@@ -126,8 +147,6 @@ public class NPC : MonoBehaviour
                     SpawnPoint ? SpawnPoint.position : dropPos,
                     Quaternion.identity
                 );
-
-
             }
             hasSpawnedPackage = true;
         }
@@ -176,21 +195,46 @@ public class NPC : MonoBehaviour
         if (itemOnTable) Destroy(itemOnTable);
         else if (spawnedPackageRef) Destroy(spawnedPackageRef);
 
+        // ✅ ปลดท่าเกาะโต๊ะ เพื่อให้เดินได้แม้ใช้ Root Motion
+        if (Animation) Animation.SetBool("TableCollision", false);
+
+        // ✅ โต๊ะว่างแล้ว
+        NPCSpawner.Instance?.SetCurrent(null);
+
         state = State.Exiting;
         itemDialogueManager?.Close();
+
+        // ✅ ให้คิวขยับมาแนบแน่น (ถ้ามีระบบคิว)
+        NPCSpawner.Instance?.OnNpcLeaving(this);
     }
+
 
     public void OnAcceptDelivery()
     {
-
+        // (คงเดิม ไม่ยุ่ง dialog)
     }
 
     public void OnDeclineDelivery()
     {
-
+        // ปฏิเสธแล้วให้ออก
         ForceExitAndClearItem();
     }
 
- 
+    // === ADD: ใช้โดย Spawner
+    public void AssignQueueTarget(Transform t)
+    {
+        queueTarget = t;
+        if (state == State.Waiting) { /* ยืนรออยู่ก็ปล่อย */ }
+    }
+
+    // === ADD: ถูกเรียกให้เข้าโต๊ะ
+    public void FlagCalledToTable()
+    {
+        isCalledToTable = true;
+        // ให้เข้าสู่ flow เดินเข้าโต๊ะ (Entering)
+        state = State.Entering;
+        entryIndex = 0;
+    }
+
     protected State GetStateWaiting() => State.Waiting;
 }

@@ -46,12 +46,14 @@ public class PlayerInteract : MonoBehaviour
             }
         }
         if (Input.GetMouseButtonDown(0)
-                   && Physics.Raycast(rayOrigin.position, rayOrigin.forward, out RaycastHit Mhit, rayDistance, interactMask, QueryTriggerInteraction.Collide))
+            && Physics.Raycast(rayOrigin.position, rayOrigin.forward, out RaycastHit Mhit, rayDistance, interactMask, QueryTriggerInteraction.Collide))
         {
             if (Mhit.collider.CompareTag("CallButton"))
             {
-                
+                // เรียกคิวแรกเข้าหน้าโต๊ะ
+                NPCSpawner.Instance?.CallNext();
             }
         }
+
     }
 }
