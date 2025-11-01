@@ -22,6 +22,8 @@ TagManager:
   - DialogTable
   - Door
   - RollDoor
+  - Table
+  - CallButton
   layers:
   - Default
   - TransparentFX

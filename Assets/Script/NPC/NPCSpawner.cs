@@ -4,8 +4,8 @@ using UnityEngine;
 public class NPCSpawner : MonoBehaviour
 {
     [Header("Prefabs & Spawn Points")]
-    public GameObject[] npcPrefabs;       // ปกติ
-    public GameObject policePrefab;       // พรีแฟบตำรวจ
+    public GameObject[] npcPrefabs;
+    public GameObject policePrefab;
     public Transform[] spawnPoints;
 
     [Header("Route Assignment")]
@@ -17,12 +17,10 @@ public class NPCSpawner : MonoBehaviour
     public int maxAlive = 3;
 
     [Header("Shop Gate")]
-    [Tooltip("ต้องเปิดร้านก่อนถึงจะสปอว์น (อ่านจาก GameManager.shopIsOpen)")]
     public bool requireShopOpen = true;
-    [Tooltip("อนุญาต/ห้ามสปอว์นด้วยตนเอง (เผื่ออยากคุมด้วย UI/ป้าย)")]
     public bool canSpawn = true;
 
-    private bool forcePoliceNextSpawn = false;  // บังคับตำรวจรอบถัดไป
+    private bool forcePoliceNextSpawn = false;
     private GameManager gm;
 
     public static NPCSpawner Instance { get; private set; }
@@ -30,21 +28,26 @@ public class NPCSpawner : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
     public NPC Spawn(NPC npcPrefab, Vector3 position, Quaternion rotation)
     {
         var npc = Instantiate(npcPrefab, position, rotation);
-        CurrentNPC = npc;               // เซ็ต current ทุกครั้งที่ spawn
+        CurrentNPC = npc;
         return npc;
     }
 
-    public void SetCurrent(NPC npc)     // เผื่อบางเคสอยาก set เอง
+    public void SetCurrent(NPC npc)
     {
         CurrentNPC = npc;
     }
+
     void Start()
     {
         gm = FindFirstObjectByType<GameManager>();
@@ -55,10 +58,8 @@ public class NPCSpawner : MonoBehaviour
     {
         while (true)
         {
-            // ---- Gate: ต้องเปิดร้านก่อน? ----
             if (requireShopOpen)
             {
-                // ยังไม่มี GM หรือร้านยังไม่เปิด → รอไปก่อน
                 if (!gm || !gm.shopIsOpen || !canSpawn)
                 {
                     yield return null;
@@ -67,7 +68,6 @@ public class NPCSpawner : MonoBehaviour
             }
             else
             {
-                // ไม่บังคับเปิดร้าน แต่ยังอยากคุมด้วย canSpawn
                 if (!canSpawn)
                 {
                     yield return null;
@@ -75,7 +75,6 @@ public class NPCSpawner : MonoBehaviour
                 }
             }
 
-            // ---- คุมจำนวนมีชีวิตบนฉาก ----
             if (CountAlive() < Mathf.Max(1, maxAlive))
             {
                 SpawnOne();
@@ -99,15 +98,13 @@ public class NPCSpawner : MonoBehaviour
 
         GameObject prefabToSpawn = null;
 
-        // ถ้าบังคับตำรวจ → spawn ตำรวจทันที
         if (forcePoliceNextSpawn && policePrefab != null)
         {
             prefabToSpawn = policePrefab;
-            forcePoliceNextSpawn = false; // ใช้แล้วรีเซ็ต
+            forcePoliceNextSpawn = false;
         }
         else
         {
-            // เงื่อนไขตำรวจตาม totalCaughtPercent
             if (gm && gm.totalCaughtPercent >= 90 && policePrefab != null)
             {
                 prefabToSpawn = policePrefab;
@@ -145,13 +142,11 @@ public class NPCSpawner : MonoBehaviour
         return all != null ? all.Length : 0;
     }
 
-    // เรียกจาก GameManager เมื่อ totalCaughtPercent >= 90
     public void ForcePoliceNext()
     {
         forcePoliceNextSpawn = true;
     }
 
-    // เรียกจากป้ายหน้าร้าน / ปุ่ม UI ก็ได้
     public void SetSpawningEnabled(bool enabled)
     {
         canSpawn = enabled;

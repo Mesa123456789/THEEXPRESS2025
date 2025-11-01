@@ -79,7 +79,11 @@ public class GameManager : MonoBehaviour
     public Vector3 lightAxis = Vector3.right;
     public float baseRotation = 0f;
 
+    bool tutorialStep12Shown = false;
+    const string KEY_TUTORIAL_DONE = "Tutorial_Done";
+
     public bool IsDangerTime => IsHourInRange(currentHour, dangerStartHour, dayEndHour);
+    public TutorialSlideUIQueue TutorialSlideUIQueue;
 
     void Awake()
     {
@@ -107,8 +111,18 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        shopIsOpen = false;      // เริ่มวันใหม่ให้ปิดร้านก่อน
-        StartNewDay();           // ← กำหนด currentHour = startHour
+        shopIsOpen = false;
+        StartNewDay();
+
+        if (PlayerPrefs.GetInt(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED, 0) == 1)
+        {
+            if (TutorialSlideUIQueue)
+            {
+                TutorialSlideUIQueue.ClearQueueAndHideImmediate();
+                TutorialSlideUIQueue.enabled = false;
+            }
+            // ไม่ต้องทำอะไรเกี่ยวกับ Tutorial อีก
+        }
 
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
         if (dangerGauge)
@@ -121,6 +135,7 @@ public class GameManager : MonoBehaviour
         currentBox = FindFirstObjectByType<BoxScript>();
     }
 
+
     void Update()
     {
         if (isEnding) return;
@@ -132,13 +147,20 @@ public class GameManager : MonoBehaviour
             // ❌ ห้าม return ที่นี่
         }
 
-        // เวลาเดิน
         hourTimer += Time.deltaTime;
         while (hourTimer >= hourDuration && !isEnding)
         {
             hourTimer -= hourDuration;
             AdvanceHour();
             if (elapsedHoursThisDay == 0) break;
+        }
+
+        if (!tutorialStep12Shown && TutorialSlideUIQueue && currentHour == shopCloseHour)
+        {
+            tutorialStep12Shown = true;
+                TutorialSlideUIQueue.CompleteCurrentByIndex(11);
+
+            StartCoroutine(OpenTutorial12());
         }
 
         // อัปเดต danger + เกจ
@@ -151,13 +173,21 @@ public class GameManager : MonoBehaviour
         }
         wasInDanger = inDanger;
 
-        UpdateTimeUI();        // ให้ UI เวลาอัปเดตทุกเฟรม (ถ้าอยากเห็น HH:mm แนะนำเพิ่มคำนวณนาที)
+        UpdateTimeUI();       
         UpdateSunLight();
     }
 
+    IEnumerator OpenTutorial12()
+    {
+        yield return new WaitForSeconds(0.3f);
+        if (TutorialSlideUIQueue) TutorialSlideUIQueue.EnqueueTutorialByIndex(12);
+    }
+
+// เรียกจุดเช็คเวลา: ใส่หลังเปลี่ยนชั่วโมง (เช่นใน AdvanceHour() หรือหลัง while เดินเวลาใน Update())
 
 
-    void UpdateSunLight()
+
+void UpdateSunLight()
     {
         if (!directionalLight) return;
         float hourFloat = currentHour + HourProgress01;
@@ -231,6 +261,7 @@ public class GameManager : MonoBehaviour
 
     void StartNewDay()
     {
+
         currentHour = startHour % 24;
         elapsedHoursThisDay = 0;
         hourTimer = 0f;
@@ -273,6 +304,7 @@ public class GameManager : MonoBehaviour
 
     public void SleepNow()
     {
+        TutorialSlideUIQueue.CompleteCurrentByIndex(12);
         if (isEnding) return;
         sleptThisCycle = true;
         currentDay++;
@@ -345,7 +377,6 @@ public class GameManager : MonoBehaviour
 
     public void SleepNowAndReloadScene(string gameplaySceneName = "Gameplay")
     {
-        // ✅ โอนยอดขายวันนี้เข้ากองกลางก่อนเซฟ
         bankBalance += currentSales;
         currentSales = 0;
 
@@ -354,8 +385,15 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt(KEY_Debt, Debt);
         PlayerPrefs.SetInt(KEY_DAY, nextDay);
         PlayerPrefs.SetInt(KEY_RELOAD, 1);
+
+        // ✅ ทำ Tutorial เสร็จแล้ว
+        PlayerPrefs.SetInt(KEY_TUTORIAL_DONE, 1);
+
         PlayerPrefs.Save();
+        TutorialSlideUIQueue.DisableForeverAndHideAll();
+
         SceneManager.LoadScene(gameplaySceneName);
     }
+
 
 }

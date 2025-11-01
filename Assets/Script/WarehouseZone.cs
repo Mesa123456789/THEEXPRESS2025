@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class WarehouseZone : MonoBehaviour
 {
@@ -10,15 +11,12 @@ public class WarehouseZone : MonoBehaviour
     public ZoneType zoneType = ZoneType.LegalZone;
 
     public FormChecker formChecker;
+    public TutorialSlideUIQueue TutorialSlideUIQueue;
 
-    IEnumerator Start()
+    private void Start()
     {
-        
-        if (FadeManager.Instance != null)
-            yield return StartCoroutine(FadeManager.Instance.FadeOut(1.5f));
-        Time.timeScale = 1f;
+        TutorialSlideUIQueue = FindFirstObjectByType<TutorialSlideUIQueue>();
     }
-
     private void OnTriggerEnter(Collider other)
     {
 
@@ -59,12 +57,15 @@ public class WarehouseZone : MonoBehaviour
             var box = boxInZone.GetComponent<BoxScript>();
             if (box != null)
             {
-                box.StoreBox(); // บวก sale + โชว์ popup
+                box.StoreBox(); 
+             box.TutorialSlideUIQueue.CompleteCurrentByIndex(10);
             }
 
             Destroy(boxInZone);  // แล้วค่อยลบกล่อง
             boxInZone = null;
             canStoreHere = false;
+           
+            TutorialSlideUIQueue.EnqueueTutorialByIndex(11);
         }
     }
 

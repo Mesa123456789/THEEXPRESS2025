@@ -67,7 +67,18 @@ public class ItemDialogueManager : MonoBehaviour
     private struct EchoLine { public string text; public int gotoIndex; }
     private readonly Queue<EchoLine> echoQueue = new Queue<EchoLine>();
 
-    // เรียกจากภายนอกเมื่อนักแสดงถูกทำลาย เพื่อ "ลืม" สถานะของอินสแตนซ์นั้น
+
+    // ครั้งเดียวตอนเริ่ม
+    [Header("Startup Tutorial (once)")]
+    public TutorialSlideUIQueue tutorialUI;
+    public bool startupTutorialOnce = true;
+    [TextArea] public string talkMsgOnce = "Talk to the customer.";
+    [TextArea] public string openPCMsgOnce = "Open the computer.";
+
+    // ภายใน
+    private bool hasShownStartupTutorial = false;   // แสดงครั้งแรกไปแล้วหรือยัง
+    private bool startupTalkPending = false;        // อยู่ในสถานะ “ทูทอเรียลคุย” รอปิดเพื่อไปขั้นต่อไป
+
     public void ForgetActor(int actorInstanceId)
     {
         talkedActorIds.Remove(actorInstanceId);
@@ -106,6 +117,7 @@ public class ItemDialogueManager : MonoBehaviour
     {
         SetCursor(false);
         if (!player) player = FindFirstObjectByType<FirstPersonController>();
+        
     }
 
 
@@ -188,8 +200,18 @@ public class ItemDialogueManager : MonoBehaviour
 
         // เปิดเคอร์เซอร์ตลอดช่วงไดอะล็อก (คอมเปิดจะ override ตาม CursorCoordinator)
         SetDialogueCursorActive(true);
-
         ShowCurrentStep();
+    }
+
+    public void ShowTutorialUI()
+    {
+        if (startupTutorialOnce && !hasShownStartupTutorial && tutorialUI)
+        {
+            // โชว์ครั้งแรก: "คุยกับลูกค้า"
+            tutorialUI.EnqueueTutorialByIndex(1);
+            startupTalkPending = true;
+            hasShownStartupTutorial = true;
+        }
     }
     void ShowEchoLineNow(string text, int gotoIndex)
     {
@@ -680,6 +702,12 @@ public class ItemDialogueManager : MonoBehaviour
 
         hasEverTalked = true;
         reviewMode = false;
+        if (startupTalkPending && tutorialUI)
+        {
+            tutorialUI.CompleteCurrentByIndex(1);                 // ✔ “Talk to the customer.”
+            tutorialUI.EnqueueTutorialByIndex(2);    // → “Open the computer.”
+            startupTalkPending = false;                   // ปิดสถานะนี้ (ทำครั้งเดียว)
+        }
     }
 
 

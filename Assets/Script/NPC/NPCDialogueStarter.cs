@@ -7,7 +7,7 @@ public class NPCDialogueStarter : MonoBehaviour
     [Tooltip("กันดับเบิลคลิก/สแปมคลิก (วินาที)")]
     public float retriggerCooldown = 0.25f;
     private float lastTriggerTime = -999f;
-
+    public TutorialSlideUIQueue uiTT;
     [Tooltip("Hint/ป้าย “กดคุย” (จะถูกลบเมื่อกดครั้งแรก)")]
     public GameObject ui;
 
@@ -15,6 +15,11 @@ public class NPCDialogueStarter : MonoBehaviour
     [Tooltip("ถ้าตั้งไว้ จะใช้ไดอะล็อกนี้แทนทุกกรณี (ทั้งตำรวจ/ลูกค้า)")]
     public ItemDialogueData overrideDialogue;
 
+    private void Start()
+    {
+        uiTT = FindFirstObjectByType<TutorialSlideUIQueue>();
+        
+    }
     void OnMouseDown()
     {
         if (!CanTriggerNow()) return;
@@ -25,6 +30,7 @@ public class NPCDialogueStarter : MonoBehaviour
             Destroy(ui);
         }
         TryStartDialogue();
+        
     }
 
     bool CanTriggerNow()
@@ -33,7 +39,7 @@ public class NPCDialogueStarter : MonoBehaviour
         if (Time.time - lastTriggerTime < retriggerCooldown) return false;
 
         var mgr = ItemDialogueManager.Instance;
-        // ถ้าไดอะล็อกกำลังเปิดอยู่ ไม่ให้เริ่มใหม่ (กันซ้อน)
+
         if (mgr && mgr.panel && mgr.panel.activeSelf) return false;
 
         return true;
@@ -81,9 +87,13 @@ public class NPCDialogueStarter : MonoBehaviour
             onChoice: null, // รอบแรกเท่านั้นที่จะมีช้อยส์; รอบถัดไประบบจะข้ามช้อยส์ให้เอง
             onFinished: () =>
             {
-                // กันคลิกติดๆ กันหลังจบ
+                
                 lastTriggerTime = Time.time;
+
             }
         );
+        //uiTT.CompleteCurrent();
+        //uiTT.EnqueueTutorialByIndex(2);
+
     }
 }

@@ -10,8 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d240500698b23c429d8874438572cf5, type: 3}
-  m_Name: Book_NPC
+  m_Name: book_NPC
   m_EditorClassIdentifier: 
   npcName: Mesa Puked
   address: Talat Yai
   package: {fileID: 2625668967519983873, guid: 7873907c1470b1c4bb52c020dac5557a, type: 3}
+  nameOptions:
+  - Mesa Pukd
+  - Mesa Puked
+  - Me Puked
+  - 'Mesa '
+  correctNameIndex: 0
+  addressOptions:
+  - Talat
+  - Yai
+  - TalYai
+  - Talat Yai
+  correctAddressIndex: 0

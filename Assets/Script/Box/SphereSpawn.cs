@@ -37,6 +37,7 @@ public class SphereSpawn : MonoBehaviour
 
                 // เพิ่มรอบบับเบิล "หนึ่งครั้ง" ต่อการคลิก
                 currentBox.AddBubble();
+
             }
         }
     }

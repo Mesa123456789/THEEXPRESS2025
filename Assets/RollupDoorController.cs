@@ -30,7 +30,7 @@ public class RollupDoorController : MonoBehaviour
     public float closedZ = 100f;
     public float openZ = 36f;
     public float scaleDuration = 0.6f;
-
+    public TutorialSlideUIQueue ui;
     // ----- Runtime -----
     Vector3 _baseScaleXY;
     bool _isOpen;
@@ -49,7 +49,7 @@ public class RollupDoorController : MonoBehaviour
     void Start()
     {
         _baseScaleXY = new Vector3(doorTransform.localScale.x, doorTransform.localScale.y, 0f);
-
+        ui.EnqueueTutorialByIndex(0);
         _isOpen = gameManager && gameManager.shopIsOpen;
         ApplyScaleInstant(_isOpen);
 
@@ -99,8 +99,8 @@ public class RollupDoorController : MonoBehaviour
         _scaleCo = StartCoroutine(ScaleZTo(targetZ, scaleDuration));
 
         if (gameManager) gameManager.SetShopOpen(_isOpen);
-
-        if (shopUI) shopUI.gameObject.SetActive(false);
+        ui.CompleteCurrentByIndex(0);
+        //if (shopUI) shopUI.gameObject.SetActive(false);
     }
 
     IEnumerator ScaleZTo(float targetZ, float duration)
@@ -139,7 +139,7 @@ public class RollupDoorController : MonoBehaviour
 
         if (!_showedOpenPromptThisDay && hour == openH && !_isOpen)
         {
-            ShowPrompt("OPEN NOW");
+            //ShowPrompt("OPEN NOW");
             _showedOpenPromptThisDay = true;
             _showedClosePromptThisNight = false;
             return;
@@ -147,7 +147,7 @@ public class RollupDoorController : MonoBehaviour
 
         if (!_showedClosePromptThisNight && hour == closeH && _isOpen)
         {
-            ShowPrompt("CLOSE NOW");
+           // ShowPrompt("CLOSE NOW");
             _showedClosePromptThisNight = true;
             return;
         }
@@ -165,12 +165,5 @@ public class RollupDoorController : MonoBehaviour
         shopUI.gameObject.SetActive(true);
     }
 
-#if UNITY_EDITOR
-    void OnDrawGizmosSelected()
-    {
-        if (!rayOrigin) return;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(rayOrigin.position, rayOrigin.position + rayOrigin.forward * rayDistance);
-    }
-#endif
+
 }
