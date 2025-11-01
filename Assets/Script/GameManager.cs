@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour
     public bool IsDangerTime => IsHourInRange(currentHour, dangerStartHour, dayEndHour);
     public TutorialSlideUIQueue TutorialSlideUIQueue;
 
+
     void Awake()
     {
         // โหลดค่าข้ามวัน
@@ -111,9 +112,32 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (currentDay == 1 && TutorialSlideUIQueue)
+        {
+            // 1) เปิดใช้ + ล้างก่อน
+            PlayerPrefs.DeleteKey(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED);
+            TutorialSlideUIQueue.enabled = true;
+            TutorialSlideUIQueue.ClearQueueAndHideImmediate();
+
+            // 2) กันกรณีลิสต์ยังไม่ถูกใส่ในซีนนี้
+            if (TutorialSlideUIQueue.tutorialMessages == null ||
+                TutorialSlideUIQueue.tutorialMessages.Count == 0)
+            {
+                Debug.LogError("[Tutorial] tutorialMessages is EMPTY in this scene. " +
+                               "Populate messages in Inspector (index 0..12).");
+            }
+            else
+            {
+                // 3) ค่อย Enqueue หลังจากเคลียร์แล้ว
+                TutorialSlideUIQueue.EnqueueTutorialByIndex(0);
+            }
+        }
+
         shopIsOpen = false;
+
         StartNewDay();
 
+        // ถ้าเคยถูกปิดถาวรไว้
         if (PlayerPrefs.GetInt(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED, 0) == 1)
         {
             if (TutorialSlideUIQueue)
@@ -121,7 +145,6 @@ public class GameManager : MonoBehaviour
                 TutorialSlideUIQueue.ClearQueueAndHideImmediate();
                 TutorialSlideUIQueue.enabled = false;
             }
-            // ไม่ต้องทำอะไรเกี่ยวกับ Tutorial อีก
         }
 
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
@@ -134,6 +157,7 @@ public class GameManager : MonoBehaviour
 
         currentBox = FindFirstObjectByType<BoxScript>();
     }
+
 
 
     void Update()
@@ -154,14 +178,17 @@ public class GameManager : MonoBehaviour
             AdvanceHour();
             if (elapsedHoursThisDay == 0) break;
         }
-
         if (!tutorialStep12Shown && TutorialSlideUIQueue && currentHour == shopCloseHour)
         {
             tutorialStep12Shown = true;
+
+            // ถ้าตอนนี้โชว์ 11 อยู่ ให้ complete; ไม่งั้นข้าม
+            if (TutorialSlideUIQueue.CurrentIndex == 11)
                 TutorialSlideUIQueue.CompleteCurrentByIndex(11);
 
             StartCoroutine(OpenTutorial12());
         }
+
 
         // อัปเดต danger + เกจ
         bool inDanger = IsHourInRange(currentHour, dangerStartHour, dayEndHour);
@@ -173,7 +200,7 @@ public class GameManager : MonoBehaviour
         }
         wasInDanger = inDanger;
 
-        UpdateTimeUI();       
+        UpdateTimeUI();
         UpdateSunLight();
     }
 
@@ -183,11 +210,11 @@ public class GameManager : MonoBehaviour
         if (TutorialSlideUIQueue) TutorialSlideUIQueue.EnqueueTutorialByIndex(12);
     }
 
-// เรียกจุดเช็คเวลา: ใส่หลังเปลี่ยนชั่วโมง (เช่นใน AdvanceHour() หรือหลัง while เดินเวลาใน Update())
+    // เรียกจุดเช็คเวลา: ใส่หลังเปลี่ยนชั่วโมง (เช่นใน AdvanceHour() หรือหลัง while เดินเวลาใน Update())
 
 
 
-void UpdateSunLight()
+    void UpdateSunLight()
     {
         if (!directionalLight) return;
         float hourFloat = currentHour + HourProgress01;
@@ -304,7 +331,6 @@ void UpdateSunLight()
 
     public void SleepNow()
     {
-        TutorialSlideUIQueue.CompleteCurrentByIndex(12);
         if (isEnding) return;
         sleptThisCycle = true;
         currentDay++;
@@ -390,10 +416,9 @@ void UpdateSunLight()
         PlayerPrefs.SetInt(KEY_TUTORIAL_DONE, 1);
 
         PlayerPrefs.Save();
-        TutorialSlideUIQueue.DisableForeverAndHideAll();
-
         SceneManager.LoadScene(gameplaySceneName);
     }
+
 
 
 }

@@ -49,7 +49,7 @@ public class RollupDoorController : MonoBehaviour
     void Start()
     {
         _baseScaleXY = new Vector3(doorTransform.localScale.x, doorTransform.localScale.y, 0f);
-        ui.EnqueueTutorialByIndex(0);
+        //ui.EnqueueTutorialByIndex(0);
         _isOpen = gameManager && gameManager.shopIsOpen;
         ApplyScaleInstant(_isOpen);
 
