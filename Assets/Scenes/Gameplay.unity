@@ -25070,13 +25070,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcPrefabs:
   - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
-  - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
-  - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
-  - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
-  - {fileID: 1082716782661448206, guid: 523f7c0cd6f7b324f9c76492c33f9b1b, type: 3}
   policePrefab: {fileID: 3013270293681396606, guid: cb4ecf7a3876ea24baa8e23782bf7567, type: 3}
   spawnPoints:
   - {fileID: 950227834}
+  policeSpawnPoints:
+  - {fileID: 843124551}
   entryWaypoints:
   - {fileID: 1237337150}
   exitPoint: {fileID: 2045465760}
@@ -25089,10 +25087,11 @@ MonoBehaviour:
   maxAlive: 4
   requireShopOpen: 1
   canSpawn: 1
-  minQueueSize: 3
+  minQueueSize: 4
   keepQueueFilled: 1
   fillTickDelay: 0.25
   autoCallWhenPoliceFront: 1
+  policeTriggerPercentOverride: -1
 --- !u!65 &1768713439
 BoxCollider:
   m_ObjectHideFlags: 0

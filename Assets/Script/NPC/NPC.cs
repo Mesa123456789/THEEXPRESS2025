@@ -63,6 +63,7 @@ public class NPC : MonoBehaviour
         {
             Debug.Log("table collision");
             if (Animation) Animation.SetBool("TableCollision", false);
+            NPCSpawner.Instance?.OnNpcLeaving(this);
         }
     }
 

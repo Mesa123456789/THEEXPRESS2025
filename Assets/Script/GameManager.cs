@@ -4,8 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum ChoiceResult { None, Yes, No }
-
 public class GameManager : MonoBehaviour
 {
     public FirstPersonController playerController;
@@ -205,6 +203,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if (totalCaughtPercent >= 90)
+        {
+            var spawner = FindFirstObjectByType<NPCSpawner>();
+            if (spawner) spawner.ForcePoliceNext();
+        }
+
         UpdateTimeUI();
         UpdateSunLight();
     }
@@ -232,35 +236,27 @@ public class GameManager : MonoBehaviour
         shopIsOpen = open;
         Debug.Log($"[GameManager] Shop is now {(shopIsOpen ? "OPEN" : "CLOSED")}.");
 
-        if (!npcSpawner) return;
+        if (!npcSpawner) npcSpawner = FindFirstObjectByType<NPCSpawner>();
 
-        if (!open)
+        if (npcSpawner)
         {
-            // ปิดร้าน: ล้างคิว (เว้น current) และหยุดสปาวน์
-            npcSpawner.HandleShopClosed();
-            npcSpawner.SetSpawningEnabled(false);
-            return;
-        }
+            npcSpawner.SetSpawningEnabled(open);   // เปิด/ปิดเกทสปอนฝั่ง Spawner
 
-        // เปิดร้าน: อนุญาตให้สปาวน์ และ "พรีวอร์มคิว" ให้มีคนมารอทันที
-        npcSpawner.SetSpawningEnabled(true);
-
-        // จำนวนเริ่มต้นที่จะให้ยืนรอคิวหน้าโต๊ะ
-        // ถ้ามี Queue Points ให้เติมให้เต็มแถว; ถ้าไม่มีก็เท่ากับ maxAlive
-        int targetInitial =
-            (npcSpawner.queuePoints != null && npcSpawner.queuePoints.Length > 0)
-            ? npcSpawner.queuePoints.Length
-            : npcSpawner.maxAlive;
-
-        // กันเกินโควตา
-        targetInitial = Mathf.Min(targetInitial, npcSpawner.maxAlive);
-
-        // สปาวน์ให้ครบจำนวนที่ตั้งใจ (ปล่อยให้ NPCSpawner จัดเข้าคิวเอง)
-        for (int i = 0; i < targetInitial; i++)
-        {
-            npcSpawner.SpawnOne();
+            if (open)
+            {
+                // เติมคิวทันที + เช็คตำรวจตามเงื่อนไข (ใช้จุดสปอนตำรวจของตัวเอง)
+                npcSpawner.OnShopOpened();
+                // ถ้าไม่ได้ใช้ OnShopOpened ก็ใช้บรรทัดนี้แทนได้:
+                // npcSpawner.FillQueueImmediate();
+            }
+            else
+            {
+                // ปิดร้าน: ล้างคิว (เว้น current) และหยุดสปอน
+                npcSpawner.HandleShopClosed();
+            }
         }
     }
+
 
 
 
@@ -273,12 +269,7 @@ public class GameManager : MonoBehaviour
 
         UpdateSalesUI();
 
-        // ตำรวจ
-        if (totalCaughtPercent >= 90)
-        {
-            var spawner = FindFirstObjectByType<NPCSpawner>();
-            if (spawner) spawner.ForcePoliceNext();
-        }
+        
     }
 
     // ====== เงิน: จ่าย -> ใช้ current ก่อน ถ้าไม่พอรูดจาก bankBalance ======

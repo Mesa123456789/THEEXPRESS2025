@@ -595,13 +595,10 @@ public class ItemDialogueManager : MonoBehaviour
 
             case ItemDialogueData.LineAction.NPCExit:
                 {
-                    NPC npc = null;
+                    // ✅ เลือกตัวที่ "ยืนหน้าโต๊ะ" จริง ๆ
+                    NPC npc = NPCSpawner.Instance ? NPCSpawner.Instance.GetCurrent() : null;
 
-                    // ✅ 1) เอาตัวที่หน้าโต๊ะจริง ๆ ก่อน
-                    if (NPCSpawner.Instance != null)
-                        npc = NPCSpawner.CurrentNPC;
-
-                    // ✅ 2) Fallback: หา NPC ที่ Animator มี TableCollision = true (คือชนโต๊ะอยู่)
+                    // Fallback: หา NPC ที่ Animator มี TableCollision = true (กำลังคุยโต๊ะ)
                     if (npc == null)
                     {
                         var npcs = FindObjectsByType<NPC>(FindObjectsSortMode.None);
@@ -618,14 +615,12 @@ public class ItemDialogueManager : MonoBehaviour
 
                     if (npc == null) { Debug.LogWarning("LineEndAction: No CURRENT NPC at table."); break; }
 
-                    // ถ้ามีไอเท็มบนโต๊ะให้เคลียร์ไปด้วย
+                    // ลบไอเท็มบนโต๊ะ (ถ้ามี) แล้วสั่งออก
                     var item = FindFirstObjectByType<ItemScript>();
                     GameObject itemGo = item ? item.gameObject : null;
-
                     npc.ForceExitAndClearItem(itemGo);
                     break;
                 }
-
 
             case ItemDialogueData.LineAction.PolicePay:
                 {
@@ -636,6 +631,13 @@ public class ItemDialogueManager : MonoBehaviour
                         gm.SpendMoney(500);
                         gm.UpdateSalesUI();
                         Debug.Log("[Police] Paid bribe: -500, reset caught percent.");
+                    }
+
+                    // ✅ ถ้าคนที่ยืนหน้าโต๊ะเป็น 'ตำรวจ' ให้เขาออกทันทีหลังจ่าย
+                    var front = NPCSpawner.Instance ? NPCSpawner.Instance.GetCurrent() : null;
+                    if (front && (front is NPCPolice || front.GetComponent<NPCPolice>() != null))
+                    {
+                        front.ForceExitAndClearItem(); // ไม่แตะ dialog/override เดิม
                     }
                     break;
                 }
@@ -650,6 +652,7 @@ public class ItemDialogueManager : MonoBehaviour
                     }
                     break;
                 }
+
         }
     }
 

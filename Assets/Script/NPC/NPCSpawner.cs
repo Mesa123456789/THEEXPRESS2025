@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;   // === ADD
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public class NPCSpawner : MonoBehaviour
@@ -7,129 +8,112 @@ public class NPCSpawner : MonoBehaviour
     [Header("Prefabs & Spawn Points")]
     public GameObject[] npcPrefabs;
     public GameObject policePrefab;
-    public Transform[] spawnPoints;
+    public Transform[] spawnPoints;           // ลูกค้าปกติ
+
+    [Header("Police Spawn Points")]
+    public Transform[] policeSpawnPoints;     // จุดสปอนตำรวจ (คนละชุด)
 
     [Header("Route Assignment")]
     public Transform[] entryWaypoints;
     public Transform exitPoint;
 
-    // === ADD: จุดเข้าคิว (วางไว้เรียงหัวแถว -> ท้ายแถว)
     [Header("Queue Points (front -> back)")]
-    public Transform[] queuePoints;
+    public Transform[] queuePoints;           // index 0 = หัวแถว
 
     [Header("Continuous Mode Settings")]
     public Vector2 spawnDelayRange = new Vector2(2f, 5f);
-    public int maxAlive = 3;
+    public int maxAlive = 4;                  // แนะนำ >= minQueueSize + 1
 
     [Header("Shop Gate")]
     public bool requireShopOpen = true;
-    public bool canSpawn = true;
+    public bool canSpawn = true;              // จะถูกซิงค์กับสถานะร้านอัตโนมัติ
 
     private bool forcePoliceNextSpawn = false;
     private GameManager gm;
 
     [Header("Queue Settings")]
-    public int minQueueSize = 3;       // เติมคิวให้มีอย่างน้อยกี่ตัว
-    public bool keepQueueFilled = true; // เปิด/ปิดโหมดเติมคิวอัตโนมัติ
+    public int minQueueSize = 3;              // โหมดเติมเรื่อย ๆ ให้มีอย่างน้อย
+    public bool keepQueueFilled = true;       // เปิดโหมดเติมเรื่อย ๆ
 
-    public static NPC CurrentNPC { get; private set; }   // มีอยู่แล้วก็ดี
-    public NPC GetCurrent() => CurrentNPC;
     [Header("Queue Fill Tuning")]
-    public float fillTickDelay = 0.25f; // หน่วงเวลาระหว่างการเติมคิวทีละตัว
-                                        // ==== COUNTS ====
-    private int exitingCount = 0; // ตัวที่เริ่มเดินออกแล้ว แต่ยังไม่ Destroy
+    public float fillTickDelay = 0.25f;       // ดีเลย์ตอนเติมเรื่อย ๆ
+
     [Header("Police Handling")]
-    public bool autoCallWhenPoliceFront = true; // โต๊ะว่าง + หัวแถวเป็นตำรวจ => เรียกเข้าทันที
+    public bool autoCallWhenPoliceFront = true;       // โต๊ะว่าง + หัวแถวเป็นตำรวจ => เข้าทันที
+    public int policeTriggerPercentOverride = -1;     // ถ้าตั้ง >=0 ใช้ค่านี้แทน (ไม่งั้นอ่านจาก GM หรือ fallback=90)
+
     public static NPCSpawner Instance { get; private set; }
-    // === ADD: โครงสร้างคิว
-    private readonly List<NPC> queue = new List<NPC>();
-    private int EffectiveAliveCount()
-    {
-        // คนที่มีผลต่อ capacity ของร้าน = current หน้าโต๊ะ + คนในคิว + คนที่กำลังเดินออก
-        return (CurrentNPC != null ? 1 : 0) + queue.Count + exitingCount;
-    }
-    private bool IsPoliceNPC(NPC npc)
-    {
-        // รองรับทั้ง subclass และมีคอมโพเนนต์ NPCPolice บนตัวเดียวกัน
-        return npc is NPCPolice || (npc != null && npc.GetComponent<NPCPolice>() != null);
-    }
-    private void AutoCallIfPoliceFront()
-    {
-        if (!autoCallWhenPoliceFront) return;
-        if (CurrentNPC != null) return;       // โต๊ะยังไม่ว่าง
-        if (queue.Count == 0) return;
+    public static NPC CurrentNPC { get; private set; }   // ตั้ง/เคลียร์จาก NPC.cs ตอนชนโต๊ะ/ออก
 
-        var head = queue[0];
-        if (head == null)
-        {
-            queue.RemoveAt(0);
-            RepositionQueue();
-            return;
-        }
+    // ===== คิวและตัวช่วย =====
+    private readonly List<NPC> waitingQueue = new List<NPC>();
+    private int exitingCount = 0;                     // ตัวที่เริ่มเดินออก (ยังไม่ Destroy)
+    private bool policeSpawnedThisCycle = false;      // กันสปอนตำรวจถี่ ๆ ภายในรอบเดียว
 
-        if (IsPoliceNPC(head))
-        {
-            // เอาตำรวจหัวแถวเข้าทันที (ข้ามปุ่ม)
-            queue.RemoveAt(0);
-            head.FlagCalledToTable();
-            RepositionQueue();
-        }
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
     }
+
+    void Start()
+    {
+        if (!gm) gm = FindFirstObjectByType<GameManager>();
+        SyncGateWithShop();           // ✅ ซิงค์ canSpawn ให้ตรงกับสถานะร้านตั้งแต่เริ่ม
+        StartCoroutine(SpawnLoop());
+    }
+
+    // ======= API ที่ GameManager/NPC เรียก =======
+
+    public NPC GetCurrent() => CurrentNPC;
 
     public void SetCurrent(NPC npc)
     {
         CurrentNPC = npc;
-        // ถ้าโต๊ะว่างแล้ว และหัวแถวเป็นตำรวจ => ให้เข้าทันที
-        if (npc == null) AutoCallIfPoliceFront();
+        if (npc == null) AutoCallIfPoliceFront();   // โต๊ะว่าง → ถ้าหัวแถวเป็นตำรวจให้เข้าอัตโนมัติ
     }
 
+    public void ForcePoliceNext() => forcePoliceNextSpawn = true;
 
-    void Awake()
+    public void SetSpawningEnabled(bool enabled) => canSpawn = enabled;
+
+    // ======= เติมคิว "ทันที" =======
+    public void FillQueueImmediate(int maxToFill = -1)
     {
-        if (Instance != null && Instance != this)
+        if (queuePoints == null || queuePoints.Length == 0) return;
+
+        SyncGateWithShop();  // ✅ เปิดเกทถ้าร้านเปิดอยู่ (กันเคส canSpawn ค้าง false)
+
+        int target = (maxToFill < 0) ? queuePoints.Length : Mathf.Min(maxToFill, queuePoints.Length);
+
+        // เติมทันที: สนเฉพาะร้านเปิด
+        while (waitingQueue.Count < target && ShopOpenGate())
         {
-            Destroy(gameObject);
-            return;
+            SpawnToQueueTail();
         }
-        Instance = this;
+
+        RepositionQueue();
+        AutoCallIfPoliceFront();   // โต๊ะว่าง + หัวแถวเป็นตำรวจ => เข้าทันที
+        TryAutoSpawnPolice();      // เช็คตำรวจหลังเติม
     }
 
-    public NPC Spawn(NPC npcPrefab, Vector3 position, Quaternion rotation)
+    // เรียกตอนเปิดร้าน (ถ้าชอบชื่อแบบ semantic)
+    public void OnShopOpened()
     {
-        var npc = Instantiate(npcPrefab, position, rotation);
-        CurrentNPC = npc;
-        return npc;
+        SyncGateWithShop();     // ✅ ให้เกทเปิดตามสถานะร้าน
+        FillQueueImmediate();   // เติมให้เต็มทุกจุดคิว
+        policeSpawnedThisCycle = false;
+        TryAutoSpawnPolice();
     }
 
-
-    void Start()
-    {
-        gm = FindFirstObjectByType<GameManager>();
-        StartCoroutine(SpawnLoop());
-    }
-
+    // ======= สปาวน์ลูปพื้นหลัง (โหมดเติมเรื่อย ๆ) =======
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            if (requireShopOpen)
-            {
-                if (!gm || !gm.shopIsOpen || !canSpawn)
-                {
-                    yield return null;
-                    continue;
-                }
-            }
-            else
-            {
-                if (!canSpawn)
-                {
-                    yield return null;
-                    continue;
-                }
-            }
+            if (!GateAllowSpawn()) { yield return null; continue; }
 
-            // หลังตี 2 ไม่สปาวน์เพิ่ม
+            // หลังตี 2 ไม่สปอนเพิ่ม (ยังเรียกจากคิวได้)
             if (gm && IsAfterCloseHour(gm.currentHour, gm.shopCloseHour))
             {
                 canSpawn = false;
@@ -137,27 +121,28 @@ public class NPCSpawner : MonoBehaviour
                 continue;
             }
 
-            // ✅ เติมคิวก่อนเสมอ โดยอิง EffectiveAliveCount (ไม่ติดเคสตัวกำลังเดินออก)
-            if (keepQueueFilled && queue != null)
+            // ตำรวจ: เช็คและสปอนถ้าเข้าเกณฑ์
+            TryAutoSpawnPolice();
+
+            // เติมคิวเรื่อย ๆ จนถึง minQueueSize (ถ้าเปิด)
+            if (keepQueueFilled)
             {
-                while (queue.Count < Mathf.Max(0, minQueueSize) &&
-                       EffectiveAliveCount() < Mathf.Max(1, maxAlive))
+                while (waitingQueue.Count < Mathf.Max(0, minQueueSize) &&
+                       EffectiveAliveCount() < Mathf.Max(1, maxAlive) &&
+                       GateAllowSpawn())
                 {
-                    SpawnOne(); // ตำรวจจะถูกเลือกอัตโนมัติถ้าเงื่อนไขถึง
+                    SpawnToQueueTail();
                     yield return new WaitForSeconds(Mathf.Max(0.01f, fillTickDelay));
                 }
 
-                // ไปเฟรมถัดไป
-                yield return null;
+                yield return null; // ผ่อนเครื่องให้ระบบอื่นขยับ
                 continue;
             }
 
-
-
-            // เงื่อนไขสุ่มสปาวน์ตาม maxAlive (ของเดิม)
-            if (EffectiveAliveCount() < Mathf.Max(1, maxAlive))
+            // โหมดสุ่มทั่วไป (ถ้าต้องการ)
+            if (EffectiveAliveCount() < Mathf.Max(1, maxAlive) && GateAllowSpawn())
             {
-                SpawnOne();
+                SpawnToQueueTail();
                 float wait = Random.Range(spawnDelayRange.x, spawnDelayRange.y);
                 yield return new WaitForSeconds(wait);
             }
@@ -165,61 +150,22 @@ public class NPCSpawner : MonoBehaviour
             {
                 yield return null;
             }
-
         }
     }
 
-
-    // === ADD: ช่วยเช็คเวลาหลังร้านปิด (รองรับข้ามวัน)
-    bool IsAfterCloseHour(int h, int closeH)
+    // ======= ลูกค้าปกติ: ต่อท้ายคิว =======
+    private void SpawnToQueueTail()
     {
-        // เปิด 15:00 ถึง 02:00 ตาม GameManager
-        // หลัง 02:00 ถือว่า closed window
-        int H = ((h % 24) + 24) % 24;
-        int C = ((closeH % 24) + 24) % 24;
-        // ช่วงเปิดคือ 15->02 (wrap) ดังนั้น "หลังปิด" = [02..14]
-        // ง่ายสุด: ถ้าไม่อยู่ในช่วงเปิดของวัน => หลังปิด
-        int open = gm ? gm.shopOpenHour : 15;
-        int O = ((open % 24) + 24) % 24;
-        if (O < C) return !(H >= O && H < C);
-        else return !(H >= O || H < C);
-    }
-
-    public void SpawnOne()
-    {
-        if (!gm) gm = FindFirstObjectByType<GameManager>();
-
-        Transform sp = ChooseSpawnPoint();
+        Transform sp = ChooseSpawnPoint(spawnPoints);
         Vector3 pos = sp ? sp.position : transform.position;
         Quaternion rot = sp ? sp.rotation : Quaternion.identity;
 
-        GameObject prefabToSpawn = null;
-        bool isPolice = false;
-
-        if (forcePoliceNextSpawn && policePrefab != null)
+        if (npcPrefabs == null || npcPrefabs.Length == 0)
         {
-            prefabToSpawn = policePrefab;
-            forcePoliceNextSpawn = false;
-            isPolice = true;
+            Debug.LogWarning("[NPCSpawner] No npcPrefabs set.");
+            return;
         }
-        else
-        {
-            // ✅ เงื่อนไขตำรวจอัตโนมัติ
-            if (gm && gm.totalCaughtPercent >= 90 && policePrefab != null)
-            {
-                prefabToSpawn = policePrefab;
-                isPolice = true;
-            }
-            else
-            {
-                if (npcPrefabs == null || npcPrefabs.Length == 0)
-                {
-                    Debug.LogWarning("[NPCSpawner] No npcPrefabs set.");
-                    return;
-                }
-                prefabToSpawn = npcPrefabs[Random.Range(0, npcPrefabs.Length)];
-            }
-        }
+        GameObject prefabToSpawn = npcPrefabs[Random.Range(0, npcPrefabs.Length)];
 
         var go = Instantiate(prefabToSpawn, pos, rot);
         var npc = go.GetComponent<NPC>();
@@ -227,135 +173,210 @@ public class NPCSpawner : MonoBehaviour
         {
             npc.entryWaypoints = entryWaypoints;
             npc.exitPoint = exitPoint;
-
-            // ตำรวจ → แทรกหัวแถวทันที (ไม่ต้องกดปุ่ม)
-            EnqueueNPC(npc, front: isPolice);
+            EnqueueNPC(npc, front: false);
         }
     }
 
-
-    public void EnqueueNPC(NPC npc, bool front = false)
+    // ======= ตำรวจ: สปอนจากจุดของตำรวจเอง =======
+    private void TryAutoSpawnPolice()
     {
-        if (npc == null) return;
-        if (front) queue.Insert(0, npc);
-        else queue.Add(npc);
+        if (!GateAllowSpawn()) return;
+        if (policePrefab == null) return;
 
-        RepositionQueue();
+        // ถ้ามีตำรวจอยู่แล้วในระบบ → ไม่สปอนซ้ำ
+        if (HasPoliceInSystem()) { policeSpawnedThisCycle = true; return; }
 
-        // ถ้าโต๊ะว่างและหัวแถวเป็นตำรวจ → ให้เข้าทันที
-        AutoCallIfPoliceFront();
+        // บังคับสปอนครั้งถัดไป
+        if (forcePoliceNextSpawn)
+        {
+            SpawnPoliceNow();
+            forcePoliceNextSpawn = false;
+            policeSpawnedThisCycle = true;
+            return;
+        }
+
+        // อ่านเกณฑ์จาก GM หรือ override
+        int threshold = GetPoliceTriggerPercent();
+        int caught = gm ? gm.totalCaughtPercent : 0;
+
+        if (caught >= threshold && !policeSpawnedThisCycle)
+        {
+            SpawnPoliceNow();
+            policeSpawnedThisCycle = true;
+        }
+
+        // ถ้าต่ำกว่า threshold อีกครั้ง → ปลดล็อกสำหรับรอบต่อไป
+        if (caught < threshold) policeSpawnedThisCycle = false;
     }
 
-
-    Transform ChooseSpawnPoint()
+    private void SpawnPoliceNow()
     {
-        if (spawnPoints != null && spawnPoints.Length > 0)
-            return spawnPoints[Random.Range(0, spawnPoints.Length)];
-        return null;
+        Transform sp = ChooseSpawnPoint(policeSpawnPoints);
+        if (sp == null) sp = ChooseSpawnPoint(spawnPoints); // เผื่อไม่ได้ตั้งจุดตำรวจ
+        Vector3 pos = sp ? sp.position : transform.position;
+        Quaternion rot = sp ? sp.rotation : Quaternion.identity;
+
+        var go = Instantiate(policePrefab, pos, rot);
+        var npc = go.GetComponent<NPC>();
+        if (npc != null)
+        {
+            npc.entryWaypoints = entryWaypoints;
+            npc.exitPoint = exitPoint;
+
+            if (CurrentNPC == null)
+            {
+                // โต๊ะว่าง → เข้าทันที
+                npc.FlagCalledToTable();
+            }
+            else
+            {
+                // มีคนอยู่หน้าโต๊ะ → แทรกหัวแถว
+                EnqueueNPC(npc, front: true);
+            }
+        }
     }
 
-    int CountAlive()
+    private bool HasPoliceInSystem()
     {
-        var all = FindObjectsByType<NPC>(FindObjectsSortMode.None);
-        return all != null ? all.Length : 0;
+        if (CurrentNPC && IsPoliceNPC(CurrentNPC)) return true;
+        for (int i = 0; i < waitingQueue.Count; i++)
+            if (IsPoliceNPC(waitingQueue[i])) return true;
+        return false;
     }
 
-    public void ForcePoliceNext()
+    private int GetPoliceTriggerPercent()
     {
-        forcePoliceNextSpawn = true;
+        if (policeTriggerPercentOverride >= 0) return policeTriggerPercentOverride;
+
+        if (gm != null)
+        {
+            // พยายามอ่านฟิลด์ public/private ชื่อ policeTriggerPercent ถ้ามี
+            FieldInfo f = gm.GetType().GetField("policeTriggerPercent",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (f != null && f.FieldType == typeof(int))
+            {
+                return (int)f.GetValue(gm);
+            }
+        }
+        return 90; // fallback
     }
 
-    public void SetSpawningEnabled(bool enabled)
-    {
-        canSpawn = enabled;
-    }
+    // ======= Queue / Housekeeping =======
 
-    // ============================
-    // === Queue System (NEW)  ====
-    // ============================
-
-    // ใส่ท้ายแถว และจัดยืนตาม queuePoints
-    public void EnqueueNPC(NPC npc)
-    {
-        if (npc == null) return;
-        queue.Add(npc);
-        RepositionQueue();
-    }
-
-    // เรียกคิวแรกเข้ามา (ใช้กับปุ่ม CallButton)
     public void CallNext()
     {
-        // ถ้ามี currentNPC ยังยืนอยู่หน้าโต๊ะ (ยังไม่ออก) ก็ยังไม่เรียกซ้อน
         if (CurrentNPC != null) return;
+        if (waitingQueue.Count == 0) return;
 
-        if (queue.Count == 0) return;
+        var next = waitingQueue[0];
+        waitingQueue.RemoveAt(0);
 
-        var next = queue[0];
-        queue.RemoveAt(0);
-
-        // สั่งให้ตัวนี้ "ถูกเรียก" ไปหน้าโต๊ะ
         next.FlagCalledToTable();
-
-        // จัดคิวที่เหลือขยับขึ้น
         RepositionQueue();
     }
 
-    // NPC ตัวไหนเริ่มเดินออก (accept/decline/ส่งของเสร็จ) ให้คิวขยับ
     public void OnNpcLeaving(NPC npc)
     {
-        // ตัวนี้กำลังออก → ให้นับเข้ายอด exiting จนกว่าจะโดน Destroy จริง
         if (npc != null)
         {
             exitingCount++;
             StartCoroutine(TrackExitDestruction(npc));
         }
-
-        // ขยับคิวให้แน่น
         RepositionQueue();
     }
 
-    // รอจนกว่าจะถูก Destroy แล้วค่อยลด exitingCount
-    private IEnumerator TrackExitDestruction(NPC npc)
-    {
-        // รอจนกว่าวัตถุจะหายไปจริง ๆ
-        while (npc != null && npc.gameObject != null)
-            yield return null;
-
-        exitingCount = Mathf.Max(0, exitingCount - 1);
-    }
-
-    // ปิดร้านด้วยมือ (ข้อ 6): ทำลายทุกตัวในคิว ยกเว้น current
     public void HandleShopClosed()
     {
-        // กันสปาวน์ใหม่
         canSpawn = false;
 
         var toKill = new List<NPC>();
-        foreach (var n in queue)
-        {
-            if (n != null) toKill.Add(n);
-        }
-        queue.Clear();
+        foreach (var n in waitingQueue) if (n != null) toKill.Add(n);
+        waitingQueue.Clear();
 
         foreach (var n in toKill)
         {
             if (n != null && n != CurrentNPC)
-            {
                 Destroy(n.gameObject);
-            }
         }
-        // จัดระเบียบ (จะว่างคิว)
+
         RepositionQueue();
     }
 
-    // จัดตำแหน่งยืนตาม queuePoints (หัวแถว index 0)
+    private int EffectiveAliveCount()
+    {
+        return (CurrentNPC != null ? 1 : 0) + waitingQueue.Count + exitingCount;
+    }
+
+    private IEnumerator TrackExitDestruction(NPC npc)
+    {
+        while (npc != null) yield return null; // เมื่อถูก Destroy แล้วตัวแปรจะกลายเป็น null
+        exitingCount = Mathf.Max(0, exitingCount - 1);
+    }
+
+    // ======= Gates & helpers =======
+
+    private void SyncGateWithShop()
+    {
+        if (!gm) gm = FindFirstObjectByType<GameManager>();
+        if (!requireShopOpen) { canSpawn = true; return; }
+        canSpawn = (gm && gm.shopIsOpen);   // ✅ ถ้าร้านเปิด → เปิดเกท
+    }
+
+    // ใช้กับโหมดเติมคิวทันที (สนแค่ว่าร้านเปิด)
+    private bool ShopOpenGate()
+    {
+        if (!gm) gm = FindFirstObjectByType<GameManager>();
+        if (!requireShopOpen) return true;
+        return gm && gm.shopIsOpen;
+    }
+
+    // ใช้กับลูปพื้นหลัง (ต้องผ่านทั้งร้านเปิด + canSpawn)
+    private bool GateAllowSpawn()
+    {
+        if (!gm) gm = FindFirstObjectByType<GameManager>();
+        if (!requireShopOpen) return canSpawn;
+        return canSpawn && gm && gm.shopIsOpen;
+    }
+
+    private bool IsAfterCloseHour(int hour, int closeHour)
+    {
+        int H = ((hour % 24) + 24) % 24;
+        int C = ((closeHour % 24) + 24) % 24;
+        int O = gm ? gm.shopOpenHour : 15;
+
+        bool openRange;
+        if (O < C) openRange = (H >= O && H < C);
+        else openRange = (H >= O || H < C);
+
+        return !openRange;
+    }
+
+    private Transform ChooseSpawnPoint(Transform[] points)
+    {
+        if (points != null && points.Length > 0)
+            return points[Random.Range(0, points.Length)];
+        return null;
+    }
+
+    public void EnqueueNPC(NPC npc, bool front = false)
+    {
+        if (npc == null) return;
+        if (front) waitingQueue.Insert(0, npc);
+        else waitingQueue.Add(npc);
+
+        RepositionQueue();
+
+        // ถ้าโต๊ะว่างและหัวแถวเป็นตำรวจ → เข้าทันที
+        AutoCallIfPoliceFront();
+    }
+
     private void RepositionQueue()
     {
         if (queuePoints == null || queuePoints.Length == 0) return;
 
-        for (int i = 0; i < queue.Count; i++)
+        for (int i = 0; i < waitingQueue.Count; i++)
         {
-            var n = queue[i];
+            var n = waitingQueue[i];
             if (n == null) continue;
 
             var slot = Mathf.Min(i, queuePoints.Length - 1);
@@ -363,5 +384,37 @@ public class NPCSpawner : MonoBehaviour
         }
     }
 
+    private bool IsPoliceNPC(NPC npc)
+    {
+        return npc is NPCPolice || (npc != null && npc.GetComponent<NPCPolice>() != null);
+    }
 
+    private void AutoCallIfPoliceFront()
+    {
+        if (!autoCallWhenPoliceFront) return;
+        if (CurrentNPC != null) return;
+        if (waitingQueue.Count == 0) return;
+
+        var head = waitingQueue[0];
+        if (head == null)
+        {
+            waitingQueue.RemoveAt(0);
+            RepositionQueue();
+            return;
+        }
+
+        if (IsPoliceNPC(head))
+        {
+            waitingQueue.RemoveAt(0);
+            head.FlagCalledToTable();
+            RepositionQueue();
+        }
+    }
+
+    // ---------- (ตัวช่วยเก่า: เผื่อยังถูกอ้างอิง) ----------
+    public NPC Spawn(NPC npcPrefab, Vector3 position, Quaternion rotation)
+    {
+        var npc = Instantiate(npcPrefab, position, rotation);
+        return npc;
+    }
 }
