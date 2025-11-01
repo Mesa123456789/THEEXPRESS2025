@@ -22,6 +22,25 @@ public class TutorialSlideUIQueue : MonoBehaviour
 
     // ---- Gate (ปิดถาวรข้ามซีน) ----
     public const string KEY_TUTORIAL_DISABLED = "TUTORIAL_DISABLED";
+    private bool _disabled = false;
+
+    public void SetDisabled(bool value)
+    {
+        _disabled = value;
+        if (_disabled)
+        {
+            // ล้างทุกอย่างและซ่อนทันที
+            ClearQueueAndHideImmediate();
+            // ปิด GameObject ก็ได้เพื่อกันการแสดงผล
+            if (gameObject.activeSelf) gameObject.SetActive(false);
+        }
+        else
+        {
+            if (!gameObject.activeSelf) gameObject.SetActive(true);
+        }
+    }
+
+    public int CurrentIndex => _currentIndex;
     static bool IsDisabled() => PlayerPrefs.GetInt(KEY_TUTORIAL_DISABLED, 0) == 1;
 
     Queue<string> _queue = new Queue<string>();
@@ -34,7 +53,7 @@ public class TutorialSlideUIQueue : MonoBehaviour
     int _currentIndex = -1;
     int _lastCompletedIndex = -1;
 
-    public int CurrentIndex => _currentIndex;
+   
     public int LastCompletedIndex => _lastCompletedIndex;
 
     void Awake()
@@ -52,7 +71,7 @@ public class TutorialSlideUIQueue : MonoBehaviour
 
     public void EnqueueTutorialByIndex(int index)
     {
-        if (IsDisabled()) return;
+        if (_disabled || PlayerPrefs.GetInt(KEY_TUTORIAL_DISABLED, 0) == 1) return;
 
         if (index < 0 || index >= tutorialMessages.Count)
         {
@@ -71,7 +90,8 @@ public class TutorialSlideUIQueue : MonoBehaviour
 
     public void CompleteCurrentByIndex(int index)
     {
-        if (IsDisabled()) return;
+        if (_disabled || PlayerPrefs.GetInt(KEY_TUTORIAL_DISABLED, 0) == 1) return;
+
         if (index != _currentIndex || string.IsNullOrEmpty(_currentMessage)) return;
 
         if (_running != null) StopCoroutine(_running);

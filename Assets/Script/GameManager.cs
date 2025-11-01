@@ -114,23 +114,18 @@ public class GameManager : MonoBehaviour
     {
         if (currentDay == 1 && TutorialSlideUIQueue)
         {
-            // 1) เปิดใช้ + ล้างก่อน
             PlayerPrefs.DeleteKey(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED);
             TutorialSlideUIQueue.enabled = true;
             TutorialSlideUIQueue.ClearQueueAndHideImmediate();
-
-            // 2) กันกรณีลิสต์ยังไม่ถูกใส่ในซีนนี้
-            if (TutorialSlideUIQueue.tutorialMessages == null ||
-                TutorialSlideUIQueue.tutorialMessages.Count == 0)
-            {
-                Debug.LogError("[Tutorial] tutorialMessages is EMPTY in this scene. " +
-                               "Populate messages in Inspector (index 0..12).");
-            }
-            else
-            {
-                // 3) ค่อย Enqueue หลังจากเคลียร์แล้ว
+            if (TutorialSlideUIQueue.tutorialMessages != null && TutorialSlideUIQueue.tutorialMessages.Count > 0)
                 TutorialSlideUIQueue.EnqueueTutorialByIndex(0);
-            }
+        }
+        else if (currentDay > 1 && TutorialSlideUIQueue)
+        {
+            // ✅ ปิดหมดทุกรอบในวันถัดไป
+            PlayerPrefs.SetInt(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED, 1);
+            PlayerPrefs.Save();
+            TutorialSlideUIQueue.SetDisabled(true);  // เกตกลางกันทุก Enqueue/Complete
         }
 
         shopIsOpen = false;
