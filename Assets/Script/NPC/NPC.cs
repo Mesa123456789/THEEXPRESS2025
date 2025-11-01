@@ -35,6 +35,7 @@ public class NPC : MonoBehaviour
         npcBoxcollider = FindFirstObjectByType<NpcBoxcollider>();
         itemDialogueManager = FindFirstObjectByType<ItemDialogueManager>();
         BoxScript.OnBoxStored += HandleBoxStored;
+        Animation.SetBool("TableCollision", false);
     }
 
     protected virtual void OnDestroy()

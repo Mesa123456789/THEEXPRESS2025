@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     public int shopCloseHour = 2;
     public bool shopIsOpen = false;
     public NPCSpawner npcSpawner;
-
+    public GameObject ghost;
 
     [Header("Day/Night Lighting")]
     public Light directionalLight;
@@ -116,13 +116,14 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.DeleteKey(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED);
             TutorialSlideUIQueue.enabled = true;
+            ghost.gameObject.SetActive(false);
             TutorialSlideUIQueue.ClearQueueAndHideImmediate();
             if (TutorialSlideUIQueue.tutorialMessages != null && TutorialSlideUIQueue.tutorialMessages.Count > 0)
                 TutorialSlideUIQueue.EnqueueTutorialByIndex(0);
         }
         else if (currentDay > 1 && TutorialSlideUIQueue)
         {
-            // ✅ ปิดหมดทุกรอบในวันถัดไป
+            ghost.gameObject.SetActive(true);
             PlayerPrefs.SetInt(TutorialSlideUIQueue.KEY_TUTORIAL_DISABLED, 1);
             PlayerPrefs.Save();
             TutorialSlideUIQueue.SetDisabled(true);  // เกตกลางกันทุก Enqueue/Complete
