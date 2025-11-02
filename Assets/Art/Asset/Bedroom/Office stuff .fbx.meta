@@ -1,0 +1,412 @@
+fileFormatVersion: 2
+guid: e06e9d6223d7ea24aa1c15f93eb3085c
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Apaper
+    second: {fileID: 2100000, guid: 5a542f5991e06934d8e4932e7afc2720, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Board
+    second: {fileID: 2100000, guid: edbb803794604954a911cccfca74d951, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Coffee
+    second: {fileID: 2100000, guid: f153a9e34197c654780b127127007a68, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Desk
+    second: {fileID: 2100000, guid: e5bec5d9e36b5604684f2c10893b7f41, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Floder
+    second: {fileID: 2100000, guid: 571658238eb24b64886bdeefac1755a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Grass
+    second: {fileID: 2100000, guid: 459d8d5a20209da489fcd355c1aa7d4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.003
+    second: {fileID: 2100000, guid: 2bb7c9f506e9e664f856dd813b4494e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.005
+    second: {fileID: 2100000, guid: 5f6d9ce0b899dbc4396470438180ff76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.030
+    second: {fileID: 2100000, guid: 9af9329c7eb827e46a9685ca486d64da, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.031
+    second: {fileID: 2100000, guid: 0d1f1bd0af83a4c4bb8d77ebe65843d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.032
+    second: {fileID: 2100000, guid: 359072bf69c23b4469af86ef1b9b8f34, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.038
+    second: {fileID: 2100000, guid: 36c1dcf5209ac3644a6a8630bf232782, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paper1
+    second: {fileID: 2100000, guid: 2690192cee71c0047adc4acd6867e753, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paper2
+    second: {fileID: 2100000, guid: 6d2174393016a764c8788e9799c7f27b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PaperCase
+    second: {fileID: 2100000, guid: 5c1def66b927d5347b05c07f680b0080, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Pen
+    second: {fileID: 2100000, guid: 6d9c85fd2d6617f408321b4e7cc38d7b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Table
+    second: {fileID: 2100000, guid: 3d108b70d5aafb243a677fb65af2fb69, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: APasper_BaseColor
+    second: {fileID: 2800000, guid: c8d3052b5d9cd894dbfc9c0365e3b6ee, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: APasper_Metallic
+    second: {fileID: 2800000, guid: 025a15f7b0e7eb84382424109d81f54f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: APasper_Normal
+    second: {fileID: 2800000, guid: 7de9e953da755b748bfd28b657c65a1f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: APasper_Roughness
+    second: {fileID: 2800000, guid: d3308ed2f0902f043a2e1be657700d44, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Board_BaseColor
+    second: {fileID: 2800000, guid: bdb6a3a1d7ffe5a4199b0313553228e4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Board_Metallic
+    second: {fileID: 2800000, guid: 783df73c70574e74ba0e76d95132babe, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Board_Normal
+    second: {fileID: 2800000, guid: 8a3bf6b479fbcc24dbf39f04fa815ed3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Board_Roughness
+    second: {fileID: 2800000, guid: 1e44bc7536fdc0843bc1ef729849613e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Coffee_Base_color
+    second: {fileID: 2800000, guid: bcc50f0a790d7cd479c7d2b01dee8e2f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Coffee_Metallic
+    second: {fileID: 2800000, guid: ea1d2beab18112a4a960d79f0deb5b7e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Coffee_Normal
+    second: {fileID: 2800000, guid: 7e633b1508ba5f640a2f28a880484db4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Coffee_Roughness
+    second: {fileID: 2800000, guid: f6288eb2af6ae5546acf74ca3d20d7d5, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_BaseColor
+    second: {fileID: 2800000, guid: 11e613bb1c74b3f4bb9508e6f53a6967, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_Metallic
+    second: {fileID: 2800000, guid: e3a2f81faf1c59e45afe62e0fbcbd8b6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_Normal
+    second: {fileID: 2800000, guid: dbac8ce544cf7de41909e7abbf0da7c6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_Roughness
+    second: {fileID: 2800000, guid: 028c9d0da59e326488da7509874c951d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Floder_BaseColor
+    second: {fileID: 2800000, guid: eb584cb4aa6aba74ab1580a47be279cf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Floder_Metallic
+    second: {fileID: 2800000, guid: 250de9dd76172a04792ac98d5025a364, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Floder_Normal
+    second: {fileID: 2800000, guid: 6ccd52a708fa2c5459f1ded2ec577fe9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Floder_Roughness
+    second: {fileID: 2800000, guid: 5119edb02fe0ad745bfb304bcb6d1c6b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Grass_BaseColor
+    second: {fileID: 2800000, guid: aadb0443852f6e749ae48be922d140cb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Grass_Metallic
+    second: {fileID: 2800000, guid: 65cf33cb2f3e62d4a83b6e3bce41d3c2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Grass_Normal
+    second: {fileID: 2800000, guid: 1e82bf12acdcd1547b5b37c9375796b6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Grass_Roughness
+    second: {fileID: 2800000, guid: 41445621a28dea346a2def87aa75de14, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PaperCase_BaseColor
+    second: {fileID: 2800000, guid: 1c064869c923c0b428af0a7ce014e4c2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PaperCase_Metallic
+    second: {fileID: 2800000, guid: 136e730d562bb3a4289abc9f1b6ad6b1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PaperCase_Normal
+    second: {fileID: 2800000, guid: 88307d2df7cf27540be1eb369c638dee, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PaperCase_Roughness
+    second: {fileID: 2800000, guid: 50dc6788c1156c14f898aa64c1988789, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers1_BaseColor
+    second: {fileID: 2800000, guid: f0194f6882ea52a41a1ee35010f5236d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers1_Metallic
+    second: {fileID: 2800000, guid: b98d0ae3dee1caa48a88dd791d0d8458, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers1_Normal
+    second: {fileID: 2800000, guid: 2646d908f8ed552429e4606328a4dffe, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers1_Roughness
+    second: {fileID: 2800000, guid: 5ad3b3d1078cdbe49b9422a5450754d3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers2_BaseColor
+    second: {fileID: 2800000, guid: 79845b1b539eb3c44b0203ae78e75747, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers2_Metallic
+    second: {fileID: 2800000, guid: 18862e90e32f5c247a4402fc705bc9a6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers2_Normal
+    second: {fileID: 2800000, guid: 688db538eb1e7aa45bec7088de7d9d62, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Papers2_Roughness
+    second: {fileID: 2800000, guid: 12a15a9dc424b13459d70d1a348bd21e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pen_BaseColor
+    second: {fileID: 2800000, guid: 750d89be1c7bf4940892eac38dea8793, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pen_Metallic
+    second: {fileID: 2800000, guid: 31f7b6928ee0b9a4ebe7b3f34136c922, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pen_Normal
+    second: {fileID: 2800000, guid: 7d82f07221793534ca3a194013f52289, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Pen_Roughness
+    second: {fileID: 2800000, guid: 242cf4968176eaf4299a594607629ee3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Table_BaseColor
+    second: {fileID: 2800000, guid: 48dc07ab9aa72bb498a70ace35615426, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Table_Metallic
+    second: {fileID: 2800000, guid: fe75465cae2c2684ea9aba5cc84474e0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Table_Normal
+    second: {fileID: 2800000, guid: 42ed37d77e4a8904ca88629733ece54e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Table_Roughness
+    second: {fileID: 2800000, guid: a2642b05e0ca83743a490e23c1c6228f, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
