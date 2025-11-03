@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   steps:
   - speaker: Pop Chiangmai
-    text: "I have a book \r"
+    text: I have a book for game development called Let Him Cook, and I want to give
+      this book to Mesa Phuket at Talat Yai , my follower.
     voice: {fileID: 0}
     gotoIndex: 1
     onLineEndAction: 0
@@ -32,19 +33,35 @@ MonoBehaviour:
     - text: Accept
       gotoIndex: 2
     - text: Refuse
-      gotoIndex: 3
+      gotoIndex: 4
+  - speaker: Delivery man
+    text: "Dafuq \u2014 this book\u2026 but okay, I\u2019ll send it"
+    voice: {fileID: 0}
+    gotoIndex: 3
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
   - speaker: Pop Chiangmai
-    text: "Thank you! Hahah \u2014 my face is very handsome.\r\n"
+    text: "Thank you! Hahah \u2014 my face is very handsome"
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 0
     moneyAmount: 0
     onLineEndDelay: 0
     options: []
-  - speaker: Pop Chiangmai
-    text: '
+  - speaker: Delivery man
+    text: 'Book of what? Are you joking? Go back!
 
 '
+    voice: {fileID: 0}
+    gotoIndex: 5
+    onLineEndAction: 0
+    moneyAmount: 0
+    onLineEndDelay: 0
+    options: []
+  - speaker: Pop Chiangmai
+    text: "Oh! No \U0001F92C \u2014 fine, I\u2019ll find someone else."
     voice: {fileID: 0}
     gotoIndex: -1
     onLineEndAction: 1
