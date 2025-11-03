@@ -748,63 +748,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77199502}
   m_CullTransparentMesh: 1
---- !u!1001 &86138760
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.5587933
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.0268073
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.644869
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2902025403513977643, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_Name
-      value: _label
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
 --- !u!1 &89385414
 GameObject:
   m_ObjectHideFlags: 0
@@ -3808,184 +3751,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.010900058, y: 0.0006284042, z: 0.03952392}
   m_Center: {x: -0.00000008218922, y: 0.025295371, z: 0.01772205}
---- !u!1 &297608251
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 297608258}
-  - component: {fileID: 297608257}
-  - component: {fileID: 297608256}
-  - component: {fileID: 297608255}
-  - component: {fileID: 297608254}
-  - component: {fileID: 297608253}
-  - component: {fileID: 297608252}
-  m_Layer: 0
-  m_Name: SliceDoor (2)
-  m_TagString: RollDoor
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &297608252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec58f9da6c36ca64284c1182e69c7612, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineTargets: []
-  maxDistance: 4
-  halfViewAngle: 30
-  rayMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  outlineModeWhenHover: 1
-  showPromptUI: 1
-  promptRoot: {fileID: 933456421}
-  promptTMP: {fileID: 0}
-  defaultMessage: Interact
-  showDelay: 0
-  hideDelay: 0
-  toggleTMPGameObject: 1
---- !u!114 &297608253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 6
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
---- !u!65 &297608254
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.00036820053, y: 0.043233715, z: 0.034949258}
-  m_Center: {x: -0.00007973972, y: -0.000000011175874, z: -0.022292884}
---- !u!114 &297608255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64fd0a1f4326aae4eab77f33e8cd5d91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameManager: {fileID: 1020915432}
-  doorTransform: {fileID: 297608258}
-  rayOrigin: {fileID: 0}
-  shopUI: {fileID: 0}
-  doorTag: RollDoor
-  rayDistance: 3
-  toggleKey: 101
-  closedZ: 100
-  openZ: 40
-  scaleDuration: 0.6
-  ui: {fileID: 595897941}
---- !u!23 &297608256
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 6516c66c7f8eb0a4b823fcf5f2c8bc8c, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &297608257
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  m_Mesh: {fileID: -2555279543630698534, guid: 4bb8f7d984af7ee4aba8b728f0850440, type: 3}
---- !u!4 &297608258
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297608251}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.397, y: 4.01, z: 2.355}
-  m_LocalScale: {x: 100, y: 112, z: 100}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -90, y: 90, z: -90}
 --- !u!1 &299748923
 GameObject:
   m_ObjectHideFlags: 0
@@ -13903,7 +13668,7 @@ MonoBehaviour:
   totalCaughtPercent: 0
   Debt: 500000
   startHour: 15
-  hourDuration: 5
+  hourDuration: 30
   dangerStartHour: 3
   dayEndHour: 6
   deathSceneName: DieWMonster
@@ -13923,6 +13688,7 @@ MonoBehaviour:
   shopCloseHour: 2
   shopIsOpen: 0
   npcSpawner: {fileID: 1768713437}
+  ghost: {fileID: 1161628024430706967}
   directionalLight: {fileID: 410087040}
   lightAxis: {x: 1, y: 0, z: 0}
   baseRotation: 190
@@ -26530,7 +26296,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1766892154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40705,7 +40471,6 @@ SceneRoots:
   - {fileID: 727255717}
   - {fileID: 1876880341}
   - {fileID: 1766892157}
-  - {fileID: 297608258}
   - {fileID: 229650437}
   - {fileID: 2055537026}
   - {fileID: 8728659500701757496}
@@ -40726,4 +40491,3 @@ SceneRoots:
   - {fileID: 755647735}
   - {fileID: 981076592}
   - {fileID: 1780880117}
-  - {fileID: 86138760}
