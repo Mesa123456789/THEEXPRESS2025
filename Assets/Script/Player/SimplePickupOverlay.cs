@@ -10,7 +10,7 @@ public class SimplePickupOverlay : MonoBehaviour
     [Tooltip("คัดเลือกด้วยแท็กเท่านั้น ไม่ได้ใช้เลเยอร์กรอง")]
     public LayerMask pickMask = ~0;       // ไม่ได้ใช้กรองคัดเลือก
 
-    [Header("Pickable Tags (หลายแท็กได้)")]
+    [Header("Pickable Tags")]
     public string[] pickableTags = new string[] { "pickable" }; // ใส่ได้หลายชื่อ เช่น {"pickable","box","tool"}
 
     [Header("Render Layer for Held Item")]

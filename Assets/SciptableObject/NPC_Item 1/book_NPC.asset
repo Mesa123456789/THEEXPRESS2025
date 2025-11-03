@@ -20,10 +20,10 @@ MonoBehaviour:
   - Mesa Puked
   - Me Puked
   - 'Mesa '
-  correctNameIndex: 0
+  correctNameIndex: 1
   addressOptions:
   - Talat
   - Yai
   - TalYai
   - Talat Yai
-  correctAddressIndex: 0
+  correctAddressIndex: 3

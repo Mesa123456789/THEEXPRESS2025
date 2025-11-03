@@ -748,63 +748,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77199502}
   m_CullTransparentMesh: 1
---- !u!1001 &86138760
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.5587933
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.0268073
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.644869
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2525886166799770001, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2902025403513977643, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
-      propertyPath: m_Name
-      value: _label
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 59555031511105a48971c2ba3d74f00b, type: 3}
 --- !u!1 &89385414
 GameObject:
   m_ObjectHideFlags: 0
@@ -12763,7 +12706,7 @@ MonoBehaviour:
   totalCaughtPercent: 0
   Debt: 500000
   startHour: 15
-  hourDuration: 5
+  hourDuration: 30
   dangerStartHour: 3
   dayEndHour: 6
   deathSceneName: DieWMonster
@@ -38420,4 +38363,3 @@ SceneRoots:
   - {fileID: 755647735}
   - {fileID: 981076592}
   - {fileID: 1780880117}
-  - {fileID: 86138760}

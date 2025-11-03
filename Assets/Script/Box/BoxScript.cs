@@ -212,7 +212,7 @@ public class BoxScript : MonoBehaviour
         // คลิกปิดฝากล่อง
         if (Input.GetMouseButtonDown(0))
         {
-            if (!IsFinsihedClose)
+            if (!IsFinsihedClose && bubbleInserted)
             {
                 Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
                 if (Physics.Raycast(ray, out var hit, 3f) && hit.collider.CompareTag("Boxlid"))

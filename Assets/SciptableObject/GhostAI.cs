@@ -99,12 +99,11 @@ public class GhostAI : MonoBehaviour
     IEnumerator Start()
     {
         if (!agent) agent = GetComponent<NavMeshAgent>();
-        yield return null; // ให้ NavMesh พร้อม 1 เฟรม
+        yield return null; 
 
         EnsureOnNavMesh(3f);
         FindPlayerOnce();
 
-        // เลือกโหมดเริ่มต้นอัตโนมัติ
         if (mode == PatrolMode.PatrolPoints && (patrolPoints == null || patrolPoints.Length == 0))
             mode = PatrolMode.RoamArea;
 
@@ -271,7 +270,6 @@ public class GhostAI : MonoBehaviour
 
         if (player)
         {
-            // หันหน้าเข้าผู้เล่นทันทีตอนสลับสถานะ
             Vector3 look = (player.position - transform.position).normalized;
             look.y = 0f;
             if (look.sqrMagnitude > 0.01f)
@@ -290,14 +288,12 @@ public class GhostAI : MonoBehaviour
 
         Vector3 dst = patrolPoints[idx].position;
 
-        // Detour
         if (Random.value < detourChance)
         {
             Vector2 r = Random.insideUnitCircle * detourRadius;
             dst += new Vector3(r.x, 0f, r.y);
         }
 
-        // Jitter
         if (patrolJitterRadius > 0f)
         {
             Vector2 r = Random.insideUnitCircle * patrolJitterRadius;
